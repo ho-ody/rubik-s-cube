@@ -1,3 +1,5 @@
+#define _USE_MATH_DEFINES
+#include <cmath>
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
@@ -269,7 +271,8 @@ int main() {
 	Tile tiles[9];
 	for (int i = 0; i < 9; i++) {
 		tiles[i].color = glm::vec3((rand() % 100 / 100.), (rand() % 100 / 100.), (rand() % 100 / 100.));
-		tiles[i].position = glm::vec3(i,0.0,0.0);
+		tiles[i].position = glm::vec3(i, 0.0, 0.0);
+		tiles[i].rotation = glm::vec3(M_PI/9*i, 0.0, 0.0);
 	}
 
 	/*
@@ -362,7 +365,13 @@ int main() {
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, tiles[i].position);
 			float angle = 20.0f * i;
-			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.x, glm::vec3(1, 0, 0));
+			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.y, glm::vec3(0, 1, 0));
+			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.z, glm::vec3(0, 0, 1));
+			//modelMatrix = translateMatrix * rotateZ * rotateY * rotateX * scaleMatrix;
+			//model *= rotateX * rotateY * rotateZ;
+
+
 			//shaderProgram.setMat4("model", model);
 			//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
 			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
