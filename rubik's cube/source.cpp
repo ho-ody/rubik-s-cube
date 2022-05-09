@@ -163,6 +163,13 @@ int main() {
 		0,1,2,
 		1,2,3
 	};
+	int n_lineIndices = 4 * 2;
+	GLuint lineIndices[] = {
+		0,1,
+		0,2,
+		3,1,
+		3,2
+	};
 
 	Tile tiles[6*9];
 	int n_tiles = 6*9;
@@ -200,6 +207,7 @@ int main() {
 	//
 	VBO VBO1(vertices, sizeof(GLfloat) * n_vertices);
 	EBO EBO1(indices, sizeof(GLuint) * n_indices);
+	EBO EBO2(lineIndices, sizeof(GLuint) * n_lineIndices);
 
 	VAO1.LinkVBO(VBO1, 0, 1);
 	VAO1.Unbind();
@@ -207,6 +215,7 @@ int main() {
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //kontury
+	glLineWidth(3);
 	float time = 0;
 	VBO1.Bind(); //dynamiczna zmiana koloru
 	Camera camera(width, height);
@@ -246,7 +255,11 @@ int main() {
 			int colorLoc = glGetUniformLocation(shaderProgram.ID, "color");
 			glUniform3f(colorLoc, tiles[i].color.x, tiles[i].color.y, tiles[i].color.z);
 			//rysowanie konkretnego kwadratu (2 trójk¹tów)
-			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+			EBO1.Bind();
+			glDrawElements(GL_TRIANGLES, n_indices, GL_UNSIGNED_INT, 0);
+			EBO2.Bind();
+			glUniform3f(colorLoc, 0.1, 0.1, 0.1);
+			glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
 		}
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
