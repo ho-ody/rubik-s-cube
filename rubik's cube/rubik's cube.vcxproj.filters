@@ -53,6 +53,9 @@
     <None Include="camera_models.vert">
       <Filter>Pliki zasobów</Filter>
     </None>
+    <None Include="color_uniform.vert">
+      <Filter>Pliki zasobów</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ShaderClass.h">

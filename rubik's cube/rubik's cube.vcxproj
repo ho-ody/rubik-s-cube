@@ -154,6 +154,7 @@
   <ItemGroup>
     <None Include="camera.vert" />
     <None Include="camera_models.vert" />
+    <None Include="color_uniform.vert" />
     <None Include="default.frag" />
     <None Include="default.vert" />
   </ItemGroup>

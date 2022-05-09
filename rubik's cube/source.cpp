@@ -213,7 +213,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "lab4", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(800, 800, "glhf", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -241,7 +241,7 @@ int main() {
 	//
 	glEnable(GL_DEPTH_TEST);
 	// Utwórz obiekt Vertex Shader
-	Shader shaderProgram("camera_models.vert", "default.frag");
+	Shader shaderProgram("color_uniform.vert", "default.frag");
 
 	VAO VAO1;
 	VAO1.Bind();
@@ -368,6 +368,8 @@ int main() {
 			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 
+			int colorLoc = glGetUniformLocation(shaderProgram.ID, "color");
+			glUniform3f(colorLoc, tiles[i].color.x, tiles[i].color.y, tiles[i].color.z);
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
 			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)((i+6) * sizeof(float)));
 			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((6*i)*sizeof(GLfloat)));
