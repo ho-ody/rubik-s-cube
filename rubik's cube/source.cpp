@@ -8,6 +8,7 @@ using namespace std;
 #include "EBO.h"
 #include "ShaderClass.h"
 #include "Camera.h"
+#include "Tile.h"
 
 
 int zad1(int size, GLfloat*& vertices, GLuint*& indices) {
@@ -264,6 +265,13 @@ int main() {
 		0,1,2,
 		1,2,3
 	};
+
+	Tile tiles[9];
+	for (int i = 0; i < 9; i++) {
+		tiles[i].color = glm::vec3((rand() % 100 / 100.), (rand() % 100 / 100.), (rand() % 100 / 100.));
+		tiles[i].position = glm::vec3(i,0.0,0.0);
+	}
+
 	/*
 	glm::vec3 positions[] = {
 		glm::vec3(0.0f,  0.0f,  0.0f),
@@ -331,10 +339,28 @@ int main() {
 		VAO1.Bind();
 		// Narysuj trójk¹ty
 		//drawIt(n_verticles_to_draw,0);
+		/*
 		for (int i = 0; i < 10; i++)
 		{
 			glm::mat4 model = glm::mat4(1.0f);
 			model = glm::translate(model, positions[i]);
+			float angle = 20.0f * i;
+			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+			//shaderProgram.setMat4("model", model);
+			//glUniformMatrix4fv(glGetUniformLocation(shaderProgram.ID, "model"), 1, GL_FALSE, glm::value_ptr(model));
+			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
+			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			//glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, (void*)((i+6) * sizeof(float)));
+			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, (void*)((6*i)*sizeof(GLfloat)));
+			glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		}
+		*/
+		for (int i = 0; i < 9; i++)
+		{
+			glm::mat4 model = glm::mat4(1.0f);
+			model = glm::translate(model, tiles[i].position);
 			float angle = 20.0f * i;
 			model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 			//shaderProgram.setMat4("model", model);
