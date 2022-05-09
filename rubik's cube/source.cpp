@@ -254,13 +254,13 @@ int main() {
 	//n_verticles_to_draw = zad4(size, vertices, indices);
 
 
-	int n_vertices = 4 * 6;
+	int n_vertices = 4 * 3;
 	GLfloat vertices[] = {
-		//x,y,z,r,g,b
-		-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,
-		+0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,
-		-0.5f, +0.5f, 0.0f, 0.0f, 0.0f, 1.0f,
-		+0.5f, +0.5f, 0.0f, 1.0f, 0.0f, 0.0f
+		//x    y      z
+		-0.5f, -0.5f, 0.0f,
+		+0.5f, -0.5f, 0.0f,
+		-0.5f, +0.5f, 0.0f,
+		+0.5f, +0.5f, 0.0f
 	};
 	int n_indices = 2 * 3;
 	GLuint indices[] = {
@@ -274,35 +274,6 @@ int main() {
 		tiles[i].position = glm::vec3(i, 0.0, 0.0);
 		tiles[i].rotation = glm::vec3(M_PI/9*i, 0.0, 0.0);
 	}
-
-	/*
-	glm::vec3 positions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-	*/
-	glm::vec3 positions[] = {
-		glm::vec3(0.0f,  0.0f,  0.0f),
-		glm::vec3(2.0f,  5.0f, -15.0f),
-		glm::vec3(-1.5f, -2.2f, -2.5f),
-		glm::vec3(-3.8f, -2.0f, -12.3f),
-		glm::vec3(2.4f, -0.4f, -3.5f),
-		glm::vec3(-1.7f,  3.0f, -7.5f),
-		glm::vec3(1.3f, -2.0f, -2.5f),
-		glm::vec3(1.5f,  2.0f, -2.5f),
-		glm::vec3(1.5f,  0.2f, -1.5f),
-		glm::vec3(-1.3f,  1.0f, -1.5f)
-	};
-
-
 
 	n_verticles_to_draw = n_indices;
 	//
