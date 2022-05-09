@@ -164,12 +164,38 @@ int main() {
 		1,2,3
 	};
 
-	Tile tiles[9];
-	int n_tiles = 9;
-	for (int i = 0; i < 9; i++) {
-		tiles[i].color = glm::vec3((rand() % 100 / 100.), (rand() % 100 / 100.), (rand() % 100 / 100.));
-		tiles[i].position = glm::vec3(i, 0.0, 0.0);
-		tiles[i].rotation = glm::vec3(M_PI/9*i, 0.0, 0.0);
+	Tile tiles[6*9];
+	int n_tiles = 6*9;
+	int j = 0;
+	for (int i = 0; j < 1 * 9; j++, i++) { //front side - red
+		tiles[j].color = glm::vec3(0.9,0.1,0.1);
+		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
+		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+	}
+	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
+		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
+		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
+		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+	}
+	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
+		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
+		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
+		tiles[j].rotation = glm::vec3(M_PI/2.0, 0.0, 0.0);
+	}
+	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
+		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
+		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
+		tiles[j].rotation = glm::vec3(M_PI / 2.0, 0.0, 0.0);
+	}
+	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
+		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
+		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
+		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
+	}
+	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
+		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
+		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
+		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
 	}
 	//
 	VBO VBO1(vertices, sizeof(GLfloat) * n_vertices);
@@ -207,9 +233,12 @@ int main() {
 			glm::mat4 model = glm::mat4(1.0f);
 			//transformacje konkretnego modelu - odpowiednia rotacja
 			model = glm::translate(model, tiles[i].position);
-			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.x, glm::vec3(1, 0, 0));
-			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.y, glm::vec3(0, 1, 0));
-			model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.z, glm::vec3(0, 0, 1));
+			if (tiles[i].rotation.x)
+				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.x, glm::vec3(1, 0, 0));
+			if (tiles[i].rotation.y)
+				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.y, glm::vec3(0, 1, 0));
+			if (tiles[i].rotation.z)
+				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.z, glm::vec3(0, 0, 1));
 			//przekazanie modelu
 			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
