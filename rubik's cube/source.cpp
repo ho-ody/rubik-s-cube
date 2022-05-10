@@ -40,15 +40,20 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 }
 
 
-int counter = 0;
-void rotate(int id) {
-	//GLOBALtiles[id].position
-
-
-	//tiles[j].position = glm::vec3(i % 3, i / 3, 0.0);
+int rotateCounter = 0;
+int ANIMATION_DURATION = 150;
+void rotate(int side) {
+	rotateCounter = ANIMATION_DURATION;
+	for (int i = side * 9; i < (side + 1) * 9; i++) {
+		GLOBALtiles[i].rotate = true;
+		if (i % 2)
+			GLOBALtiles[i].genPositionOffset(true);
+		else
+			GLOBALtiles[i].genPositionOffset(false);
+	}	
 }
 
-int ANIMATION_DURATION = 150;
+
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -71,11 +76,10 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position -= cameraSpeed * Up;
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-		//glm::vec3 temp = GLOBALtiles[0].color;
-		//GLOBALtiles[0].color = GLOBALtiles[9].color;
-		//GLOBALtiles[9].color = temp;
-		//cerr << "yes sir!\n";
-		counter = ANIMATION_DURATION;
+		rotate(1);
+	}
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
+		rotate(0);
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -113,32 +117,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
-double genPosOffsetCross(float x, float y) {
-	double result;
 
-	if (x < 0.5 && x > -0.5) //left
-		result = 2;
-	else if (x < 2.5 && x > 1.5) //right
-		result = 0;
-	else if (y < 2.5 && y > 1.5) //down
-		result = 1;
-	else //up
-		result = 3;
-	return result * M_PI / 2.;
-}
-double genPosOffsetDiag(float x, float y) {
-	double result;
-
-	if (x > 1 && y > 1) //rightup
-		result = 2;
-	else if (x > 1 && y < 1) //rightdown
-		result = 0;
-	else if (x < 1 && y > 1) //leftup
-		result = 1;
-	else //leftdown
-		result = 3;
-	return result * M_PI / 2.;
-}
 
 
 int width = 800, height = 800;
@@ -204,31 +183,37 @@ int main() {
 		tiles[j].color = glm::vec3(0.9,0.1,0.1);
 		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
 		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
 		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
 		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
 		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
 		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
 		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
 		tiles[j].rotation = glm::vec3(M_PI/2.0, 0.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
 		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
 		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
 		tiles[j].rotation = glm::vec3(M_PI / 2.0, 0.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
 		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
 		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
 		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
 		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
+		if (i != 4) tiles[j].side = j / 9;
 	}
 	//
 	VBO VBO1(vertices, sizeof(GLfloat) * n_vertices);
@@ -247,9 +232,27 @@ int main() {
 	Camera camera(width, height);
 	while (!glfwWindowShouldClose(window))
 	{
-		
-		if (counter > 0) {
-			if (counter == ANIMATION_DURATION) {
+		if (rotateCounter >= 0) { 
+			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
+			for (int i = 0; i < n_tiles; i++) {
+				if (tiles[i].rotate == true) {
+					if ((i % 2 && !(tiles[i].side % 2)) || (!(i % 2) && tiles[i].side % 2))
+						tiles[i].genRotationPosition(multi, 1.);
+					else
+						tiles[i].genRotationPosition(multi, sqrt(2));
+				}
+			}
+			if (rotateCounter == 0)
+				for (int i = 0; i < n_tiles; i++)
+					tiles[i].rotate = false;
+			rotateCounter--;
+		}
+
+
+
+		/*
+		if (rotateCounter > 0) {
+			if (rotateCounter == ANIMATION_DURATION) {
 				tiles[1].posOffset = genPosOffsetCross(tiles[1].position.x, tiles[1].position.y);
 				tiles[3].posOffset = genPosOffsetCross(tiles[3].position.x, tiles[3].position.y);
 				tiles[5].posOffset = genPosOffsetCross(tiles[5].position.x, tiles[5].position.y);
@@ -262,38 +265,38 @@ int main() {
 			}
 			
 			
-			counter--;
+			rotateCounter--;
 
-			float multi = counter * M_PI /2. / ANIMATION_DURATION;
+			float multi = rotateCounter * M_PI /2. / ANIMATION_DURATION;
 
-			tiles[1].position.x = 1 * sin(multi + tiles[1].posOffset) + 1;
-			tiles[1].position.y = 1 * cos(multi + tiles[1].posOffset) + 1;
+			tiles[1].position.x = sin(multi + tiles[1].posOffset) + 1;
+			tiles[1].position.y = cos(multi + tiles[1].posOffset) + 1;
 
-			tiles[3].position.x = 1 * sin(multi + tiles[3].posOffset) + 1;
-			tiles[3].position.y = 1 * cos(multi + tiles[3].posOffset) + 1;
+			tiles[3].position.x = sin(multi + tiles[3].posOffset) + 1;
+			tiles[3].position.y = cos(multi + tiles[3].posOffset) + 1;
 
-			tiles[5].position.x = 1 * sin(multi + tiles[5].posOffset) + 1;
-			tiles[5].position.y = 1 * cos(multi + tiles[5].posOffset) + 1;
+			tiles[5].position.x = sin(multi + tiles[5].posOffset) + 1;
+			tiles[5].position.y = cos(multi + tiles[5].posOffset) + 1;
 
-			tiles[7].position.x = 1 * sin(multi + tiles[7].posOffset) + 1;
-			tiles[7].position.y = 1 * cos(multi + tiles[7].posOffset) + 1;
+			tiles[7].position.x = sin(multi + tiles[7].posOffset) + 1;
+			tiles[7].position.y = cos(multi + tiles[7].posOffset) + 1;
 
 			tiles[1].rotation.z = -multi;
 			tiles[3].rotation.z = -multi;
 			tiles[5].rotation.z = -multi;
 			tiles[7].rotation.z = -multi;
 
-			tiles[0].position.x = sqrt(2) * sin(multi + tiles[0].posOffset + M_PI / 4.) + 1;
-			tiles[0].position.y = sqrt(2) * cos(multi + tiles[0].posOffset + M_PI / 4.) + 1;
+			tiles[0].position.x = sqrt(2) * sin(multi + tiles[0].posOffset) + 1;
+			tiles[0].position.y = sqrt(2) * cos(multi + tiles[0].posOffset) + 1;
 
-			tiles[2].position.x = sqrt(2) * sin(multi + tiles[2].posOffset + M_PI / 4.) + 1;
-			tiles[2].position.y = sqrt(2) * cos(multi + tiles[2].posOffset + M_PI / 4.) + 1;
+			tiles[2].position.x = sqrt(2) * sin(multi + tiles[2].posOffset) + 1;
+			tiles[2].position.y = sqrt(2) * cos(multi + tiles[2].posOffset) + 1;
 
-			tiles[6].position.x = sqrt(2) * sin(multi + tiles[6].posOffset + M_PI / 4.) + 1;
-			tiles[6].position.y = sqrt(2) * cos(multi + tiles[6].posOffset + M_PI / 4.) + 1;
+			tiles[6].position.x = sqrt(2) * sin(multi + tiles[6].posOffset) + 1;
+			tiles[6].position.y = sqrt(2) * cos(multi + tiles[6].posOffset) + 1;
 
-			tiles[8].position.x = sqrt(2) * sin(multi + tiles[8].posOffset + M_PI / 4.) + 1;
-			tiles[8].position.y = sqrt(2) * cos(multi + tiles[8].posOffset + M_PI / 4.) + 1;
+			tiles[8].position.x = sqrt(2) * sin(multi + tiles[8].posOffset) + 1;
+			tiles[8].position.y = sqrt(2) * cos(multi + tiles[8].posOffset) + 1;
 
 			tiles[0].rotation.z = -multi;
 			tiles[2].rotation.z = -multi;
@@ -302,6 +305,7 @@ int main() {
 
 			tiles[4].rotation.z = -multi;
 		}
+		*/
 		//time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
