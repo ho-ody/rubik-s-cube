@@ -33,10 +33,19 @@ float lastX = 800.0f / 2.0;
 float lastY = 600.0 / 2.0;
 float fov = 45.0f;
 glm::vec3 cameraFront;
+float deltaTime = 0., lastFrame = 0.;
 void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uruchamiane po zmianie rozmiaru okienka
 {
 	glViewport(0, 0, width, height);
 }
+
+void rotate(int id) {
+	//GLOBALtiles[id].position
+
+
+	//tiles[j].position = glm::vec3(i % 3, i / 3, 0.0);
+}
+
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -44,7 +53,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)          // sprawdzanie czy wybrany klawisz jest wciœniêty (Esc)     GLFW_PRESS | GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka
 
-	const float cameraSpeed = 0.05f; // adjust accordingly
+	const float cameraSpeed = 4.00f * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		Position += cameraSpeed * Orientation;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -202,11 +211,54 @@ int main() {
 	float time = 0;
 	VBO1.Bind(); //dynamiczna zmiana koloru
 	Camera camera(width, height);
+
 	while (!glfwWindowShouldClose(window))
 	{
+		
+		tiles[1].position.x = 1 * sin(5 * time + 0 * M_PI / 2.) + 1;
+		tiles[1].position.y = 1 * cos(5 * time + 0 * M_PI / 2.) + 1;
+
+		tiles[3].position.x = 1 * sin(5 * time + 1 * M_PI / 2.) + 1;
+		tiles[3].position.y = 1 * cos(5 * time + 1 * M_PI / 2.) + 1;
+
+		tiles[5].position.x = 1 * sin(5 * time + 2 * M_PI / 2.) + 1;
+		tiles[5].position.y = 1 * cos(5 * time + 2 * M_PI / 2.) + 1;
+
+		tiles[7].position.x = 1 * sin(5 * time + 3 * M_PI / 2.) + 1;
+		tiles[7].position.y = 1 * cos(5 * time + 3 * M_PI / 2.) + 1;
+		
+		tiles[1].rotation.z = -5 * time;
+		tiles[3].rotation.z = -5 * time;
+		tiles[5].rotation.z = -5 * time;
+		tiles[7].rotation.z = -5 * time;
+
+
+		tiles[0].position.x = sqrt(2) * sin(5 * time + 0 * M_PI / 2. + M_PI / 4.) + 1;
+		tiles[0].position.y = sqrt(2) * cos(5 * time + 0 * M_PI / 2. + M_PI / 4.) + 1;
+
+		tiles[2].position.x = sqrt(2) * sin(5 * time + 1 * M_PI / 2. + M_PI / 4.) + 1;
+		tiles[2].position.y = sqrt(2) * cos(5 * time + 1 * M_PI / 2. + M_PI / 4.) + 1;
+
+		tiles[6].position.x = sqrt(2) * sin(5 * time + 2 * M_PI / 2. + M_PI / 4.) + 1;
+		tiles[6].position.y = sqrt(2) * cos(5 * time + 2 * M_PI / 2. + M_PI / 4.) + 1;
+
+		tiles[8].position.x = sqrt(2) * sin(5 * time + 3 * M_PI / 2. + M_PI / 4.) + 1;
+		tiles[8].position.y = sqrt(2) * cos(5 * time + 3 * M_PI / 2. + M_PI / 4.) + 1;
+
+		tiles[0].rotation.z = -5 * time;
+		tiles[2].rotation.z = -5 * time;
+		tiles[6].rotation.z = -5 * time;
+		tiles[8].rotation.z = -5 * time;
+
+		tiles[4].rotation.z = -5 * time;
+
+		//time logic
+		float currentFrame = glfwGetTime();
+		deltaTime = currentFrame - lastFrame;
+		lastFrame = currentFrame;
 		input(window, camera.Position, camera.Orientation, camera.Up);
 		//logika koloru t³a
-		time += 0.01;
+		time += 0.003;
 		backgroud_r = sin(time) / 2 + 0.5;
 		backgroud_g = sin(-time) / 2 + 0.5;
 		backgroud_b = sin(time + 1.57) / 2 + 0.5;
