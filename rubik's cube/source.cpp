@@ -41,7 +41,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 
 int rotateCounter = 0;
-int ANIMATION_DURATION = 1500;
+int ANIMATION_DURATION = 150;
 void rotate(int side) {
 	rotateCounter = ANIMATION_DURATION;
 	for (int i = side * 9; i < (side + 1) * 9; i++) {
@@ -58,28 +58,28 @@ void rotate(int side) {
 	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(true);
 	//GLOBALtiles[2 * 9 + 8].rotate = 2;
 	//GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(false);
-	/*
-	GLOBALtiles[3 * 9 + 2].rotate = 2;
-	GLOBALtiles[3 * 9 + 2].genPositionOffset(false);
-	GLOBALtiles[3 * 9 + 5].rotate = 2;
-	GLOBALtiles[3 * 9 + 5].genPositionOffset(true);
-	GLOBALtiles[3 * 9 + 8].rotate = 2;
-	GLOBALtiles[3 * 9 + 8].genPositionOffset(false);
-
-	GLOBALtiles[4 * 9 + 2].rotate = 2;
-	GLOBALtiles[4 * 9 + 2].genPositionOffset(false);
-	GLOBALtiles[4 * 9 + 5].rotate = 2;
-	GLOBALtiles[4 * 9 + 5].genPositionOffset(true);
-	GLOBALtiles[4 * 9 + 8].rotate = 2;
-	GLOBALtiles[4 * 9 + 8].genPositionOffset(false);
 	
-	GLOBALtiles[5 * 9 + 2].rotate = 2;
-	GLOBALtiles[5 * 9 + 2].genPositionOffset(false);
+	//GLOBALtiles[3 * 9 + 2].rotate = 2;
+	//GLOBALtiles[3 * 9 + 2].genPositionOffset(false);
+	GLOBALtiles[3 * 9 + 5].rotate = 2;
+	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(true);
+	//GLOBALtiles[3 * 9 + 8].rotate = 2;
+	//GLOBALtiles[3 * 9 + 8].genPositionOffset(false);
+	
+	//GLOBALtiles[4 * 9 + 2].rotate = 2;
+	//GLOBALtiles[4 * 9 + 2].genPositionOffset(false);
+	GLOBALtiles[4 * 9 + 5].rotate = 2;
+	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(true);
+	//GLOBALtiles[4 * 9 + 8].rotate = 2;
+	//GLOBALtiles[4 * 9 + 8].genPositionOffset(false);
+	
+	//GLOBALtiles[5 * 9 + 2].rotate = 2;
+	//GLOBALtiles[5 * 9 + 2].genPositionOffset(false);
 	GLOBALtiles[5 * 9 + 5].rotate = 2;
-	GLOBALtiles[5 * 9 + 5].genPositionOffset(true);
-	GLOBALtiles[5 * 9 + 8].rotate = 2;
-	GLOBALtiles[5 * 9 + 8].genPositionOffset(false);
-	*/
+	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(true);
+	//GLOBALtiles[5 * 9 + 8].rotate = 2;
+	//GLOBALtiles[5 * 9 + 8].genPositionOffset(false);
+	
 }
 
 int ccc = 0;
@@ -155,7 +155,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 
 
 
-
+VAO* vao_x, *vao_y, *vao_z;
 
 
 int width = 800, height = 800;
@@ -243,6 +243,9 @@ int main() {
 	VAO_y.Bind();
 	VAO_y.LinkVBO(VBO_y, 0, 1);
 	VAO_y.Unbind();
+	vao_x = &VAO_x;
+	vao_y = &VAO_y;
+	vao_z = &VAO_z;
 	//
 
 	Tile tiles[6*9];
@@ -306,7 +309,9 @@ int main() {
 						tiles[i].genRotationPosition(multi, sqrt(2));
 				}
 				if (tiles[i].rotate == 2) {
-						tiles[i].genRotationPositionPerpendicular(0, multi, sqrt(2));
+					tiles[i].genRotationPositionPerpendicular(0, multi, 1.5);
+					if (rotateCounter == 0)
+						tiles[i].updateSide(0);
 				}
 			}
 			if (rotateCounter == 0)

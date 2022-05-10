@@ -1,5 +1,6 @@
 #include "Tile.h"
 #include <iostream>
+extern VAO *vao_x, *vao_y, *vao_z;
 
 Tile::Tile(glm::vec3 position_in, glm::vec3 color_in, glm::vec3 rotation_in, short side_in) {
 	position = position_in;
@@ -42,13 +43,15 @@ void Tile::genRotationPosition(float multi, float offset) {
 }
 
 void Tile::genRotationPositionPerpendicular(int toSide, float multi, float offset) {
-	std::cerr << multi << "\n";
-	offset = 1.5;
+	//std::cerr << multi << "\n";
 	switch (toSide) {
 	case 0: //front
 		position.x = offset * sin(multi + posOffset) + 1;
 		position.y = offset * cos(multi + posOffset) + 1;
-		rotation.z = M_PI / 2. -multi;
+		//if (side == 2 || side == 3)
+			rotation.z = M_PI / 2. -multi;
+		//else
+		//	rotation.z = -multi;
 		break;
 	}
 
@@ -110,15 +113,14 @@ double genPosOffsetDiagXYAxis(float x, float y) {
 
 double genPosOffsetCrossPerpendicular(float x, float y) {
 	double result;
-
-	if (x < 0.5 && x > -0.5) //left
-		result = 0;
-	else if (x < 2.5 && x > 1.5) //right
+	if (x < 0.25) //left
 		result = 2;
-	else if (y > -3 && y < -2) //down
-		result = 3;
-	else //up
+	else if (x > 1.75) //right
+		result = 0;
+	else if (y < 1) //down
 		result = 1;
+	else //up
+		result = 3;
 	return result * M_PI / 2.;
 }
 void Tile::genPositionOffset(bool isOnCross) {
@@ -156,21 +158,45 @@ void Tile::genPositionOffset(bool isOnCross) {
 void Tile::genPositionOffsetPerpendicular(bool isOnCross) {
 
 	std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z;
-	if (side % 2)
-		if (isOnCross == true)
-			isOnCross = false;
-		else
-			isOnCross = true;
+	//if (side % 2)
+	//	if (isOnCross == true)
+	//		isOnCross = false;
+	//	else
+	//		isOnCross = true;
 
-	switch (side) {
-	case 2: //bottom
+	//switch (side) {
+	//case 2: //bottom
 		if (isOnCross == true)
 			//posOffset = 1 * M_PI / 2.;
 			posOffset = genPosOffsetCrossPerpendicular(position.x, position.y);
 		else
 			posOffset = 0 * M_PI / 2. + M_PI / 4.;
 			//genPosOffsetDiagXYAxis(position.x, position.z);
-		break;
-	}
+	//	break;
+	//}
 	std::cerr << "\t" << posOffset / M_PI * 2. <<std::endl;
+}
+
+void Tile::updateSide(int toSide) {
+	std::cerr << "\t\t" << side << "\n";
+	switch (toSide) {
+	case 0:
+		if (side == 2) side = 5;
+		else if (side == 5) side = 3;
+		else if (side == 3) side = 4;
+		else if (side == 4) side = 2;
+		
+		if (side == 4 || side == 5)
+			vao = vao_y;
+		else
+			vao = vao_x;
+		rotation = glm::vec3(0, 0, 0);
+
+		break;
+
+	}
+
+
+
+
 }
