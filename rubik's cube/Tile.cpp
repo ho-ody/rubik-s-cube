@@ -46,32 +46,9 @@ void Tile::genRotationPositionPerpendicular(int toSide, float multi, float offse
 	offset = 1.5;
 	switch (toSide) {
 	case 0: //front
-		float q = M_PI / 2.;
 		position.x = offset * sin(multi + posOffset) + 1;
 		position.y = offset * cos(multi + posOffset) + 1;
-		//position.y = offset * sin(multi + posOffset) + 1;
-		//position.z = offset * cos(multi + posOffset) - 1.5;
-		//rotation.x = M_PI/2. * sin(multi);			
-		//rotation.y = M_PI / 2. - M_PI/2. * cos(multi);
-		//rotation.z = -multi;
-		/*rotation.x = 1.57 * sin(multi);			
-		rotation.y = 1.57 * cos(multi);
-		rotation.z = 1.57 * sin(-multi);*/
-		//rotation.x = q - q * cos(-multi);
-		//rotation.y = q - q * sin(-multi);
-		//rotation.z = q * sin(-multi);
-		//rotation.x = q * sin(multi);
-		//rotation.y = q * cos(multi);
-		//rotation.z = -multi;
-		//rotation.x = q * sin(multi);
-		//rotation.y = q * cos(multi);
-		//rotation.z = -multi;
-		//rotation.x = q / 2. * (cos(2 * multi + 2*q) + 1);
-		//rotation.y = q / 2. * (cos(2 * multi) + 1);
-		//rotation.z = -multi;
-		rotation2.x = 0;
-		rotation2.y = 0;
-		rotation2.z = -multi;
+		rotation.z = M_PI / 2. -multi;
 		break;
 	}
 

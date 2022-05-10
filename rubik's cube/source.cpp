@@ -243,8 +243,6 @@ int main() {
 	VAO_y.Bind();
 	VAO_y.LinkVBO(VBO_y, 0, 1);
 	VAO_y.Unbind();
-
-	VAO* currentVAO = NULL;
 	//
 
 	Tile tiles[6*9];
@@ -335,10 +333,11 @@ int main() {
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.5f, 20.0f, shaderProgram, "camMatrix");
 
-		VAO_z.Bind();
+		//VAO_z.Bind();
 		// Narysuj trójk¹ty
 		for (int i = 0; i < n_tiles; i++)
 		{
+			tiles[i].vao->Bind();
 			//model
 			glm::mat4 model = glm::mat4(1.0f);
 			//transformacje konkretnego modelu - odpowiednia rotacja
@@ -361,6 +360,7 @@ int main() {
 			EBO2.Bind();
 			glUniform3f(colorLoc, 0.1, 0.1, 0.1);
 			glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
+			tiles[i].vao->Unbind();
 		}
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
