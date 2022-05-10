@@ -20,6 +20,18 @@ void Tile::genRotationPosition(float multi, float offset) {
 		position.y = offset * cos(multi + posOffset) + 1;
 		rotation.z = -multi;
 		break;
+	case 2: // bottom
+	case 3: // top
+		position.x = offset * sin(multi + posOffset) + 1;
+		position.z = offset * cos(multi + posOffset) - 1.5;
+		rotation.z = -multi;
+		break;
+	case 4: // left
+	case 5: // right
+		position.y = offset * sin(multi + posOffset) + 1;
+		position.z = offset * cos(multi + posOffset) - 1.5;
+		rotation.z = -multi;
+		break;
 	case 7: //center
 		rotation.z = -multi;
 		break;
@@ -27,7 +39,7 @@ void Tile::genRotationPosition(float multi, float offset) {
 
 }
 
-double genPosOffsetCross(float x, float y) {
+double genPosOffsetCrossZAxis(float x, float y) {
 	double result;
 
 	if (x < 0.5 && x > -0.5) //left
@@ -40,7 +52,7 @@ double genPosOffsetCross(float x, float y) {
 		result = 3;
 	return result * M_PI / 2.;
 }
-double genPosOffsetDiag(float x, float y) {
+double genPosOffsetDiagZAxis(float x, float y) {
 	double result;
 
 	if (x > 1 && y > 1) //rightup
@@ -48,6 +60,32 @@ double genPosOffsetDiag(float x, float y) {
 	else if (x > 1 && y < 1) //rightdown
 		result = 0;
 	else if (x < 1 && y > 1) //leftup
+		result = 1;
+	else //leftdown
+		result = 3;
+	return result * M_PI / 2. + M_PI / 4.;
+}
+double genPosOffsetCrossXYAxis(float x, float y) {
+	double result;
+
+	if (x < 0.5 && x > -0.5) //left
+		result = 2;
+	else if (x < 2.5 && x > 1.5) //right
+		result = 0;
+	else if (y > -3 && y < -2) //down
+		result = 1;
+	else //up
+		result = 3;
+	return result * M_PI / 2.;
+}
+double genPosOffsetDiagXYAxis(float x, float y) {
+	double result;
+
+	if (x > 1 && y < -1.5) //rightup
+		result = 2;
+	else if (x > 1 && y > -1.5) //rightdown
+		result = 0;
+	else if (x < 1 && y < -1.5) //leftup
 		result = 1;
 	else //leftdown
 		result = 3;
@@ -64,9 +102,23 @@ void Tile::genPositionOffset(bool isOnCross) {
 	case 0: //front
 	case 1: //back
 		if (isOnCross == true)
-			posOffset = genPosOffsetCross(position.x, position.y);
+			posOffset = genPosOffsetCrossZAxis(position.x, position.y);
 		else
-			posOffset = genPosOffsetDiag(position.x, position.y);
+			posOffset = genPosOffsetDiagZAxis(position.x, position.y);
+		break;
+	case 2: //bottom
+	case 3: //top
+		if (isOnCross == true)
+			posOffset = genPosOffsetCrossXYAxis(position.x, position.z);
+		else
+			posOffset = genPosOffsetDiagXYAxis(position.x, position.z);
+		break;
+	case 4: //left
+	case 5: //right
+		if (isOnCross == true)
+			posOffset = genPosOffsetCrossXYAxis(position.y, position.z);
+		else
+			posOffset = genPosOffsetDiagXYAxis(position.y, position.z);
 		break;
 	}
 }

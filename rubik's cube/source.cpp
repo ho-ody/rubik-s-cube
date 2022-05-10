@@ -53,7 +53,8 @@ void rotate(int side) {
 	}	
 }
 
-
+int ccc = 0;
+bool o_flipflop = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -76,10 +77,18 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position -= cameraSpeed * Up;
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-		rotate(1);
+		rotate(ccc);
 	}
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-		rotate(0);
+		if (o_flipflop == 0) {
+			o_flipflop = 1;
+			ccc++;
+			if (ccc > 5)
+				ccc = 0;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {
+		o_flipflop = 0;
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -247,65 +256,6 @@ int main() {
 					tiles[i].rotate = false;
 			rotateCounter--;
 		}
-
-
-
-		/*
-		if (rotateCounter > 0) {
-			if (rotateCounter == ANIMATION_DURATION) {
-				tiles[1].posOffset = genPosOffsetCross(tiles[1].position.x, tiles[1].position.y);
-				tiles[3].posOffset = genPosOffsetCross(tiles[3].position.x, tiles[3].position.y);
-				tiles[5].posOffset = genPosOffsetCross(tiles[5].position.x, tiles[5].position.y);
-				tiles[7].posOffset = genPosOffsetCross(tiles[7].position.x, tiles[7].position.y);
-
-				tiles[0].posOffset = genPosOffsetDiag(tiles[0].position.x, tiles[0].position.y);
-				tiles[2].posOffset = genPosOffsetDiag(tiles[2].position.x, tiles[2].position.y);
-				tiles[6].posOffset = genPosOffsetDiag(tiles[6].position.x, tiles[6].position.y);
-				tiles[8].posOffset = genPosOffsetDiag(tiles[8].position.x, tiles[8].position.y);
-			}
-			
-			
-			rotateCounter--;
-
-			float multi = rotateCounter * M_PI /2. / ANIMATION_DURATION;
-
-			tiles[1].position.x = sin(multi + tiles[1].posOffset) + 1;
-			tiles[1].position.y = cos(multi + tiles[1].posOffset) + 1;
-
-			tiles[3].position.x = sin(multi + tiles[3].posOffset) + 1;
-			tiles[3].position.y = cos(multi + tiles[3].posOffset) + 1;
-
-			tiles[5].position.x = sin(multi + tiles[5].posOffset) + 1;
-			tiles[5].position.y = cos(multi + tiles[5].posOffset) + 1;
-
-			tiles[7].position.x = sin(multi + tiles[7].posOffset) + 1;
-			tiles[7].position.y = cos(multi + tiles[7].posOffset) + 1;
-
-			tiles[1].rotation.z = -multi;
-			tiles[3].rotation.z = -multi;
-			tiles[5].rotation.z = -multi;
-			tiles[7].rotation.z = -multi;
-
-			tiles[0].position.x = sqrt(2) * sin(multi + tiles[0].posOffset) + 1;
-			tiles[0].position.y = sqrt(2) * cos(multi + tiles[0].posOffset) + 1;
-
-			tiles[2].position.x = sqrt(2) * sin(multi + tiles[2].posOffset) + 1;
-			tiles[2].position.y = sqrt(2) * cos(multi + tiles[2].posOffset) + 1;
-
-			tiles[6].position.x = sqrt(2) * sin(multi + tiles[6].posOffset) + 1;
-			tiles[6].position.y = sqrt(2) * cos(multi + tiles[6].posOffset) + 1;
-
-			tiles[8].position.x = sqrt(2) * sin(multi + tiles[8].posOffset) + 1;
-			tiles[8].position.y = sqrt(2) * cos(multi + tiles[8].posOffset) + 1;
-
-			tiles[0].rotation.z = -multi;
-			tiles[2].rotation.z = -multi;
-			tiles[6].rotation.z = -multi;
-			tiles[8].rotation.z = -multi;
-
-			tiles[4].rotation.z = -multi;
-		}
-		*/
 		//time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -363,6 +313,7 @@ int main() {
 	VAO1.Delete();
 	VBO1.Delete();
 	EBO1.Delete();
+	EBO2.Delete();
 	//delete[] vertices;
 	//delete[] indices;
 	return 0;
