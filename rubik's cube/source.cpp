@@ -41,16 +41,45 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 
 int rotateCounter = 0;
-int ANIMATION_DURATION = 150;
+int ANIMATION_DURATION = 1500;
 void rotate(int side) {
 	rotateCounter = ANIMATION_DURATION;
 	for (int i = side * 9; i < (side + 1) * 9; i++) {
-		GLOBALtiles[i].rotate = true;
+		GLOBALtiles[i].rotate = 1;
 		if (i % 2)
 			GLOBALtiles[i].genPositionOffset(true);
 		else
 			GLOBALtiles[i].genPositionOffset(false);
 	}	
+
+	//GLOBALtiles[2 * 9 + 2].rotate = 2;
+	//GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(false);
+	GLOBALtiles[2 * 9 + 5].rotate = 2;
+	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(true);
+	//GLOBALtiles[2 * 9 + 8].rotate = 2;
+	//GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(false);
+	/*
+	GLOBALtiles[3 * 9 + 2].rotate = 2;
+	GLOBALtiles[3 * 9 + 2].genPositionOffset(false);
+	GLOBALtiles[3 * 9 + 5].rotate = 2;
+	GLOBALtiles[3 * 9 + 5].genPositionOffset(true);
+	GLOBALtiles[3 * 9 + 8].rotate = 2;
+	GLOBALtiles[3 * 9 + 8].genPositionOffset(false);
+
+	GLOBALtiles[4 * 9 + 2].rotate = 2;
+	GLOBALtiles[4 * 9 + 2].genPositionOffset(false);
+	GLOBALtiles[4 * 9 + 5].rotate = 2;
+	GLOBALtiles[4 * 9 + 5].genPositionOffset(true);
+	GLOBALtiles[4 * 9 + 8].rotate = 2;
+	GLOBALtiles[4 * 9 + 8].genPositionOffset(false);
+	
+	GLOBALtiles[5 * 9 + 2].rotate = 2;
+	GLOBALtiles[5 * 9 + 2].genPositionOffset(false);
+	GLOBALtiles[5 * 9 + 5].rotate = 2;
+	GLOBALtiles[5 * 9 + 5].genPositionOffset(true);
+	GLOBALtiles[5 * 9 + 8].rotate = 2;
+	GLOBALtiles[5 * 9 + 8].genPositionOffset(false);
+	*/
 }
 
 int ccc = 0;
@@ -160,11 +189,9 @@ int main() {
 	// Utwórz obiekt Vertex Shader
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
-	VAO VAO1;
-	VAO1.Bind();
 	//
 	int n_vertices = 4 * 3;
-	GLfloat vertices[] = {
+	GLfloat vertices_z[] = {
 		//x    y      z
 		-0.5f, -0.5f, 0.0f,
 		+0.5f, -0.5f, 0.0f,
@@ -183,6 +210,42 @@ int main() {
 		3,1,
 		3,2
 	};
+	GLfloat vertices_x[] = {
+		//x    y      z
+		-0.5f, 0.0f, -0.5f,
+		+0.5f, 0.0f, -0.5f,
+		-0.5f, 0.0f, +0.5f,
+		+0.5f, 0.0f, +0.5f
+	};
+	GLfloat vertices_y[] = {
+		//x    y      z
+		0.0f, -0.5f, -0.5f,
+		0.0f, +0.5f, -0.5f,
+		0.0f, -0.5f, +0.5f,
+		0.0f, +0.5f, +0.5f
+	};
+	// VAO, VBO, EBO
+	VBO VBO_z(vertices_z, sizeof(GLfloat) * n_vertices);
+	VBO VBO_x(vertices_x, sizeof(GLfloat) * n_vertices);
+	VBO VBO_y(vertices_y, sizeof(GLfloat) * n_vertices);
+	EBO EBO1(indices, sizeof(GLuint) * n_indices);
+	EBO EBO2(lineIndices, sizeof(GLuint) * n_lineIndices);
+
+	VAO VAO_z;
+	VAO_z.Bind();
+	VAO_z.LinkVBO(VBO_z, 0, 1);
+	VAO_z.Unbind();
+	VAO VAO_x;
+	VAO_x.Bind();
+	VAO_x.LinkVBO(VBO_x, 0, 1);
+	VAO_x.Unbind();
+	VAO VAO_y;
+	VAO_y.Bind();
+	VAO_y.LinkVBO(VBO_y, 0, 1);
+	VAO_y.Unbind();
+
+	VAO* currentVAO = NULL;
+	//
 
 	Tile tiles[6*9];
 	GLOBALtiles = tiles;
@@ -191,69 +254,66 @@ int main() {
 	for (int i = 0; j < 1 * 9; j++, i++) { //front side - red
 		tiles[j].color = glm::vec3(0.9,0.1,0.1);
 		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
-		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+		tiles[j].vao = &VAO_z;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
 		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
 		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
-		tiles[j].rotation = glm::vec3(0.0, 0.0, 0.0);
+		tiles[j].vao = &VAO_z;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
 		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
 		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
-		tiles[j].rotation = glm::vec3(M_PI/2.0, 0.0, 0.0);
+		tiles[j].vao = &VAO_x;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
 		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
 		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
-		tiles[j].rotation = glm::vec3(M_PI / 2.0, 0.0, 0.0);
+		tiles[j].vao = &VAO_x;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
 		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
-		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
+		tiles[j].vao = &VAO_y;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
 		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
-		tiles[j].rotation = glm::vec3(0.0, M_PI / 2.0, 0.0);
+		tiles[j].vao = &VAO_y;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	//
-	VBO VBO1(vertices, sizeof(GLfloat) * n_vertices);
-	EBO EBO1(indices, sizeof(GLuint) * n_indices);
-	EBO EBO2(lineIndices, sizeof(GLuint) * n_lineIndices);
-
-	VAO1.LinkVBO(VBO1, 0, 1);
-	VAO1.Unbind();
+	
 
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //kontury
 	glLineWidth(3);
 	float time = 0;
-	VBO1.Bind(); //dynamiczna zmiana koloru
 	Camera camera(width, height);
 	while (!glfwWindowShouldClose(window))
 	{
 		if (rotateCounter >= 0) { 
 			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 			for (int i = 0; i < n_tiles; i++) {
-				if (tiles[i].rotate == true) {
+				if (tiles[i].rotate == 1) {
 					if ((i % 2 && !(tiles[i].side % 2)) || (!(i % 2) && tiles[i].side % 2))
 						tiles[i].genRotationPosition(multi, 1.);
 					else
 						tiles[i].genRotationPosition(multi, sqrt(2));
 				}
+				if (tiles[i].rotate == 2) {
+						tiles[i].genRotationPositionPerpendicular(0, multi, sqrt(2));
+				}
 			}
 			if (rotateCounter == 0)
 				for (int i = 0; i < n_tiles; i++)
-					tiles[i].rotate = false;
+					tiles[i].rotate = 0;
 			rotateCounter--;
 		}
 		//time logic
@@ -275,7 +335,7 @@ int main() {
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.5f, 20.0f, shaderProgram, "camMatrix");
 
-		VAO1.Bind();
+		VAO_z.Bind();
 		// Narysuj trójk¹ty
 		for (int i = 0; i < n_tiles; i++)
 		{
@@ -310,8 +370,12 @@ int main() {
 	glfwDestroyWindow(window); //Delete window before ending the program
 	glfwTerminate(); //Terminate GLFW before ending the program
 
-	VAO1.Delete();
-	VBO1.Delete();
+	VAO_x.Delete();
+	VAO_y.Delete();
+	VAO_z.Delete();
+	VBO_x.Delete();
+	VBO_y.Delete();
+	VBO_z.Delete();
 	EBO1.Delete();
 	EBO2.Delete();
 	//delete[] vertices;
