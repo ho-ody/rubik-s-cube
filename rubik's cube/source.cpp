@@ -12,6 +12,7 @@ using namespace std;
 #include "Camera.h"
 #include "Tile.h"
 
+Tile* GLOBALtiles;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
@@ -44,32 +45,6 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka
 
 	const float cameraSpeed = 0.05f; // adjust accordingly
-	/*
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS) {
-		Position.z += cameraSpeed;
-		//Orientation.z += cameraSpeed;
-	}
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS) {
-		Position.z -= cameraSpeed;
-		//Orientation.z -= cameraSpeed;
-	}
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS) {
-		Position.x -= cameraSpeed;
-		//Orientation.x -= cameraSpeed;
-	}
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
-		Position.x += cameraSpeed;
-		//Orientation.x += cameraSpeed;
-	}
-	if (glfwGetKey(window, GLFW_KEY_Z) == GLFW_PRESS) {
-		Position.y -= cameraSpeed;
-		//Orientation.y -= cameraSpeed;
-	}
-	if (glfwGetKey(window, GLFW_KEY_X) == GLFW_PRESS) {
-		Position.y += cameraSpeed;
-		//Orientation.y += cameraSpeed;
-	}
-	*/
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		Position += cameraSpeed * Orientation;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -82,6 +57,13 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position += cameraSpeed * Up;
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		Position -= cameraSpeed * Up;
+
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+		glm::vec3 temp = GLOBALtiles[0].color;
+		GLOBALtiles[0].color = GLOBALtiles[9].color;
+		GLOBALtiles[9].color = temp;
+		cerr << "yes sir!\n";
+	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -172,6 +154,7 @@ int main() {
 	};
 
 	Tile tiles[6*9];
+	GLOBALtiles = tiles;
 	int n_tiles = 6*9;
 	int j = 0;
 	for (int i = 0; j < 1 * 9; j++, i++) { //front side - red
