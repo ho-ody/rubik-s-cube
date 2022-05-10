@@ -41,15 +41,20 @@ void Tile::genRotationPosition(float multi, float offset) {
 	}
 
 }
-
+extern double xxx, yyy;
 void Tile::genRotationPositionPerpendicular(int toSide, float multi, float offset) {
-	//std::cerr << multi << "\n";
+	offset = sqrt(2) * 1.5;
+	offset = sqrt(1 * 1 + 1.5 * 1.5);
+
+	double blockCorrect = atan(1./1.5);
+	//posOffset = 1 * M_PI / 2.;
+	//posOffset = M_PI / 4.;
 	switch (toSide) {
 	case 0: //front
-		position.x = offset * sin(multi + posOffset) + 1;
-		position.y = offset * cos(multi + posOffset) + 1;
+		position.x = offset * sin(multi + posOffset + blockCorrect) + 1;
+		position.y = offset * cos(multi + posOffset + blockCorrect) + 1;
 		//if (side == 2 || side == 3)
-			rotation.z = M_PI / 2. -multi;
+		rotation.z = M_PI / 2. -multi;
 		//else
 		//	rotation.z = -multi;
 		break;
@@ -123,6 +128,21 @@ double genPosOffsetCrossPerpendicular(float x, float y) {
 		result = 3;
 	return result * M_PI / 2.;
 }
+double genPosOffsetDiagPerpendicular(float x, float y) {
+	double result;
+	if (x < -0.25) //left
+		result = 2;
+	else if (x > 2.25) //right
+		result = 0; 
+	else if (y < 1) //down
+		result = 1; 
+	else //up
+		result = 3;
+	std::cerr << result << "\n";
+	return result * M_PI / 2.;
+}
+
+
 void Tile::genPositionOffset(bool isOnCross) {
 	if (side % 2)
 		if (isOnCross == true)
@@ -157,7 +177,7 @@ void Tile::genPositionOffset(bool isOnCross) {
 
 void Tile::genPositionOffsetPerpendicular(bool isOnCross) {
 
-	std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z;
+	std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z << " -> ";
 	//if (side % 2)
 	//	if (isOnCross == true)
 	//		isOnCross = false;
@@ -166,19 +186,19 @@ void Tile::genPositionOffsetPerpendicular(bool isOnCross) {
 
 	//switch (side) {
 	//case 2: //bottom
-		if (isOnCross == true)
-			//posOffset = 1 * M_PI / 2.;
-			posOffset = genPosOffsetCrossPerpendicular(position.x, position.y);
-		else
-			posOffset = 0 * M_PI / 2. + M_PI / 4.;
+	if (isOnCross == true)
+		posOffset = genPosOffsetCrossPerpendicular(position.x, position.y);
+	else
+		posOffset = genPosOffsetDiagPerpendicular(position.x, position.y);
 			//genPosOffsetDiagXYAxis(position.x, position.z);
 	//	break;
 	//}
-	std::cerr << "\t" << posOffset / M_PI * 2. <<std::endl;
+	//std::cerr << "\t" << posOffset / M_PI * 2. <<std::endl;
 }
 
 void Tile::updateSide(int toSide) {
-	std::cerr << "\t\t" << side << "\n";
+	
+	std::cerr << "("<< position.x << "," << position.y << ")\t" << side << " -> ";
 	switch (toSide) {
 	case 0:
 		if (side == 2) side = 5;
@@ -195,7 +215,7 @@ void Tile::updateSide(int toSide) {
 		break;
 
 	}
-
+	std::cerr << side << "\n";
 
 
 

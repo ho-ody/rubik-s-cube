@@ -52,38 +52,39 @@ void rotate(int side) {
 			GLOBALtiles[i].genPositionOffset(false);
 	}	
 
-	//GLOBALtiles[2 * 9 + 2].rotate = 2;
-	//GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(false);
-	GLOBALtiles[2 * 9 + 5].rotate = 2;
-	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[2 * 9 + 2].rotate = 2;
+	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(false);
+	//GLOBALtiles[2 * 9 + 5].rotate = 2;
+	//GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(true);
 	//GLOBALtiles[2 * 9 + 8].rotate = 2;
 	//GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(false);
 	
 	//GLOBALtiles[3 * 9 + 2].rotate = 2;
-	//GLOBALtiles[3 * 9 + 2].genPositionOffset(false);
-	GLOBALtiles[3 * 9 + 5].rotate = 2;
-	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(true);
-	//GLOBALtiles[3 * 9 + 8].rotate = 2;
-	//GLOBALtiles[3 * 9 + 8].genPositionOffset(false);
+	//GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(false);
+	//GLOBALtiles[3 * 9 + 5].rotate = 2;
+	//GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[3 * 9 + 8].rotate = 2;
+	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(false);
 	
 	//GLOBALtiles[4 * 9 + 2].rotate = 2;
-	//GLOBALtiles[4 * 9 + 2].genPositionOffset(false);
-	GLOBALtiles[4 * 9 + 5].rotate = 2;
-	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(true);
-	//GLOBALtiles[4 * 9 + 8].rotate = 2;
-	//GLOBALtiles[4 * 9 + 8].genPositionOffset(false);
+	//GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(false);
+	//GLOBALtiles[4 * 9 + 5].rotate = 2;
+	//GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[4 * 9 + 8].rotate = 2;
+	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(false);
 	
-	//GLOBALtiles[5 * 9 + 2].rotate = 2;
-	//GLOBALtiles[5 * 9 + 2].genPositionOffset(false);
-	GLOBALtiles[5 * 9 + 5].rotate = 2;
-	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[5 * 9 + 2].rotate = 2;
+	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(false);
+	//GLOBALtiles[5 * 9 + 5].rotate = 2;
+	//GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(true);
 	//GLOBALtiles[5 * 9 + 8].rotate = 2;
-	//GLOBALtiles[5 * 9 + 8].genPositionOffset(false);
+	//GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(false);
 	
 }
 
 int ccc = 0;
-bool o_flipflop = 0;
+bool p_flipflop = 0;
+double xxx = 0.0, yyy = 0.0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -106,18 +107,25 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position -= cameraSpeed * Up;
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-		rotate(ccc);
+		if (p_flipflop == 0) {
+			p_flipflop = 1;
+			rotate(ccc);
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+		p_flipflop = 0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-		if (o_flipflop == 0) {
+		xxx += 0.005;
+		/*if (o_flipflop == 0) {
 			o_flipflop = 1;
 			ccc++;
 			if (ccc > 5)
 				ccc = 0;
-		}
+		}*/
 	}
-	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {
-		o_flipflop = 0;
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
+		yyy += 0.005;
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
