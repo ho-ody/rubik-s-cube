@@ -27,16 +27,25 @@ void Tile::genRotationPosition(float multi, float offset) {
 	case 3: // top
 		position.x = offset * sin(multi + posOffset) + 1;
 		position.z = offset * cos(multi + posOffset) - 1.5;
-		rotation.z = -multi;
+		rotation.y = multi;
 		break;
 	case 4: // left
 	case 5: // right
 		position.y = offset * sin(multi + posOffset) + 1;
 		position.z = offset * cos(multi + posOffset) - 1.5;
+		rotation.x = -multi;
+		break;
+	case 10: //center
+	case 11: //center
 		rotation.z = -multi;
 		break;
-	case 7: //center
-		rotation.z = -multi;
+	case 12: //center
+	case 13: //center
+		rotation.y = multi;
+		break;
+	case 14: //center
+	case 15: //center
+		rotation.x = -multi;
 		break;
 	}
 
@@ -47,6 +56,7 @@ void genOnCross(int toSide, float multi, float offset, float posOffset, glm::vec
 	offset = 1.5; //!!!
 	switch (toSide) {
 	case 0: //front
+	case 1: //back
 		p.x = offset * sin(multi + posOffset) + 1;
 		p.y = offset * cos(multi + posOffset) + 1;
 		//if (side == 2 || side == 3)
@@ -54,6 +64,13 @@ void genOnCross(int toSide, float multi, float offset, float posOffset, glm::vec
 		//else
 		//	rotation.z = -multi;
 		break;
+	case 2:
+		p.x = offset * sin(multi + posOffset) + 1;
+		p.z = offset * cos(multi + posOffset) - 1.5;
+		//if (side == 2 || side == 3)
+		r.y = multi;
+		//else
+		//	rotation.z = -multi;
 	}
 }
 
@@ -68,6 +85,7 @@ void genOnDiag(int toSide, float multi, float offset, float posOffset, int place
 
 	switch (toSide) {
 	case 0: //front
+	case 1: //back
 		p.x = offset * sin(multi + posOffset + blockCorrect) + 1;
 		p.y = offset * cos(multi + posOffset + blockCorrect) + 1;
 		//if (side == 2 || side == 3)
@@ -283,6 +301,7 @@ void Tile::updateSide(int toSide) {
 	std::cerr << "("<< position.x << "," << position.y << ")\t" << side << " -> ";
 	switch (toSide) {
 	case 0:
+	case 1:
 		if (side == 2) side = 5;
 		else if (side == 5) side = 3;
 		else if (side == 3) side = 4;
@@ -295,7 +314,19 @@ void Tile::updateSide(int toSide) {
 		rotation = glm::vec3(0, 0, 0);
 
 		break;
+	case 2:
+		if (side == 5) side = 0;
+		else if (side == 0) side = 4;
+		else if (side == 4) side = 1;
+		else if (side == 1) side = 5;
 
+		if (side == 4 || side == 5)
+			vao = vao_y;
+		else
+			vao = vao_z;
+		rotation = glm::vec3(0, 0, 0);
+
+		break;
 	}
 	std::cerr << side << "\n";
 

@@ -55,16 +55,18 @@ void rotate(int side) {
 
 	int sides_0[] = { 2,5,3,4 };
 	int blocks_0[] = { 2,5,8 };
-	int sides_1[] = { 2,3,4,5 };
-	int blocks_1[] = { 0,3,6 };
+	int sides_1[] = { 0,1,4,5 };
+	int blocks_1[] = { 0,1,2 };
 
 
 	int* sides = NULL, *blocks = NULL;
 	sides = sides_0; blocks = blocks_0;
-
+	sides = sides_1; blocks = blocks_1;
+	
 	
 	for (int i = 0; i < 4; i++) { //every side around
 		for (int j = 0; j < 3; j++) { //blocks (3 of them)
+			if (j == 1)
 			GLOBALtiles[sides[i] * 9 + blocks[j]].rotate = 2;
 			if (i < 2)
 				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(j);
@@ -114,7 +116,7 @@ void rotate(int side) {
 	*/
 }
 
-int ccc = 0;
+int ccc = 2;
 bool p_flipflop = 0;
 double xxx = 0.0, yyy = 0.0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
@@ -148,7 +150,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		p_flipflop = 0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-		xxx += 0.005;
+		//xxx += 0.005;
+		ccc = 0;
 		/*if (o_flipflop == 0) {
 			o_flipflop = 1;
 			ccc++;
@@ -296,43 +299,37 @@ int main() {
 		tiles[j].color = glm::vec3(0.9,0.1,0.1);
 		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
 		tiles[j].vao = &VAO_z;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
 		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
 		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
 		tiles[j].vao = &VAO_z;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
 		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
 		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
 		tiles[j].vao = &VAO_x;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
 		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
 		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
 		tiles[j].vao = &VAO_x;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
 		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
 		tiles[j].vao = &VAO_y;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
 		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
 		tiles[j].vao = &VAO_y;
-		tiles[j].placeOfBlock = i;
-		if (i != 4) tiles[j].side = j / 9;
+		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	//
 	
@@ -355,9 +352,9 @@ int main() {
 						tiles[i].genRotationPosition(multi, sqrt(2));
 				}
 				if (tiles[i].rotate == 2) {
-					tiles[i].genRotationPositionPerpendicular(0, multi, 1.5);
+					tiles[i].genRotationPositionPerpendicular(ccc, multi, 1.5); ///!!!!!!!! ccc
 					if (rotateCounter == 0)
-						tiles[i].updateSide(0);
+						tiles[i].updateSide(ccc); ///!!!!!!!! ccc
 				}
 			}
 			if (rotateCounter == 0)
