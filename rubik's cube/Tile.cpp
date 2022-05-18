@@ -61,9 +61,9 @@ void genOnDiag(int toSide, float multi, float offset, float posOffset, int place
 	offset = sqrt(1 * 1 + 1.5 * 1.5); //!!!
 
 	float blockCorrect;
-	if (placeOfBlock == 1)
+	if (placeOfBlock == 2)
 		blockCorrect = atan(1.5 / 1.);
-	else if (placeOfBlock == 2)
+	else if (placeOfBlock == 0)
 		blockCorrect = atan(1. / 1.5);
 
 	switch (toSide) {
@@ -123,7 +123,7 @@ void Tile::genRotationPositionPerpendicular(int toSide, float multi, float offse
 		break;
 	}
 	*/
-	if (placeOfBlock == 0)
+	if (placeOfBlock == 1)
 		genOnCross(toSide, multi, offset, posOffset, position, rotation);
 	else
 		genOnDiag(toSide, multi, offset, posOffset, placeOfBlock, position, rotation);
@@ -205,7 +205,7 @@ double genPosOffsetDiagPerpendicular1(float x, float y) {
 		result = 0; 
 	else //up
 		result = 2;
-	std::cerr << result << "\n";
+	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
 double genPosOffsetDiagPerpendicular2(float x, float y) {
@@ -218,7 +218,7 @@ double genPosOffsetDiagPerpendicular2(float x, float y) {
 		result = 1;
 	else //up
 		result = 3;
-	std::cerr << result << "\n";
+	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
 
@@ -255,8 +255,9 @@ void Tile::genPositionOffset(bool isOnCross) {
 }
 
 void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
+	std::cerr << placeOfBlock << " -> " << placeOfBlock_in << std::endl;
 	placeOfBlock = placeOfBlock_in;
-	std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z << " -> ";
+	//std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z << " -> ";
 	//if (side % 2)
 	//	if (isOnCross == true)
 	//		isOnCross = false;
@@ -265,9 +266,9 @@ void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
 
 	//switch (side) {
 	//case 2: //bottom
-	if (placeOfBlock == 0) //0->cross
+	if (placeOfBlock == 1) //0->cross
 		posOffset = genPosOffsetCrossPerpendicular(position.x, position.y);
-	else if (placeOfBlock == 1) //1->diagn one
+	else if (placeOfBlock == 2) //1->diagn one
 		posOffset = genPosOffsetDiagPerpendicular1(position.x, position.y);
 	else //2->diagn one
 		posOffset = genPosOffsetDiagPerpendicular2(position.x, position.y);

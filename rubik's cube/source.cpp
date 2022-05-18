@@ -11,6 +11,7 @@ using namespace std;
 #include "ShaderClass.h"
 #include "Camera.h"
 #include "Tile.h"
+#include <vector>
 
 Tile* GLOBALtiles;
 
@@ -52,34 +53,65 @@ void rotate(int side) {
 			GLOBALtiles[i].genPositionOffset(false);
 	}	
 
-	GLOBALtiles[2 * 9 + 2].rotate = 2;
+	int sides_0[] = { 2,5,3,4 };
+	int blocks_0[] = { 2,5,8 };
+	int sides_1[] = { 2,3,4,5 };
+	int blocks_1[] = { 0,3,6 };
+
+
+	int* sides = NULL, *blocks = NULL;
+	sides = sides_0; blocks = blocks_0;
+
+	
+	for (int i = 0; i < 4; i++) { //every side around
+		for (int j = 0; j < 3; j++) { //blocks (3 of them)
+			GLOBALtiles[sides[i] * 9 + blocks[j]].rotate = 2;
+			if (i < 2)
+				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(j);
+			else
+				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(2-j);
+		}
+	}
+	
+	/*
 	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[2 * 9 + 5].rotate = 2;
-	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(0);
-	GLOBALtiles[2 * 9 + 8].rotate = 2;
 	GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(1);
+	*/
+	/*
+	GLOBALtiles[2 * 9 + 2].rotate = 2;
+	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[2 * 9 + 5].rotate = 2;
+	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[2 * 9 + 8].rotate = 2;
+	GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(2);
 	
 	GLOBALtiles[3 * 9 + 2].rotate = 2;
-	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(2);
 	GLOBALtiles[3 * 9 + 5].rotate = 2;
-	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(1);
 	GLOBALtiles[3 * 9 + 8].rotate = 2;
-	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(0);
 	
 	GLOBALtiles[4 * 9 + 2].rotate = 2;
-	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(2);
 	GLOBALtiles[4 * 9 + 5].rotate = 2;
-	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(1);
 	GLOBALtiles[4 * 9 + 8].rotate = 2;
-	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(0);
 	
 	GLOBALtiles[5 * 9 + 2].rotate = 2;
-	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(0);
 	GLOBALtiles[5 * 9 + 5].rotate = 2;
-	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(1);
 	GLOBALtiles[5 * 9 + 8].rotate = 2;
-	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(1);
-	
+	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(2);
+	*/
 }
 
 int ccc = 0;
@@ -264,36 +296,42 @@ int main() {
 		tiles[j].color = glm::vec3(0.9,0.1,0.1);
 		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
 		tiles[j].vao = &VAO_z;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
 		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
 		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
 		tiles[j].vao = &VAO_z;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
 		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
 		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
 		tiles[j].vao = &VAO_x;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
 		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
 		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
 		tiles[j].vao = &VAO_x;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
 		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
 		tiles[j].vao = &VAO_y;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
 		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
 		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
 		tiles[j].vao = &VAO_y;
+		tiles[j].placeOfBlock = i;
 		if (i != 4) tiles[j].side = j / 9;
 	}
 	//
