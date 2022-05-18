@@ -66,12 +66,11 @@ void rotate(int side) {
 	
 	for (int i = 0; i < 4; i++) { //every side around
 		for (int j = 0; j < 3; j++) { //blocks (3 of them)
-			if (j == 1)
 			GLOBALtiles[sides[i] * 9 + blocks[j]].rotate = 2;
 			if (i < 2)
 				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(j);
 			else
-				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(2-j);
+				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(2 - j);
 		}
 	}
 	

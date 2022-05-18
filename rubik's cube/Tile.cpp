@@ -68,9 +68,10 @@ void genOnCross(int toSide, float multi, float offset, float posOffset, glm::vec
 		p.x = offset * sin(multi + posOffset) + 1;
 		p.z = offset * cos(multi + posOffset) - 1.5;
 		//if (side == 2 || side == 3)
-		r.y = multi;
+		r.y = -M_PI / 2. + multi;
 		//else
 		//	rotation.z = -multi;
+		break;
 	}
 }
 
@@ -90,6 +91,14 @@ void genOnDiag(int toSide, float multi, float offset, float posOffset, int place
 		p.y = offset * cos(multi + posOffset + blockCorrect) + 1;
 		//if (side == 2 || side == 3)
 		r.z = M_PI / 2. - multi;
+		//else
+		//	rotation.z = -multi;
+		break;
+	case 2:
+		p.x = offset * sin(multi + posOffset + blockCorrect) + 1;
+		p.z = offset * cos(multi + posOffset + blockCorrect) - 1.5;
+		//if (side == 2 || side == 3)
+		r.y = -M_PI / 2. + multi;
 		//else
 		//	rotation.z = -multi;
 		break;
@@ -201,6 +210,49 @@ double genPosOffsetDiagXYAxis(float x, float y) {
 	return result * M_PI / 2. + M_PI / 4.;
 }
 
+double genPosOffsetCrossPerpendicularXY(float x, float y) {
+	//std::cerr << x << "," << y;
+	double result;
+	if (x < 0.25) //left white
+		result = 2;
+	else if (x > 1.75) //right yellow
+		result = 0;
+	else if (y < -1.5) //down red
+		result = 1;
+	else //up orange
+		result = 3;
+	//std::cerr << "  ->  " << result << std::endl;
+	return result * M_PI / 2.;
+}
+double genPosOffsetDiagPerpendicular1(float x, float y) {
+	double result;
+	if (x < -0.25) //left
+		result = 1;
+	else if (x > 2.25) //right
+		result = 3;
+	else if (y < -1.5) //down
+		result = 0; 
+	else //up
+		result = 2;
+	//std::cerr << result << "\n";
+	return result * M_PI / 2.;
+}
+double genPosOffsetDiagPerpendicular2(float x, float y) {
+	//std::cerr << x << "," << y << std::endl;
+	double result;
+	if (x < -0.25) //left
+		result = 2;
+	else if (x > 2.25) //right
+		result = 0;
+	else if (y < -1.5) //down
+		result = 1;
+	else //up
+		result = 3;
+	//std::cerr << result << "\n";
+	return result * M_PI / 2.;
+}
+
+/*
 double genPosOffsetCrossPerpendicular(float x, float y) {
 	double result;
 	if (x < 0.25) //left
@@ -213,6 +265,7 @@ double genPosOffsetCrossPerpendicular(float x, float y) {
 		result = 3;
 	return result * M_PI / 2.;
 }
+
 double genPosOffsetDiagPerpendicular1(float x, float y) {
 	double result;
 	if (x < -0.25) //left
@@ -220,7 +273,7 @@ double genPosOffsetDiagPerpendicular1(float x, float y) {
 	else if (x > 2.25) //right
 		result = 3;
 	else if (y < 1) //down
-		result = 0; 
+		result = 0;
 	else //up
 		result = 2;
 	//std::cerr << result << "\n";
@@ -239,6 +292,7 @@ double genPosOffsetDiagPerpendicular2(float x, float y) {
 	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
+*/
 
 void Tile::genPositionOffset(bool isOnCross) {
 	if (side % 2)
@@ -273,7 +327,7 @@ void Tile::genPositionOffset(bool isOnCross) {
 }
 
 void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
-	std::cerr << placeOfBlock << " -> " << placeOfBlock_in << std::endl;
+	//std::cerr << placeOfBlock << " -> " << placeOfBlock_in << std::endl;
 	placeOfBlock = placeOfBlock_in;
 	//std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z << " -> ";
 	//if (side % 2)
@@ -285,11 +339,11 @@ void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
 	//switch (side) {
 	//case 2: //bottom
 	if (placeOfBlock == 1) //0->cross
-		posOffset = genPosOffsetCrossPerpendicular(position.x, position.y);
+		posOffset = genPosOffsetCrossPerpendicularXY(position.x, position.z);
 	else if (placeOfBlock == 2) //1->diagn one
-		posOffset = genPosOffsetDiagPerpendicular1(position.x, position.y);
+		posOffset = genPosOffsetDiagPerpendicular1(position.x, position.z);
 	else //2->diagn one
-		posOffset = genPosOffsetDiagPerpendicular2(position.x, position.y);
+		posOffset = genPosOffsetDiagPerpendicular2(position.x, position.z);
 			//genPosOffsetDiagXYAxis(position.x, position.z);
 	//	break;
 	//}
@@ -297,8 +351,8 @@ void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
 }
 
 void Tile::updateSide(int toSide) {
-	
-	std::cerr << "("<< position.x << "," << position.y << ")\t" << side << " -> ";
+	std::cerr << "\n";
+	//std::cerr << "("<< position.x << "," << position.y << ")\t" << side << " -> ";
 	switch (toSide) {
 	case 0:
 	case 1:
@@ -328,7 +382,7 @@ void Tile::updateSide(int toSide) {
 
 		break;
 	}
-	std::cerr << side << "\n";
+	//std::cerr << side << "\n";
 
 
 
