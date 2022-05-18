@@ -15,11 +15,12 @@ public:
 	int rotate;
 	short side;
 	VAO* vao;
+	int placeOfBlock;
 
 	void genRotationPosition(float, float);
 	void genRotationPositionPerpendicular(int toSide, float, float);
 	void genPositionOffset(bool isOnCross);
-	void genPositionOffsetPerpendicular(bool isOnCross);
+	void genPositionOffsetPerpendicular(int placeOfBlock);
 	void updateSide(int toSide);
 
 	Tile(glm::vec3 = glm::vec3(0.0, 0.0, 0.0), glm::vec3 = glm::vec3(0.3,0.3,0.3), glm::vec3 = glm::vec3(0.0, 0.0, 0.0), short = 7);

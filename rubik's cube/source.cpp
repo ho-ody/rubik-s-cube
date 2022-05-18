@@ -53,32 +53,32 @@ void rotate(int side) {
 	}	
 
 	GLOBALtiles[2 * 9 + 2].rotate = 2;
-	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(false);
-	//GLOBALtiles[2 * 9 + 5].rotate = 2;
-	//GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(true);
-	//GLOBALtiles[2 * 9 + 8].rotate = 2;
-	//GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(false);
+	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[2 * 9 + 5].rotate = 2;
+	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[2 * 9 + 8].rotate = 2;
+	GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(1);
 	
-	//GLOBALtiles[3 * 9 + 2].rotate = 2;
-	//GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(false);
-	//GLOBALtiles[3 * 9 + 5].rotate = 2;
-	//GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[3 * 9 + 2].rotate = 2;
+	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[3 * 9 + 5].rotate = 2;
+	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(0);
 	GLOBALtiles[3 * 9 + 8].rotate = 2;
-	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(false);
+	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(2);
 	
-	//GLOBALtiles[4 * 9 + 2].rotate = 2;
-	//GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(false);
-	//GLOBALtiles[4 * 9 + 5].rotate = 2;
-	//GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(true);
+	GLOBALtiles[4 * 9 + 2].rotate = 2;
+	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(1);
+	GLOBALtiles[4 * 9 + 5].rotate = 2;
+	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(0);
 	GLOBALtiles[4 * 9 + 8].rotate = 2;
-	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(false);
+	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(2);
 	
 	GLOBALtiles[5 * 9 + 2].rotate = 2;
-	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(false);
-	//GLOBALtiles[5 * 9 + 5].rotate = 2;
-	//GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(true);
-	//GLOBALtiles[5 * 9 + 8].rotate = 2;
-	//GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(false);
+	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(2);
+	GLOBALtiles[5 * 9 + 5].rotate = 2;
+	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(0);
+	GLOBALtiles[5 * 9 + 8].rotate = 2;
+	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(1);
 	
 }
 
