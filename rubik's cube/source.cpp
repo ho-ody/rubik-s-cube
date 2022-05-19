@@ -12,6 +12,7 @@ using namespace std;
 #include "Camera.h"
 #include "Tile.h"
 #include <vector>
+#include "Block.h"
 
 Tile* GLOBALtiles;
 
@@ -370,6 +371,31 @@ int main() {
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
 	//
+	float v = 0.45;
+	GLfloat vertices[] = {
+		-v, -v, -v,
+		+v, -v, -v,
+
+		+v, +v, -v,
+		-v, +v, -v,
+
+		-v, -v, +v,
+		+v, -v, +v,
+
+		+v, +v, +v,
+		-v, +v, +v
+	};
+	int n_vertices = 4 * 2 * 3;
+	GLuint indices[] = {
+		0, 1, 3, 3, 1, 2,
+		1, 5, 2, 2, 5, 6,
+		5, 4, 6, 6, 4, 7,
+		4, 0, 7, 7, 0, 3,
+		3, 2, 7, 7, 2, 6,
+		4, 5, 0, 0, 5, 1
+	};
+	int n_indices = 6 * 6;
+	/*
 	int n_vertices = 4 * 3;
 	GLfloat vertices_z[] = {
 		//x    y      z
@@ -404,13 +430,22 @@ int main() {
 		0.0f, -0.5f, +0.5f,
 		0.0f, +0.5f, +0.5f
 	};
+	*/
 	// VAO, VBO, EBO
+	/*
 	VBO VBO_z(vertices_z, sizeof(GLfloat) * n_vertices);
 	VBO VBO_x(vertices_x, sizeof(GLfloat) * n_vertices);
 	VBO VBO_y(vertices_y, sizeof(GLfloat) * n_vertices);
 	EBO EBO1(indices, sizeof(GLuint) * n_indices);
 	EBO EBO2(lineIndices, sizeof(GLuint) * n_lineIndices);
-
+	*/
+	VBO blockVBO(vertices, sizeof(GLfloat) * n_vertices);
+	EBO blockEBO(indices, sizeof(GLuint) * n_indices);
+	VAO blockVAO;
+	blockVAO.Bind();
+	blockVAO.LinkVBO(blockVBO, 0, 1);
+	blockVAO.Unbind();
+	/*
 	VAO VAO_z;
 	VAO_z.Bind();
 	VAO_z.LinkVBO(VBO_z, 0, 1);
@@ -426,16 +461,54 @@ int main() {
 	vao_x = &VAO_x;
 	vao_y = &VAO_y;
 	vao_z = &VAO_z;
+	*/
 	//
 
-
+	/*
 	int order_[6 * 9];
 	order = order_;
 	for (int i = 0; i < 6 * 9; i++) {
 		order[i] = i;
 	}
+	*/
 
+	Block blocks[3 * 3 * 3];
+	int n_blocks = 3 * 3 * 3;
+	for (int i = 0; i < 3 * 3 * 3; i++) {
+		blocks[i].position = glm::vec3(i % 3, (i / 3)%3, i / 9);
+		//for (int j = 0; j < 3; j++)
+		//	blocks[i].color[j] = glm::vec3(0.9, 0.1, 0.1);
+		if (i < 1*9) { //first side - red
+			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
+			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i > 0*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i < 0*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		}
+		else if (i < 2 * 9) {
+			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i > 1*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i < 1*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		}
+		else if (i < 3 * 9) {
+			blocks[i].color[2] = glm::vec3(0.9, 0.5, 0.1); //orange
+			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i > 2*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i < 2*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		}
+		/*
+			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
+			blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			blocks[i].color[2] = glm::vec3(0.9, 0.5, 0.1); //orange
+			blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		*/
+	}
 
+	/*
 	Tile tiles[6*9];
 	GLOBALtiles = tiles;
 	int n_tiles = 6*9;
@@ -477,7 +550,7 @@ int main() {
 		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	//
-
+	*/
 
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
@@ -487,6 +560,8 @@ int main() {
 	Camera camera(width, height);
 	while (!glfwWindowShouldClose(window))
 	{
+		//ROTATION
+		/* 
 		if (rotateCounter >= 0) { 
 			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 			for (int i = 0; i < n_tiles; i++) {
@@ -507,6 +582,7 @@ int main() {
 					tiles[order[i]].rotate = 0;
 			rotateCounter--;
 		}
+		*/
 		//time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
@@ -528,32 +604,42 @@ int main() {
 
 		//VAO_z.Bind();
 		// Narysuj trójk¹ty
-		for (int i = 0; i < n_tiles; i++)
+		blockVAO.Bind();
+		for (int i = 0; i < n_blocks; i++)
 		{
-			tiles[i].vao->Bind();
+			//tiles[i].vao->Bind();
 			//model
 			glm::mat4 model = glm::mat4(1.0f);
 			//transformacje konkretnego modelu - odpowiednia rotacja
-			model = glm::translate(model, tiles[i].position);
-			if (tiles[i].rotation.x)
-				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.x, glm::vec3(1, 0, 0));
-			if (tiles[i].rotation.y)
-				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.y, glm::vec3(0, 1, 0));
-			if (tiles[i].rotation.z)
-				model *= glm::rotate(glm::mat4(1.0f), tiles[i].rotation.z, glm::vec3(0, 0, 1));
+			model = glm::translate(model, blocks[i].position);
+			if (blocks[i].rotation.x)
+				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.x, glm::vec3(1, 0, 0));
+			if (blocks[i].rotation.y)
+				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.y, glm::vec3(0, 1, 0));
+			if (blocks[i].rotation.z)
+				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.z, glm::vec3(0, 0, 1));
 			//przekazanie modelu
 			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 			//przekazanie koloru
 			int colorLoc = glGetUniformLocation(shaderProgram.ID, "color");
-			glUniform3f(colorLoc, tiles[i].color.x, tiles[i].color.y, tiles[i].color.z);
+			glUniform3f(colorLoc, blocks[i].color[0].x, blocks[i].color[0].y, blocks[i].color[0].z);
 			//rysowanie konkretnego kwadratu (2 trójk¹tów)
-			EBO1.Bind();
-			glDrawElements(GL_TRIANGLES, n_indices, GL_UNSIGNED_INT, 0);
-			EBO2.Bind();
-			glUniform3f(colorLoc, 0.1, 0.1, 0.1);
-			glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
-			tiles[i].vao->Unbind();
+			blockEBO.Bind();
+			//glDrawElements(GL_TRIANGLES, n_indices, GL_UNSIGNED_INT, 0);
+
+			for (int j = 0; j < 6; j++) {
+				//cerr << (j + 1) * n_indices / 6 << endl;
+				glUniform3f(colorLoc, blocks[i].color[j].x, blocks[i].color[j].y, blocks[i].color[j].z);
+				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
+			}
+
+
+
+			//EBO2.Bind();
+			//glUniform3f(colorLoc, 0.1, 0.1, 0.1);
+			//glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
+			//tiles[i].vao->Unbind();
 		}
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
@@ -563,6 +649,7 @@ int main() {
 	glfwDestroyWindow(window); //Delete window before ending the program
 	glfwTerminate(); //Terminate GLFW before ending the program
 
+	/*
 	VAO_x.Delete();
 	VAO_y.Delete();
 	VAO_z.Delete();
@@ -571,6 +658,10 @@ int main() {
 	VBO_z.Delete();
 	EBO1.Delete();
 	EBO2.Delete();
+	*/
+	blockVAO.Delete();
+	blockVBO.Delete();
+	blockEBO.Delete();
 	//delete[] vertices;
 	//delete[] indices;
 	return 0;
