@@ -40,39 +40,101 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 	glViewport(0, 0, width, height);
 }
 
-
+int ccc = 2;
 int rotateCounter = 0;
 int ANIMATION_DURATION = 150;
+
+int* order;
+
 void rotate(int side) {
 	rotateCounter = ANIMATION_DURATION;
 	for (int i = side * 9; i < (side + 1) * 9; i++) {
-		GLOBALtiles[i].rotate = 1;
-		if (i % 2)
-			GLOBALtiles[i].genPositionOffset(true);
+		GLOBALtiles[order[i]].rotate = 1;
+		//cerr << order[i] << " - ";
+		if (order[i] % 2)
+			GLOBALtiles[order[i]].genPositionOffset(true);
 		else
-			GLOBALtiles[i].genPositionOffset(false);
+			GLOBALtiles[order[i]].genPositionOffset(false);
 	}	
+	//cerr << order[1] << "\t" << GLOBALtiles[order[1]].placeOfBlock << "\t" << GLOBALtiles[order[1]].posOffset << "\t" << GLOBALtiles[order[1]].rotate << "\t" << GLOBALtiles[order[1]].side << "\t" << GLOBALtiles[order[1]].vao << "\t" << GLOBALtiles[order[1]].position.x << "\t" << GLOBALtiles[order[1]].position.y << "\t" << GLOBALtiles[order[1]].position.z << "\t" << GLOBALtiles[order[1]].rotation.x << "\t" << GLOBALtiles[order[1]].rotation.y << "\t" << GLOBALtiles[order[1]].rotation.z << "\n";
+
 
 	int sides_0[] = { 2,5,3,4 };
 	int blocks_0[] = { 2,5,8 };
-	int sides_1[] = { 0,1,4,5 };
+	int orders_0[] = { 2,5,3,4 };
+
+	int sides_1[] = { 0,4,1,5 };
 	int blocks_1[] = { 0,1,2 };
+	int orders_1[] = { 4,0,5,1 };
 
-
-	int* sides = NULL, *blocks = NULL;
-	sides = sides_0; blocks = blocks_0;
-	sides = sides_1; blocks = blocks_1;
-	
-	
+	int* sides = NULL, * blocks = NULL, *orders = NULL;
+	if (ccc == 2) {
+		sides = sides_1; blocks = blocks_1; orders = orders_1;
+	}
+	else {
+		sides = sides_0; blocks = blocks_0; orders = orders_0;
+	}
 	for (int i = 0; i < 4; i++) { //every side around
 		for (int j = 0; j < 3; j++) { //blocks (3 of them)
-			GLOBALtiles[sides[i] * 9 + blocks[j]].rotate = 2;
+			GLOBALtiles[order[sides[i] * 9 + blocks[j]]].rotate = 2;
+			cerr << GLOBALtiles[order[sides[i] * 9 + blocks[j]]].side << " > ";
 			if (i < 2)
-				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(j);
+				GLOBALtiles[order[sides[i] * 9 + blocks[j]]].genPositionOffsetPerpendicular(side, 2-j); //!!!!!!!
 			else
-				GLOBALtiles[sides[i] * 9 + blocks[j]].genPositionOffsetPerpendicular(2 - j);
+				GLOBALtiles[order[sides[i] * 9 + blocks[j]]].genPositionOffsetPerpendicular(side, j);
 		}
 	}
+	cerr << endl;
+	//for (int i = 0; i < 6 * 9; i++)
+	//	cerr << GLOBALtiles[i].rotate << (i % 3 == 2 ? "\n" : "\t") << (i % 9 == 8 ? "\n" : "");
+	//cerr << endl;
+
+	for (int i = 0; i < 6 * 9; i++)
+	cerr << order[i] << " (" << GLOBALtiles[order[i]].rotate << ")" << (i % 3 == 2 ? "\n" : "\t") << (i % 9 == 8 ? "\n" : "");
+	//order update
+	for (int i = 0; i < 3; i++) {
+		int temp = order[orders[0] * 9 + blocks[i]];
+		order[orders[0] * 9 + blocks[i]] = order[orders[1] * 9 + blocks[i]];
+		order[orders[1] * 9 + blocks[i]] = order[orders[2] * 9 + blocks[i]];
+		order[orders[2] * 9 + blocks[i]] = order[orders[3] * 9 + blocks[i]];
+		order[orders[3] * 9 + blocks[i]] = temp;
+	}
+	
+	/*
+	int temp = order[side * 9 + 8];
+	order[side * 9 + 8] = order[side * 9 + 0];
+	order[side * 9 + 0] = order[side * 9 + 2];
+	order[side * 9 + 2] = temp;
+	*/
+
+	/*
+	int temp = order[order[side * 9 + 0]];
+	order[order[side * 9 + 0]] = order[order[side * 9 + 2]];
+	order[order[side * 9 + 2]] = order[order[side * 9 + 8]];
+	order[order[side * 9 + 8]] = order[order[side * 9 + 6]];
+	order[order[side * 9 + 6]] = temp;
+	temp = order[order[side * 9 + 1]];
+	order[order[side * 9 + 1]] = order[order[side * 9 + 5]];
+	order[order[side * 9 + 5]] = order[order[side * 9 + 7]];
+	order[order[side * 9 + 7]] = order[order[side * 9 + 3]];
+	order[order[side * 9 + 3]] = temp;
+	*/
+	/*
+	temp = order[side * 9 + 0];
+	order[side * 9 + 0] = order[side * 9 + 3];
+	order[side * 9 + 3] = order[side * 9 + 6];
+	order[side * 9 + 6] = order[side * 9 + 7];
+	order[side * 9 + 7] = order[side * 9 + 8];
+	order[side * 9 + 8] = order[side * 9 + 5];
+	order[side * 9 + 5] = order[side * 9 + 2];
+	order[side * 9 + 2] = order[side * 9 + 1];
+	order[side * 9 + 1] = temp;
+	*/
+
+	//cerr << "    into    \n\n";
+	//for (int i = 0; i < 6 * 9; i++)
+	//	cerr << order[i] << (i%3==2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
+	//cerr << "\n\n\n\n";
 	
 	/*
 	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(2);
@@ -115,8 +177,10 @@ void rotate(int side) {
 	*/
 }
 
-int ccc = 2;
+
 bool p_flipflop = 0;
+bool i_flipflop = 0;
+bool u_flipflop = 0;
 double xxx = 0.0, yyy = 0.0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
@@ -125,7 +189,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)          // sprawdzanie czy wybrany klawisz jest wciœniêty (Esc)     GLFW_PRESS | GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka
 
-	const float cameraSpeed = 4.00f * deltaTime; // adjust accordingly
+	const float cameraSpeed = 7.00f * deltaTime; // adjust accordingly
 	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 		Position += cameraSpeed * Orientation;
 	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -159,7 +223,81 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}*/
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-		yyy += 0.005;
+		int side = 0;
+		if (i_flipflop == 0) {
+			i_flipflop = 1;
+			//for (int i = side * 9; i < (side + 1) * 9; i++) {
+			//	GLOBALtiles[order[i]].color -= glm::vec3(0.1, 0.1, 0.1);
+			//}
+			//int a[3 * 4] = { 9,10,11,0,1,2,45,46,47,36,37,38 };
+			//int b[9] = { 18,19,20,21,22,23,24,25,26 };
+
+			//for (int i = 0; i < 12; i++)
+			//	GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
+			//for (int i = 0; i < 9; i++)
+			//	GLOBALtiles[b[i]].color = glm::vec3(0.1, 0.1, 0.1);
+			//for (int i = 0; i < 6*9; i++)
+			//	if (GLOBALtiles[order[i]].rotate != 0)
+			//		GLOBALtiles[order[i]].color = glm::vec3(0.7, 0.1, 0.7);
+			/*
+			int sides[] = { 0,1,4,5 };
+			int blocks[] = { 0,1,2 };
+			int orders[] = { 4,0,5,1 };
+			//int blocks[] = { 2,5,8 };
+			//int orders[] = { 2,5,3,4 };
+			int i = 0;
+
+			int a[4];
+			
+			a[0] = order[orders[0] * 9 + blocks[i]];
+			a[1] = order[orders[1] * 9 + blocks[i]];
+			a[2] = order[orders[2] * 9 + blocks[i]];
+			a[3] = order[orders[3] * 9 + blocks[i]];
+
+			//a[0] = order[orders[0] * 9 + blocks[i]];
+			//a[1] = order[orders[1] * 9 + blocks[i]];
+			//a[2] = order[orders[2] * 9 + blocks[2 - i]];
+			//a[3] = order[orders[3] * 9 + blocks[2 - i]];
+
+			for (int i = 0; i < 4; i++)
+				GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
+				*/
+			for (int i = 0; i < 6*9; i++)
+				GLOBALtiles[i].color = glm::vec3(i % 9 * 0.1, i % 9 * 0.1, 0.1);
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
+		i_flipflop = 0;
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+		int side = 0;
+		if (u_flipflop == 0) {
+			u_flipflop = 1;
+			/*
+			int sides[] = { 0,1,4,5 };
+			int blocks[] = { 0,1,2 };
+			int orders[] = { 4,0,5,1 };
+			//int blocks[] = { 2,5,8 };
+			//int orders[] = { 2,5,3,4 };
+			int i = 0;
+
+			int a[4];
+
+			a[0] = order[orders[0] * 9 + blocks[i]];
+			a[1] = order[orders[1] * 9 + blocks[i]];
+			a[2] = order[orders[2] * 9 + blocks[i]];
+			a[3] = order[orders[3] * 9 + blocks[i]];
+
+
+			for (int i = 0; i < 4; i++)
+				GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
+			*/
+			for (int i = 0; i < 6 * 9; i++)
+				GLOBALtiles[order[i]].color = glm::vec3(0.1, i % 9 * 0.1, i % 9 * 0.1);
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
+		u_flipflop = 0;
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -176,7 +314,7 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	lastX = xpos;
 	lastY = ypos;
 
-	float sensitivity = 0.2f;
+	float sensitivity = 0.25f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
@@ -290,6 +428,14 @@ int main() {
 	vao_z = &VAO_z;
 	//
 
+
+	int order_[6 * 9];
+	order = order_;
+	for (int i = 0; i < 6 * 9; i++) {
+		order[i] = i;
+	}
+
+
 	Tile tiles[6*9];
 	GLOBALtiles = tiles;
 	int n_tiles = 6*9;
@@ -331,7 +477,7 @@ int main() {
 		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
 	}
 	//
-	
+
 
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
@@ -344,21 +490,21 @@ int main() {
 		if (rotateCounter >= 0) { 
 			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 			for (int i = 0; i < n_tiles; i++) {
-				if (tiles[i].rotate == 1) {
-					if ((i % 2 && !(tiles[i].side % 2)) || (!(i % 2) && tiles[i].side % 2))
-						tiles[i].genRotationPosition(multi, 1.);
+				if (tiles[order[i]].rotate == 1) {
+					if ((order[i] % 2 && !(tiles[order[i]].side % 2)) || (!(order[i] % 2) && tiles[order[i]].side % 2))
+						tiles[order[i]].genRotationPosition(multi, 1.);
 					else
-						tiles[i].genRotationPosition(multi, sqrt(2));
+						tiles[order[i]].genRotationPosition(multi, sqrt(2));
 				}
-				if (tiles[i].rotate == 2) {
-					tiles[i].genRotationPositionPerpendicular(ccc, multi, 1.5); ///!!!!!!!! ccc
+				if (tiles[order[i]].rotate == 2) {
+					tiles[order[i]].genRotationPositionPerpendicular(ccc, multi, 1.5); ///!!!!!!!! ccc
 					if (rotateCounter == 0)
-						tiles[i].updateSide(ccc); ///!!!!!!!! ccc
+						tiles[order[i]].updateSide(ccc); ///!!!!!!!! ccc
 				}
 			}
 			if (rotateCounter == 0)
 				for (int i = 0; i < n_tiles; i++)
-					tiles[i].rotate = 0;
+					tiles[order[i]].rotate = 0;
 			rotateCounter--;
 		}
 		//time logic

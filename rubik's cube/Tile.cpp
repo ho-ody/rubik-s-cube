@@ -65,6 +65,7 @@ void genOnCross(int toSide, float multi, float offset, float posOffset, glm::vec
 		//	rotation.z = -multi;
 		break;
 	case 2:
+	case 3:
 		p.x = offset * sin(multi + posOffset) + 1;
 		p.z = offset * cos(multi + posOffset) - 1.5;
 		//if (side == 2 || side == 3)
@@ -74,15 +75,31 @@ void genOnCross(int toSide, float multi, float offset, float posOffset, glm::vec
 		break;
 	}
 }
-
-void genOnDiag(int toSide, float multi, float offset, float posOffset, int placeOfBlock, glm::vec3& p, glm::vec3& r) {
+//ROGBWY
+bool fix = false;
+void genOnDiag(int toSide, float multi, float offset, float posOffset, int placeOfBlock, glm::vec3& p, glm::vec3& r, int side) {
 	offset = sqrt(1 * 1 + 1.5 * 1.5); //!!!
 
+	/*
+	if (side == 4)
+	{
+		if (placeOfBlock == 2)
+			placeOfBlock = 0;
+		else
+			placeOfBlock = 2;
+	}
+	*/
+
+	//double times = 1.;
+	//if (side == 4) times = -1;
+	//!!!!!!!!!!!!
 	float blockCorrect;
 	if (placeOfBlock == 2)
 		blockCorrect = atan(1.5 / 1.);
 	else if (placeOfBlock == 0)
 		blockCorrect = atan(1. / 1.5);
+	//blockCorrect *= times;
+	//!!!!!!!!!!!!
 
 	switch (toSide) {
 	case 0: //front
@@ -95,6 +112,7 @@ void genOnDiag(int toSide, float multi, float offset, float posOffset, int place
 		//	rotation.z = -multi;
 		break;
 	case 2:
+	case 3:
 		p.x = offset * sin(multi + posOffset + blockCorrect) + 1;
 		p.z = offset * cos(multi + posOffset + blockCorrect) - 1.5;
 		//if (side == 2 || side == 3)
@@ -153,7 +171,7 @@ void Tile::genRotationPositionPerpendicular(int toSide, float multi, float offse
 	if (placeOfBlock == 1)
 		genOnCross(toSide, multi, offset, posOffset, position, rotation);
 	else
-		genOnDiag(toSide, multi, offset, posOffset, placeOfBlock, position, rotation);
+		genOnDiag(toSide, multi, offset, posOffset, placeOfBlock, position, rotation,side);
 }
 
 
@@ -224,7 +242,7 @@ double genPosOffsetCrossPerpendicularXY(float x, float y) {
 	//std::cerr << "  ->  " << result << std::endl;
 	return result * M_PI / 2.;
 }
-double genPosOffsetDiagPerpendicular1(float x, float y) {
+double genPosOffsetDiagPerpendicular1XY(float x, float y) {
 	double result;
 	if (x < -0.25) //left
 		result = 1;
@@ -237,7 +255,7 @@ double genPosOffsetDiagPerpendicular1(float x, float y) {
 	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
-double genPosOffsetDiagPerpendicular2(float x, float y) {
+double genPosOffsetDiagPerpendicular2XY(float x, float y) {
 	//std::cerr << x << "," << y << std::endl;
 	double result;
 	if (x < -0.25) //left
@@ -252,8 +270,7 @@ double genPosOffsetDiagPerpendicular2(float x, float y) {
 	return result * M_PI / 2.;
 }
 
-/*
-double genPosOffsetCrossPerpendicular(float x, float y) {
+double genPosOffsetCrossPerpendicularZ(float x, float y) {
 	double result;
 	if (x < 0.25) //left
 		result = 2;
@@ -265,8 +282,7 @@ double genPosOffsetCrossPerpendicular(float x, float y) {
 		result = 3;
 	return result * M_PI / 2.;
 }
-
-double genPosOffsetDiagPerpendicular1(float x, float y) {
+double genPosOffsetDiagPerpendicular1Z(float x, float y) {
 	double result;
 	if (x < -0.25) //left
 		result = 1;
@@ -279,7 +295,7 @@ double genPosOffsetDiagPerpendicular1(float x, float y) {
 	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
-double genPosOffsetDiagPerpendicular2(float x, float y) {
+double genPosOffsetDiagPerpendicular2Z(float x, float y) {
 	double result;
 	if (x < -0.25) //left
 		result = 2;
@@ -292,7 +308,6 @@ double genPosOffsetDiagPerpendicular2(float x, float y) {
 	//std::cerr << result << "\n";
 	return result * M_PI / 2.;
 }
-*/
 
 void Tile::genPositionOffset(bool isOnCross) {
 	if (side % 2)
@@ -326,7 +341,7 @@ void Tile::genPositionOffset(bool isOnCross) {
 	}
 }
 
-void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
+void Tile::genPositionOffsetPerpendicular(int toSide, int placeOfBlock_in) {
 	//std::cerr << placeOfBlock << " -> " << placeOfBlock_in << std::endl;
 	placeOfBlock = placeOfBlock_in;
 	//std::cerr << "x= " << position.x << "\ty= " << position.y << "\tz=" << position.z << " -> ";
@@ -335,27 +350,40 @@ void Tile::genPositionOffsetPerpendicular(int placeOfBlock_in) {
 	//		isOnCross = false;
 	//	else
 	//		isOnCross = true;
-
-	//switch (side) {
-	//case 2: //bottom
-	if (placeOfBlock == 1) //0->cross
-		posOffset = genPosOffsetCrossPerpendicularXY(position.x, position.z);
-	else if (placeOfBlock == 2) //1->diagn one
-		posOffset = genPosOffsetDiagPerpendicular1(position.x, position.z);
-	else //2->diagn one
-		posOffset = genPosOffsetDiagPerpendicular2(position.x, position.z);
-			//genPosOffsetDiagXYAxis(position.x, position.z);
-	//	break;
-	//}
+	//ROGBWY
+	switch (toSide) {
+	case 0: 
+	case 1: 
+		if (placeOfBlock == 1) //0->cross
+			posOffset = genPosOffsetCrossPerpendicularZ(position.x, position.y);
+		else if (placeOfBlock == 2) //1->diagn one
+			posOffset = genPosOffsetDiagPerpendicular1Z(position.x, position.y);
+		else //2->diagn one
+			posOffset = genPosOffsetDiagPerpendicular2Z(position.x, position.y);
+		//genPosOffsetDiagXYAxis(position.x, position.z);
+		break;
+	case 2:
+	case 3: 
+		//if (side == 0 || side == 4)
+		//	placeOfBlock = 2 - placeOfBlock;
+		if (placeOfBlock == 1) //0->cross
+			posOffset = genPosOffsetCrossPerpendicularXY(position.x, position.z);
+		else if (placeOfBlock == 2) //1->diagn one
+			posOffset = genPosOffsetDiagPerpendicular1XY(position.x, position.z);
+		else //2->diagn one
+			posOffset = genPosOffsetDiagPerpendicular2XY(position.x, position.z);
+		//genPosOffsetDiagXYAxis(position.x, position.z);
+		break;
+	}
 	//std::cerr << "\t" << posOffset / M_PI * 2. <<std::endl;
 }
 
 void Tile::updateSide(int toSide) {
-	std::cerr << "\n";
 	//std::cerr << "("<< position.x << "," << position.y << ")\t" << side << " -> ";
 	switch (toSide) {
 	case 0:
 	case 1:
+		//model swap, rotation reset
 		if (side == 2) side = 5;
 		else if (side == 5) side = 3;
 		else if (side == 3) side = 4;
@@ -366,7 +394,6 @@ void Tile::updateSide(int toSide) {
 		else
 			vao = vao_x;
 		rotation = glm::vec3(0, 0, 0);
-
 		break;
 	case 2:
 		if (side == 5) side = 0;
