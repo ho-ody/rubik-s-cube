@@ -1,3 +1,4 @@
+
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
@@ -55,6 +56,7 @@ int ANIMATION_DURATION = 70;
 int* order;
 int* neworder;
 
+/*
 void rotate(int side) {
 	rotateCounter = ANIMATION_DURATION;
 	for (int i = side * 9; i < (side + 1) * 9; i++) {
@@ -183,44 +185,25 @@ void rotate(int side) {
 	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(1);
 	GLOBALtiles[5 * 9 + 8].rotate = 2;
 	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(2);
-	*/
+	
 }
+*/
 
-void pr() {
-	for (int i = 0; i < 27; i++)
-		cerr << neworder[i] << (i % 3 == 2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
-}
-
+//axis: x->0, y->1, z->2
+int axis;
 int* toRotate;
-void rotateMatrix(bool clockwise)
+int direction;
+void orderUpdateRotateMatrix(bool clockwise)
 {
-	for (int i = 0; i < 9; i++)
-		cerr << toRotate[i] << (i % 3 == 2 ? "\n" : "\t");
 	int N = 3;
-
-	//for (int i = 0; i < N * N; i++)
-	//	cerr << neworder[i] << (i % 3 == N - 1 ? "\n" : "\t");
-
 	if (clockwise == 0) {
-		// Consider all squares one by one
 		for (int x = 0; x < N / 2; x++) {
-			// Consider elements in group
-			// of 4 in current square
 			for (int y = x; y < N - x - 1; y++) {
-				// Store current cell in
-				// temp variable
+
 				int temp = neworder[toRotate[x + N * y]];
-
-				// Move values from right to top
 				neworder[toRotate[x + N * y]] = neworder[toRotate[y + (N - 1 - x) * N]];
-
-				// Move values from bottom to right
 				neworder[toRotate[y + (N - 1 - x) * N]] = neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]];
-
-				// Move values from left to bottom
 				neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]] = neworder[toRotate[(N - 1 - y) + x * N]];
-
-				// Assign temp to left
 				neworder[toRotate[(N - 1 - y) + x * N]] = temp;
 			}
 		}
@@ -237,33 +220,108 @@ void rotateMatrix(bool clockwise)
 			}
 		}
 	}
-
-
-	//cerr << "\n\t|\n\tV\n\n";
-	//for (int i = 0; i < N * N; i++)
-	//	cerr << neworder[i] << (i % 3 == N-1 ? "\n" : "\t");
-	//cerr << "\n\n\n\n";
 }
-/*
-// Traverse each cycle
-	for (int x = 0; x < N / 2; x++) {
-		for (int y = i; y < N - i - 1; y++) {
+int rotateIndex[3][9] = { {0,3,6,9,12,15,18,21,24} ,{ 0,1,2,9,10,11,18,19,20 } ,{ 0,1,2,3,4,5,6,7,8 } };
 
-			// Swap elements of each cycle
-			// in clockwise direction
-			int temp = a[x][y];
-			a[x][y] = a[N - 1 - y][x];
-			a[N - 1 - y][x] = a[N - 1 - x][N - 1 - y];
-			a[N - 1 - x][N - 1 - y] = a[y][N - 1 - x];
-			a[y][N - 1 - x] = temp;
+int indexesOfRotationX(int j) {
+	return order[3 * j];
+}
+int indexesOfRotationY(int j) {
+	return order[j % 3 + j / 3 * 9];
+}
+int indexesOfRotationZ(int j) {
+	return order[j];
+}
+
+//clockwise: 0 -> yep, 1 -> also yep
+void rotate(int clockwise, int changeOrder, int indexsOfRotation(int)) {
+	if (changeOrder)
+		if (clockwise)
+			clockwise = 0;
+		else
+			clockwise = 1;
+	int N = 3;
+	float a, b;
+	rotateCounter = ANIMATION_DURATION;
+	toRotate = rotateIndex[axis];
+	for (int i = 0, j = 0; j < N*N; j++) {
+		i = indexsOfRotation(j);
+		GLOBALblocks[i].roll = true;
+
+		if (axis == 0) {
+			a = GLOBALblocks[i].position.z;
+			b = GLOBALblocks[i].position.y;
+		}
+		else if (axis == 1) {
+			a = GLOBALblocks[i].position.x;
+			b = GLOBALblocks[i].position.z;
+		}
+		else {
+			a = GLOBALblocks[i].position.x;
+			b = GLOBALblocks[i].position.y;
+		}
+
+		if (j % 9 == 4)
+			GLOBALblocks[i].blockOffsetFix = -1;
+		else if (j % 2 == 0) { //!!!
+			if (a < 1 && b < 1)
+				GLOBALblocks[i].blockOffsetFix = 1 + clockwise;
+			else if (a > 1 && b < 1)
+				GLOBALblocks[i].blockOffsetFix = 0 + clockwise;
+			else if (a > 1 && b > 1)
+				GLOBALblocks[i].blockOffsetFix = 3 + clockwise;
+			else
+				GLOBALblocks[i].blockOffsetFix = 2 + clockwise;
+		}
+		else {
+			if (a > 0.5 && a < 1.5)
+				if (b > 1)
+					GLOBALblocks[i].blockOffsetFix = 3 + clockwise;
+				else
+					GLOBALblocks[i].blockOffsetFix = 1 + clockwise;
+			else if (a < 1)
+				GLOBALblocks[i].blockOffsetFix = 2 + clockwise;
+			else
+				GLOBALblocks[i].blockOffsetFix = 0 + clockwise;
+		}
+		if ((clockwise == 0 && changeOrder==0) || (clockwise == 1 && changeOrder == 1)) {
+			GLOBALblocks[i].rot[axis]++;
+			if (GLOBALblocks[i].rot[axis] == 4) {
+				GLOBALblocks[i].rot[axis] = 0;
+				GLOBALblocks[i].prevRot[axis] = -1;
+			}
+		}
+		else {
+			GLOBALblocks[i].rot[axis]--;
+			if (GLOBALblocks[i].rot[axis] == -1) {
+				GLOBALblocks[i].rot[axis] = 3;
+				GLOBALblocks[i].prevRot[axis] = 4;
+			}
 		}
 	}
-*/
+	if (changeOrder)
+		if (clockwise)
+			clockwise = 0;
+		else
+			clockwise = 1;
+	orderUpdateRotateMatrix(clockwise);
+}
+
+
+void pr() {
+	for (int i = 0; i < 27; i++)
+		cerr << neworder[i] << (i % 3 == 2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
+}
+
+
+
+
 
 bool block = false;
 bool p_flipflop = 0;
 bool i_flipflop = 0;
 bool u_flipflop = 0;
+int m_flipflop = 0;
 double xxx = 0.0, yyy = 0.0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
@@ -305,54 +363,39 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				else if (j % 2 == 0) {
 					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
 					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 0;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y > 1)
-						GLOBALblocks[i].blockOffsetFix = 3;
-					else
 						GLOBALblocks[i].blockOffsetFix = 2;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y < 1)
+						GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y > 1)
+						GLOBALblocks[i].blockOffsetFix = 0;
+					else
+						GLOBALblocks[i].blockOffsetFix = 3;
 				}
 				else {
 					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
 					if (GLOBALblocks[i].position.x > 0.5 && GLOBALblocks[i].position.x < 1.5)
 						if (GLOBALblocks[i].position.y > 1)
-							GLOBALblocks[i].blockOffsetFix = 3;
+							GLOBALblocks[i].blockOffsetFix = 0;
 						else
-							GLOBALblocks[i].blockOffsetFix = 1;
+							GLOBALblocks[i].blockOffsetFix = 2;
 					else if (GLOBALblocks[i].position.x < 1)
-						GLOBALblocks[i].blockOffsetFix = 2;
+						GLOBALblocks[i].blockOffsetFix = 3;
 					else
-						GLOBALblocks[i].blockOffsetFix = 0;
+						GLOBALblocks[i].blockOffsetFix = 1;
 				}
-				GLOBALblocks[i].rot[2]++;
-				if (GLOBALblocks[i].rot[2] == 4) {
-					GLOBALblocks[i].rot[2] = 0;
-					GLOBALblocks[i].prevRot[2] = -1;
+				//GLOBALblocks[i].rot[2]++;
+				//if (GLOBALblocks[i].rot[2] == 4) {
+				//	GLOBALblocks[i].rot[2] = 0;
+				//	GLOBALblocks[i].prevRot[2] = -1;
+				//}
+				GLOBALblocks[i].rot[2]--;
+				if (GLOBALblocks[i].rot[2] == -1) {
+					GLOBALblocks[i].rot[2] = 3;
+					GLOBALblocks[i].prevRot[2] = 4;
 				}
-					
 			}
 			//order
-			rotateMatrix(0);
-			/*
-			rotateMatrix(1);
-			int t = neworder[0];
-			neworder[0] = neworder[6];
-			neworder[6] = neworder[8];
-			neworder[8] = neworder[2];
-			neworder[2] = t;
-
-			t = neworder[1];
-			neworder[1] = neworder[3];
-			neworder[3] = neworder[7];
-			neworder[7] = neworder[5];
-			neworder[5] = t;
-			//for (int i = 0; i < 27; i++)
-			//	cerr << order[i] << " ";
-			//cerr << endl;
-			//for (int i = 0; i < 27; i++)
-			//	cerr << neworder[i] << " ";
-			*/
+			orderUpdateRotateMatrix(1);
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
@@ -408,13 +451,17 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 					GLOBALblocks[i].rot[0] = 3;
 					GLOBALblocks[i].prevRot[0] = 4;
 				}
-					
+				//GLOBALblocks[i].rot[0]++;
+				//if (GLOBALblocks[i].rot[0] == 4) {
+				//	GLOBALblocks[i].rot[0] = 0;
+				//	GLOBALblocks[i].prevRot[0] = -1;
+				//}
 				//cerr << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << "\t" << GLOBALblocks[i].position.z << "  ->  " << GLOBALblocks[i].blockOffsetFix << endl;
 				//cerr << GLOBALblocks[i].position << endl;
 				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
 			}
 			//order
-			rotateMatrix(1);
+			orderUpdateRotateMatrix(1);
 			/*
 			pr();
 			rotateMatrix(0);
@@ -484,7 +531,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 
 			}
 			//order
-			rotateMatrix(0);
+			orderUpdateRotateMatrix(0);
 			/*pr();
 			rotateMatrix(1);
 			int t = neworder[0];
@@ -506,6 +553,68 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
 		u_flipflop = 0;
 	}
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) { //move
+		if (m_flipflop == 0) {
+			m_flipflop = 1;
+			/*
+			axis = 0;
+			//ccc = 2;
+			direction = 1;
+			//rotate(0,1, indexesOfRotationX);
+			rotate(direction, 1, indexesOfRotationX);
+			return;
+
+
+			string moves = "";
+			cin >> moves;
+			for (int i = 0; i < moves.length(); i++) {
+				switch (moves[i]) {
+				case 'F':
+					axis = 2;
+					ccc = 0;
+					rotate(1,0,indexesOfRotationZ);
+					break;
+				case 'f':
+					break;
+
+				}
+			}
+			*/
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
+		if (m_flipflop==2)
+			m_flipflop = 0;
+	}
+
+	cerr << m_flipflop << endl;
+	if (m_flipflop == 1) {
+
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			direction = 1;
+		else
+			direction = 0;
+		
+		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
+			axis = 2;
+			rotate(direction, 1, indexesOfRotationZ);
+			m_flipflop = 2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+			axis = 0;
+			rotate(direction, 1, indexesOfRotationX);
+			m_flipflop = 2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			axis = 1;
+			rotate(direction, 1, indexesOfRotationY);
+			m_flipflop = 2;
+		}
+
+
+
+	}
+
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -823,14 +932,14 @@ int main() {
 
 			for (int j = 0; j < 3 * 3 * 3; j++) {
 				if (blocks[j].roll)
-					blocks[j].rotate((j + 1) % 2, ccc, time, 0);
+					blocks[j].rotate((j + 1) % 2, axis, time, direction);
 			}
 			if (rotateCounter == 0) {
 				//roll reset && block update
 				for (int j = 0; j < 3 * 3 * 3; j++) {
 					if (blocks[j].roll) {
 						blocks[j].roll = false;
-						blocks[j].update();
+						blocks[j].update(direction);
 					}
 				}				
 				//order rotation
