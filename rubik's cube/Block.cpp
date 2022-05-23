@@ -24,20 +24,20 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		//float tx = position.x, ty = position.y;
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.x = offset * sin(time + posOffset + blockOffset) + 1;
-				position.y = offset * cos(time + posOffset + blockOffset) + 1;
-			}
-			else {
 				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 1;
 				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 1;	
+			}
+			else {
+				position.x = offset * sin(time + posOffset + blockOffset) + 1;
+				position.y = offset * cos(time + posOffset + blockOffset) + 1;
 			}
 		}
 		//if (side == 2 || side == 3)
 		//rotation.x = M_PI / 2. * rot[1];
 		if (direction)
-			rotation.z = 3*M_PI / 2. - time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
-		else
 			rotation.z = 3*M_PI / 2. + time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
+		else
+			rotation.z = 3*M_PI / 2. - time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
 		return;
 	}
 	/*
@@ -76,18 +76,18 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		}
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.z = offset * sin(time + posOffset + blockOffset) + 1;
-				position.y = offset * cos(time + posOffset + blockOffset) + 1;
-			}
-			else {
 				position.z = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 1;
 				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 1;
+			}
+			else {
+				position.z = offset * sin(time + posOffset + blockOffset) + 1;
+				position.y = offset * cos(time + posOffset + blockOffset) + 1;
 			}	
 		}
 		if (direction)
-			rotation.x = M_PI / 2. + time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
-		else
 			rotation.x = M_PI / 2. - time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
+		else
+			rotation.x = M_PI / 2. + time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
 		return;
 	}
 	if (axis == 1) { //green
@@ -104,19 +104,19 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		//float tx = position.x, ty = position.y;
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.x = offset * sin(time + posOffset + blockOffset) + 1;
-				position.z = offset * cos(time + posOffset + blockOffset) + 1;
-			}
-			else {
 				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 1;
 				position.z = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 1;
+			}
+			else {
+				position.x = offset * sin(time + posOffset + blockOffset) + 1;
+				position.z = offset * cos(time + posOffset + blockOffset) + 1;
 			}
 		}
 		//if (side == 2 || side == 3)
 		if (direction)
-			rotation.y = M_PI / 2. + time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
-		else
 			rotation.y = M_PI / 2. - time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
+		else
+			rotation.y = M_PI / 2. + time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
 		return;
 	}
 }
@@ -132,49 +132,49 @@ void Block::update(int direction) {
 	for (int i = 0; i < abs( rot[0] - prevRot[0]); i++) {
 		if (direction) {
 			t = color[0];
-			color[0] = color[4];
-			color[4] = color[2];
-			color[2] = color[5];
-			color[5] = t;
-		}
-		else {
-			t = color[0];
 			color[0] = color[5];
 			color[5] = color[2];
 			color[2] = color[4];
 			color[4] = t;
+		}
+		else {
+			t = color[0];
+			color[0] = color[4];
+			color[4] = color[2];
+			color[2] = color[5];
+			color[5] = t;
 		}	
 	}
 	for (int i = 0; i <abs( rot[1] - prevRot[1]); i++) {
 		if (direction) {
-			t = color[0];
-			color[0] = color[3];
-			color[3] = color[2];
-			color[2] = color[1];
-			color[1] = t;
-		}
-		else {
 			t = color[0];
 			color[0] = color[1];
 			color[1] = color[2];
 			color[2] = color[3];
 			color[3] = t;
 		}
+		else {
+			t = color[0];
+			color[0] = color[3];
+			color[3] = color[2];
+			color[2] = color[1];
+			color[1] = t;
+		}
 	}
 	for (int i = 0; i <abs( rot[2] - prevRot[2]); i++) {
 		if (direction) {
-			t = color[1];
-			color[1] = color[5];
-			color[5] = color[3];
-			color[3] = color[4];
-			color[4] = t;
-		}
-		else {
 			t = color[1];
 			color[1] = color[4];
 			color[4] = color[3];
 			color[3] = color[5];
 			color[5] = t;
+		}
+		else {
+			t = color[1];
+			color[1] = color[5];
+			color[5] = color[3];
+			color[3] = color[4];
+			color[4] = t;
 		}
 	}
 	rotation = glm::vec3(0., 0., 0.);

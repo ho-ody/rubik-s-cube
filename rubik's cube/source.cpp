@@ -196,7 +196,7 @@ int direction;
 void orderUpdateRotateMatrix(bool clockwise)
 {
 	int N = 3;
-	if (clockwise == 0) {
+	if (clockwise==0) {
 		for (int x = 0; x < N / 2; x++) {
 			for (int y = x; y < N - x - 1; y++) {
 
@@ -221,31 +221,38 @@ void orderUpdateRotateMatrix(bool clockwise)
 		}
 	}
 }
-int rotateIndex[3][9] = { {0,3,6,9,12,15,18,21,24} ,{ 0,1,2,9,10,11,18,19,20 } ,{ 0,1,2,3,4,5,6,7,8 } };
+int rotateIndex[9][9] = {
+	{0,3,6,9,12,15,18,21,24},	 //x 
+	{0,1,2,9,10,11,18,19,20},	 //y
+	{0,1,2,3,4,5,6,7,8},		 //z
+	{1,4,7,10,13,16,19,22,25},	 //x+1
+	{3,4,5,12,13,14,21,22,23},	 //y+1
+	{9,10,11,12,13,14,15,16,17}, //z+1
+	{2,5,8,11,14,17,20,23,26},	 //x+2
+	{6,7,8,15,16,17,24,25,26},	 //y+2
+	{18,19,20,21,22,23,24,25,26} //z+2
+};
 
-int indexesOfRotationX(int j) {
-	return order[3 * j];
+
+int indexesOfRotationX(int j, int offset) {
+	return order[3 * j + offset];
 }
-int indexesOfRotationY(int j) {
-	return order[j % 3 + j / 3 * 9];
+int indexesOfRotationY(int j, int offset) {
+	return order[j % 3 + j / 3 * 9 + offset*3];
 }
-int indexesOfRotationZ(int j) {
-	return order[j];
+int indexesOfRotationZ(int j, int offset) {
+	return order[j + offset*9];
 }
 
 //clockwise: 0 -> yep, 1 -> also yep
-void rotate(int clockwise, int changeOrder, int indexsOfRotation(int)) {
-	if (changeOrder)
-		if (clockwise)
-			clockwise = 0;
-		else
-			clockwise = 1;
+void rotate(int clockwise, int indexsOfRotation(int,int), int offset) {
 	int N = 3;
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
 	toRotate = rotateIndex[axis];
+	axis %= 3;
 	for (int i = 0, j = 0; j < N*N; j++) {
-		i = indexsOfRotation(j);
+		i = indexsOfRotation(j,offset);
 		GLOBALblocks[i].roll = true;
 
 		if (axis == 0) {
@@ -284,7 +291,7 @@ void rotate(int clockwise, int changeOrder, int indexsOfRotation(int)) {
 			else
 				GLOBALblocks[i].blockOffsetFix = 0 + clockwise;
 		}
-		if ((clockwise == 0 && changeOrder==0) || (clockwise == 1 && changeOrder == 1)) {
+		if (clockwise) {
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
 				GLOBALblocks[i].rot[axis] = 0;
@@ -299,11 +306,6 @@ void rotate(int clockwise, int changeOrder, int indexsOfRotation(int)) {
 			}
 		}
 	}
-	if (changeOrder)
-		if (clockwise)
-			clockwise = 0;
-		else
-			clockwise = 1;
 	orderUpdateRotateMatrix(clockwise);
 }
 
@@ -344,6 +346,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 		Position -= cameraSpeed * Up;
 
+	/*
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
 		if (p_flipflop == 0 && rotateCounter > -1)
 			p_flipflop = 1;
@@ -478,7 +481,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			neworder[21] = t;
 			cerr << "\n\nxxx\n\n";
 			pr();
-			*/
+			
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
@@ -547,12 +550,13 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			neworder[11] = t;
 			cerr << "\n\nxxx\n\n";
 			pr();
-			*/
+			
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
 		u_flipflop = 0;
 	}
+	*/
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) { //move
 		if (m_flipflop == 0) {
 			m_flipflop = 1;
@@ -586,10 +590,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		if (m_flipflop==2)
 			m_flipflop = 0;
 	}
-
-	cerr << m_flipflop << endl;
-	if (m_flipflop == 1) {
-
+	if (m_flipflop == 1 && rotateCounter < 0) {
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			direction = 1;
 		else
@@ -597,22 +598,34 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
 			axis = 2;
-			rotate(direction, 1, indexesOfRotationZ);
+			rotate(direction, indexesOfRotationZ,0);
 			m_flipflop = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
 			axis = 0;
-			rotate(direction, 1, indexesOfRotationX);
+			rotate(direction, indexesOfRotationX,0);
 			m_flipflop = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			axis = 1;
-			rotate(direction, 1, indexesOfRotationY);
+			rotate(direction, indexesOfRotationY,0);
 			m_flipflop = 2;
 		}
-
-
-
+		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+			axis = 8;
+			rotate(direction, indexesOfRotationZ,2);
+			m_flipflop = 2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+			axis = 6;
+			rotate(direction, indexesOfRotationX,2);
+			m_flipflop = 2;
+		}
+		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+			axis = 7;
+			rotate(direction, indexesOfRotationY,2);
+			m_flipflop = 2;
+		}
 	}
 
 }
