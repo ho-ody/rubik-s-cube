@@ -53,6 +53,7 @@ int rotateCounter = -1;
 int ANIMATION_DURATION = 150;
 
 int* order;
+int* neworder;
 
 void rotate(int side) {
 	rotateCounter = ANIMATION_DURATION;
@@ -218,7 +219,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			//rotate(ccc);
 			ccc = 0;
 			rotateCounter = ANIMATION_DURATION;
-			for (int i = 0; i < 9; i++) {
+			for (int i = 0, j = 0; j < 9; j++) {
+				i = order[j];
 				GLOBALblocks[i].roll = true;
 				if (i % 9 == 4)
 					GLOBALblocks[i].blockOffsetFix = -1;
@@ -249,6 +251,24 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				if (GLOBALblocks[i].rot[2] == 4)
 					GLOBALblocks[i].rot[2] = 0;
 			}
+			//order
+			int t = neworder[0];
+			neworder[0] = neworder[6];
+			neworder[6] = neworder[8];
+			neworder[8] = neworder[2];
+			neworder[2] = t;
+			
+			t = neworder[1];
+			neworder[1] = neworder[3];
+			neworder[3] = neworder[7];
+			neworder[7] = neworder[5];
+			neworder[5] = t;
+
+			//for (int i = 0; i < 27; i++)
+			//	cerr << order[i] << " ";
+			//cerr << endl;
+			//for (int i = 0; i < 27; i++)
+			//	cerr << neworder[i] << " ";
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
@@ -265,7 +285,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			ccc = 2;
 			rotateCounter = ANIMATION_DURATION;
 			for (int i = 0, j = 0; j < 9; j++) {
-				i = 3 * j;
+				i = order[3*j];
 				//cerr << i << " -> ";
 				GLOBALblocks[i].roll = true;
 				if (j % 9 == 4)
@@ -302,6 +322,18 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				cerr << GLOBALblocks[i].position << endl;
 				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
 			}
+			//order
+			int t = neworder[0];
+			neworder[0] = neworder[6];
+			neworder[6] = neworder[24];
+			neworder[24] = neworder[18];
+			neworder[18] = t;
+
+			t = neworder[9];
+			neworder[9] = neworder[3];
+			neworder[3] = neworder[15];
+			neworder[15] = neworder[21];
+			neworder[21] = t;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
@@ -311,8 +343,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		int side = 0;
 		if (u_flipflop == 0) {
 			u_flipflop = 1;
-			rotateCounter = ANIMATION_DURATION;
-			ccc++;
+			//rotateCounter = ANIMATION_DURATION;
+			//for (int i = 0; i < 6; i++)
+			//	GLOBALblocks[order[ccc]].color[i] = glm::vec3(ccc*0.08, ccc * 0.02, ccc * 0.08);
+			//ccc++;
+
 			/*
 			int sides[] = { 0,1,4,5 };
 			int blocks[] = { 0,1,2 };
@@ -505,9 +540,14 @@ int main() {
 
 	
 	int order_[3*3*3];
+	int order__[3*3*3];
 	order = order_;
+	neworder = order__;
 	for (int i = 0; i < 3*3*3; i++) {
 		order[i] = i;
+	}
+	for (int i = 0; i < 3 * 3 * 3; i++) {
+		neworder[i] = i;
 	}
 	
 
@@ -598,8 +638,50 @@ int main() {
 	glLineWidth(3);
 	float time = 0;
 	Camera camera(width, height);
+	int counterFlex = 50;
+	int idFlex = 0;
+	glm::vec3 colorSave[27][6], flex = glm::vec3(0.8, 0.2, 0.8);
+	int counterFlex2 = 50;
+	int idFlex2 = 0;
+	glm::vec3 flex2 = glm::vec3(0.2, 0.8, 0.2);
+
+	for (int i = 0; i < 27; i++)
+		for (int j = 0; j < 6; j++)
+			colorSave[i][j] = blocks[i].color[j];
+
 	while (!glfwWindowShouldClose(window))
 	{
+		counterFlex--;
+		if (counterFlex == 0) {
+			counterFlex = 50;
+			for (int i = 0; i < 6; i++) {
+				glm::vec3 t = blocks[order[idFlex]].color[i];
+				blocks[order[idFlex]].color[i] = flex;
+				if (idFlex != 0)
+					blocks[order[idFlex-1]].color[i] = colorSave[order[idFlex - 1]][i];
+				else
+					blocks[order[26]].color[i] = colorSave[26][i];
+			}	
+			idFlex++;
+			if (idFlex == 27)
+				idFlex = 0;
+		}
+		counterFlex2--;
+		if (counterFlex2 == 0) {
+			counterFlex2 = 50;
+			for (int i = 0; i < 6; i++) {
+				glm::vec3 t = blocks[idFlex2].color[i];
+				//blocks[idFlex2].color[i] = flex2;
+				if (idFlex2 != 0)
+					blocks[idFlex2 - 1].color[i] = colorSave[idFlex2 - 1][i];
+				else
+					blocks[order[26]].color[i] = colorSave[26][i];
+			}
+			idFlex2++;
+			if (idFlex2 == 27)
+				idFlex2 = 0;
+		}
+
 		//ROTATION
 		if (rotateCounter >= 0) {
 			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
@@ -608,9 +690,15 @@ int main() {
 				if (blocks[j].roll)
 					blocks[j].rotate((j + 1) % 2, ccc, time, 0);
 			}
-			if (rotateCounter == 0)
+			if (rotateCounter == 0) {
+				//roll reset
 				for (int j = 0; j < 3 * 3 * 3; j++)
 					blocks[j].roll = false;
+				//order rotation
+				for (int j = 0; j < 3 * 3 * 3; j++)
+					order[j] = neworder[j];
+			}
+				
 			rotateCounter--;
 
 			/*
