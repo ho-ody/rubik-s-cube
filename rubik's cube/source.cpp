@@ -15,6 +15,13 @@ using namespace std;
 #include "Block.h"
 
 Tile* GLOBALtiles;
+Block* GLOBALblocks;
+
+ostream& operator<<(ostream& stream, const glm::vec3& v)
+{
+	stream << "(" << v.x << "," << v.y << "," << v.z << ")";
+	return stream;
+}
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
@@ -41,8 +48,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 	glViewport(0, 0, width, height);
 }
 
-int ccc = 2;
-int rotateCounter = 0;
+int ccc = 0;
+int rotateCounter = -1;
 int ANIMATION_DURATION = 150;
 
 int* order;
@@ -205,66 +212,96 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position -= cameraSpeed * Up;
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+		//z rot
 		if (p_flipflop == 0) {
 			p_flipflop = 1;
-			rotate(ccc);
+			//rotate(ccc);
+			ccc = 0;
+			rotateCounter = ANIMATION_DURATION;
+			for (int i = 0; i < 9; i++) {
+				GLOBALblocks[i].roll = true;
+				if (i % 9 == 4)
+					GLOBALblocks[i].blockOffsetFix = -1;
+				else if (i % 2 == 0) {
+					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.y < 1)
+						GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y < 1)
+						GLOBALblocks[i].blockOffsetFix = 0;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y > 1)
+						GLOBALblocks[i].blockOffsetFix = 3;
+					else
+						GLOBALblocks[i].blockOffsetFix = 2;
+				}
+				else {
+					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.x > 0.5 && GLOBALblocks[i].position.x < 1.5)
+						if (GLOBALblocks[i].position.y > 1)
+							GLOBALblocks[i].blockOffsetFix = 3;
+						else
+							GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.x < 1)
+						GLOBALblocks[i].blockOffsetFix = 2;
+					else
+						GLOBALblocks[i].blockOffsetFix = 0;
+				}
+				GLOBALblocks[i].rot[2]++;
+				if (GLOBALblocks[i].rot[2] == 4)
+					GLOBALblocks[i].rot[2] = 0;
+			}
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
 		p_flipflop = 0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-		//xxx += 0.005;
-		ccc = 0;
-		/*if (o_flipflop == 0) {
-			o_flipflop = 1;
-			ccc++;
-			if (ccc > 5)
-				ccc = 0;
-		}*/
+
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-		int side = 0;
+		//x rot
 		if (i_flipflop == 0) {
 			i_flipflop = 1;
-			//for (int i = side * 9; i < (side + 1) * 9; i++) {
-			//	GLOBALtiles[order[i]].color -= glm::vec3(0.1, 0.1, 0.1);
-			//}
-			//int a[3 * 4] = { 9,10,11,0,1,2,45,46,47,36,37,38 };
-			//int b[9] = { 18,19,20,21,22,23,24,25,26 };
-
-			//for (int i = 0; i < 12; i++)
-			//	GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
-			//for (int i = 0; i < 9; i++)
-			//	GLOBALtiles[b[i]].color = glm::vec3(0.1, 0.1, 0.1);
-			//for (int i = 0; i < 6*9; i++)
-			//	if (GLOBALtiles[order[i]].rotate != 0)
-			//		GLOBALtiles[order[i]].color = glm::vec3(0.7, 0.1, 0.7);
-			/*
-			int sides[] = { 0,1,4,5 };
-			int blocks[] = { 0,1,2 };
-			int orders[] = { 4,0,5,1 };
-			//int blocks[] = { 2,5,8 };
-			//int orders[] = { 2,5,3,4 };
-			int i = 0;
-
-			int a[4];
-			
-			a[0] = order[orders[0] * 9 + blocks[i]];
-			a[1] = order[orders[1] * 9 + blocks[i]];
-			a[2] = order[orders[2] * 9 + blocks[i]];
-			a[3] = order[orders[3] * 9 + blocks[i]];
-
-			//a[0] = order[orders[0] * 9 + blocks[i]];
-			//a[1] = order[orders[1] * 9 + blocks[i]];
-			//a[2] = order[orders[2] * 9 + blocks[2 - i]];
-			//a[3] = order[orders[3] * 9 + blocks[2 - i]];
-
-			for (int i = 0; i < 4; i++)
-				GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
-				*/
-			for (int i = 0; i < 6*9; i++)
-				GLOBALtiles[i].color = glm::vec3(i % 9 * 0.1, i % 9 * 0.1, 0.1);
+			//rotate(ccc);
+			ccc = 2;
+			rotateCounter = ANIMATION_DURATION;
+			for (int i = 0, j = 0; j < 9; j++) {
+				i = 3 * j;
+				//cerr << i << " -> ";
+				GLOBALblocks[i].roll = true;
+				if (j % 9 == 4)
+					GLOBALblocks[i].blockOffsetFix = -1;
+				else if (j % 2 == 0) {
+					cerr << "c:";
+					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.z < 1 && GLOBALblocks[i].position.y < 1)
+						GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.z > 1 && GLOBALblocks[i].position.y < 1)
+						GLOBALblocks[i].blockOffsetFix = 0;
+					else if (GLOBALblocks[i].position.z > 1 && GLOBALblocks[i].position.y > 1)
+						GLOBALblocks[i].blockOffsetFix = 3;
+					else
+						GLOBALblocks[i].blockOffsetFix = 2;
+				}
+				else {
+					cerr << " d:";
+					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.z > 0.5 && GLOBALblocks[i].position.z < 1.5)
+						if (GLOBALblocks[i].position.y > 1)
+							GLOBALblocks[i].blockOffsetFix = 3;
+						else
+							GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.z < 1)
+						GLOBALblocks[i].blockOffsetFix = 2;
+					else
+						GLOBALblocks[i].blockOffsetFix = 0;
+				}
+				GLOBALblocks[i].rot[1]--;
+				if (GLOBALblocks[i].rot[1] == -1)
+					GLOBALblocks[i].rot[1] = 3;
+				//cerr << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << "\t" << GLOBALblocks[i].position.z << "  ->  " << GLOBALblocks[i].blockOffsetFix << endl;
+				cerr << GLOBALblocks[i].position << endl;
+				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
+			}
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
@@ -274,6 +311,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		int side = 0;
 		if (u_flipflop == 0) {
 			u_flipflop = 1;
+			rotateCounter = ANIMATION_DURATION;
+			ccc++;
 			/*
 			int sides[] = { 0,1,4,5 };
 			int blocks[] = { 0,1,2 };
@@ -293,8 +332,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			for (int i = 0; i < 4; i++)
 				GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
 			*/
-			for (int i = 0; i < 6 * 9; i++)
-				GLOBALtiles[order[i]].color = glm::vec3(0.1, i % 9 * 0.1, i % 9 * 0.1);
+			//for (int i = 0; i < 6 * 9; i++)
+			//	GLOBALtiles[order[i]].color = glm::vec3(0.1, i % 9 * 0.1, i % 9 * 0.1);
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
@@ -464,15 +503,16 @@ int main() {
 	*/
 	//
 
-	/*
-	int order_[6 * 9];
+	
+	int order_[3*3*3];
 	order = order_;
-	for (int i = 0; i < 6 * 9; i++) {
+	for (int i = 0; i < 3*3*3; i++) {
 		order[i] = i;
 	}
-	*/
+	
 
 	Block blocks[3 * 3 * 3];
+	GLOBALblocks = blocks;
 	int n_blocks = 3 * 3 * 3;
 	for (int i = 0; i < 3 * 3 * 3; i++) {
 		blocks[i].position = glm::vec3(i % 3, (i / 3)%3, i / 9);
@@ -482,8 +522,8 @@ int main() {
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
 			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i > 0*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i < 0*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+			if (i > 0 * 9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i < 0 * 9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
 		else if (i < 2 * 9) {
 			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -561,6 +601,57 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
+		if (rotateCounter >= 0) {
+			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
+
+			for (int j = 0; j < 3 * 3 * 3; j++) {
+				if (blocks[j].roll)
+					blocks[j].rotate((j + 1) % 2, ccc, time, 0);
+			}
+			if (rotateCounter == 0)
+				for (int j = 0; j < 3 * 3 * 3; j++)
+					blocks[j].roll = false;
+			rotateCounter--;
+
+			/*
+			blocks[0].rotate(1, 0, time, 0);
+			blocks[1].rotate(0, 0, time, 1);
+			blocks[2].rotate(1, 0, time, 0);
+			blocks[3].rotate(0, 0, time, 2);
+			blocks[4].rotate(0, 0, time, -1);
+			blocks[5].rotate(0, 0, time, 0);
+			blocks[6].rotate(1, 0, time, 0);
+			blocks[7].rotate(0, 0, time, 3);
+			blocks[8].rotate(1, 0, time, 0);
+			*/
+			/*
+			blocks[9].rotate(1, 0, time, 0);
+			blocks[10].rotate(0, 0, time, 1);
+			blocks[11].rotate(1, 0, time, 0);
+			blocks[12].rotate(0, 0, time, 2);
+			blocks[13].rotate(0, 0, time, -1);
+			blocks[14].rotate(0, 0, time, 0);
+			blocks[15].rotate(1, 0, time, 0);
+			blocks[16].rotate(0, 0, time, 3);
+			blocks[17].rotate(1, 0, time, 0);
+			*/
+			//blocks[ccc].rotate(1, 0, time, 0);
+			/*
+			blocks[0].rotate(1, 2, time, 0);
+			blocks[3].rotate(0, 2, time, 1); 
+			blocks[6].rotate(1, 2, time, 0);
+			blocks[9].rotate(0, 2, time, 2);
+			blocks[12].rotate(0, 2, time, -1); 
+			blocks[15].rotate(0, 2, time, 0);
+			blocks[18].rotate(1, 2, time, 0);
+			blocks[21].rotate(0, 2, time, 3); 
+			blocks[24].rotate(1, 2, time, 0);
+			rotateCounter--;
+			*/
+		}
+
+
+
 		/* 
 		if (rotateCounter >= 0) { 
 			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
