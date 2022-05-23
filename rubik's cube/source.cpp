@@ -186,6 +186,36 @@ void rotate(int side) {
 	*/
 }
 
+int* toRotate;
+void rotateMatrix()
+{
+	neworder[toRotate[0]];
+	int N = 3;
+	// Consider all squares one by one
+	for (int x = 0; x < 3 / 2; x++) {
+		// Consider elements in group
+		// of 4 in current square
+		for (int y = x; y < N - x - 1; y++) {
+			// Store current cell in
+			// temp variable
+			int temp = neworder[toRotate[x + N*y]];
+
+			// Move values from right to top
+			neworder[toRotate[x + 3 * y]] = neworder[toRotate[y + (N-1-x)*N]];
+
+			// Move values from bottom to right
+			neworder[toRotate[y + (N - 1 - x) * N]] = neworder[toRotate[(N - 1 - x) + (N - 1 - y)*N]];
+
+			// Move values from left to bottom
+			neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]] = neworder[toRotate[(N - 1 - y) + x * N]];
+
+			// Assign temp to left
+			neworder[toRotate[(N - 1 - y) + x * N]] = temp;
+		}
+	}
+}
+
+
 bool block = false;
 bool p_flipflop = 0;
 bool i_flipflop = 0;
@@ -359,6 +389,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			rotateCounter = ANIMATION_DURATION;
 			for (int i = 0, j = 0; j < 9; j++) {
 				i = order[j%3 + j/3 * 9];
+				toRotate[j] = i;
 				cerr << i << endl;
 				GLOBALblocks[i].roll = true;
 				if (j % 9 == 4)
@@ -393,7 +424,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				}
 
 			}
+			rotateMatrix();
 			//order
+			/*
 			int t = neworder[0];
 			neworder[0] = neworder[18];
 			neworder[18] = neworder[20];
@@ -405,6 +438,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			neworder[9] = neworder[19];
 			neworder[19] = neworder[11];
 			neworder[11] = t;
+			*/
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
@@ -577,6 +611,7 @@ int main() {
 	
 	int order_[3*3*3];
 	int order__[3*3*3];
+	toRotate = new int[3 * 3];
 	order = order_;
 	neworder = order__;
 	for (int i = 0; i < 3*3*3; i++) {
