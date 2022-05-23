@@ -224,9 +224,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			for (int i = 0, j = 0; j < 9; j++) {
 				i = order[j];
 				GLOBALblocks[i].roll = true;
-				if (i % 9 == 4)
+				if (j % 9 == 4)
 					GLOBALblocks[i].blockOffsetFix = -1;
-				else if (i % 2 == 0) {
+				else if (j % 2 == 0) {
 					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
 					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.y < 1)
 						GLOBALblocks[i].blockOffsetFix = 1;
@@ -350,35 +350,61 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		i_flipflop = 0;
 	}
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-		int side = 0;
+		if (u_flipflop == 0 && rotateCounter > -1)
+			u_flipflop = 1;
 		if (u_flipflop == 0) {
 			u_flipflop = 1;
-			//rotateCounter = ANIMATION_DURATION;
-			//for (int i = 0; i < 6; i++)
-			//	GLOBALblocks[order[ccc]].color[i] = glm::vec3(ccc*0.08, ccc * 0.02, ccc * 0.08);
-			//ccc++;
+			//rotate(ccc);
+			ccc = 4;
+			rotateCounter = ANIMATION_DURATION;
+			for (int i = 0, j = 0; j < 9; j++) {
+				i = order[j%3 + j/3 * 9];
+				cerr << i << endl;
+				GLOBALblocks[i].roll = true;
+				if (j % 9 == 4)
+					GLOBALblocks[i].blockOffsetFix = -1;
+				else if (j % 2 == 0) {
+					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.z < 1)
+						GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.z < 1)
+						GLOBALblocks[i].blockOffsetFix = 0;
+					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.z > 1)
+						GLOBALblocks[i].blockOffsetFix = 3;
+					else
+						GLOBALblocks[i].blockOffsetFix = 2;
+				}
+				else {
+					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
+					if (GLOBALblocks[i].position.x > 0.5 && GLOBALblocks[i].position.x < 1.5)
+						if (GLOBALblocks[i].position.z > 1)
+							GLOBALblocks[i].blockOffsetFix = 3;
+						else
+							GLOBALblocks[i].blockOffsetFix = 1;
+					else if (GLOBALblocks[i].position.x < 1)
+						GLOBALblocks[i].blockOffsetFix = 2;
+					else
+						GLOBALblocks[i].blockOffsetFix = 0;
+				}
+				GLOBALblocks[i].rot[1]++;
+				if (GLOBALblocks[i].rot[1] == 4) {
+					GLOBALblocks[i].rot[1] = 0;
+					GLOBALblocks[i].prevRot[1] = -1;
+				}
 
-			/*
-			int sides[] = { 0,1,4,5 };
-			int blocks[] = { 0,1,2 };
-			int orders[] = { 4,0,5,1 };
-			//int blocks[] = { 2,5,8 };
-			//int orders[] = { 2,5,3,4 };
-			int i = 0;
+			}
+			//order
+			int t = neworder[0];
+			neworder[0] = neworder[18];
+			neworder[18] = neworder[20];
+			neworder[20] = neworder[2];
+			neworder[2] = t;
 
-			int a[4];
-
-			a[0] = order[orders[0] * 9 + blocks[i]];
-			a[1] = order[orders[1] * 9 + blocks[i]];
-			a[2] = order[orders[2] * 9 + blocks[i]];
-			a[3] = order[orders[3] * 9 + blocks[i]];
-
-
-			for (int i = 0; i < 4; i++)
-				GLOBALtiles[a[i]].color = glm::vec3(0.7, 0.1, 0.7);
-			*/
-			//for (int i = 0; i < 6 * 9; i++)
-			//	GLOBALtiles[order[i]].color = glm::vec3(0.1, i % 9 * 0.1, i % 9 * 0.1);
+			t = neworder[1];
+			neworder[1] = neworder[9];
+			neworder[9] = neworder[19];
+			neworder[19] = neworder[11];
+			neworder[11] = t;
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {

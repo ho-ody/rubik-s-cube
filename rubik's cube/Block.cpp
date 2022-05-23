@@ -52,14 +52,28 @@ void Block::rotate(int n, int toSide, float time, int side) {
 		//rotation.z = M_PI / 2. * rot[2];
 		return;
 	}
+	if (toSide == 4) { //green
+		if (n == 0) { //cross
+			offset = 1.0;
+			posOffset = 0.;
+			blockOffset = M_PI / 2. * blockOffsetFix;
+		}
+		else { //not cross
+			offset = sqrt(1. + abs(n) * abs(n));
+			posOffset = atan(n);
+			blockOffset = M_PI / 2. * blockOffsetFix;
+		}
+		//float tx = position.x, ty = position.y;
+		if (blockOffsetFix != -1) { //center fix
+			position.x = offset * sin(time + posOffset + blockOffset) + 1;
+			position.z = offset * cos(time + posOffset + blockOffset) + 1;
+		}
+		//if (side == 2 || side == 3)
+		rotation.y = 3 * M_PI / 2. + time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
+		//rotation.z = M_PI / 2. * rot[2];
+		return;
+	}
 }
-
-bool eq(float a, float b) { //equal approximately
-	if (a + 0.001 > b && a - 0.001 < b)
-		return true;
-	return false;
-}
-
 
 void Block::update() {
 	/*
@@ -77,11 +91,11 @@ void Block::update() {
 		color[5] = t;
 	}
 	for (int i = 0; i <abs( rot[1] - prevRot[1]); i++) {
-		t = color[1];
-		color[1] = color[5];
-		color[5] = color[3];
-		color[3] = color[4];
-		color[4] = t;
+		t = color[0];
+		color[0] = color[3];
+		color[3] = color[2];
+		color[2] = color[1];
+		color[1] = t;
 	}
 	for (int i = 0; i <abs( rot[2] - prevRot[2]); i++) {
 		t = color[1];
