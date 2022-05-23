@@ -50,7 +50,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 150;
+int ANIMATION_DURATION = 70;
 
 int* order;
 int* neworder;
@@ -213,6 +213,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		Position -= cameraSpeed * Up;
 
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
+		if (p_flipflop == 0 && rotateCounter > -1)
+			p_flipflop = 1;
 		//z rot
 		if (p_flipflop == 0) {
 			p_flipflop = 1;
@@ -278,6 +280,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
+		if (i_flipflop == 0 && rotateCounter > -1)
+			i_flipflop = 1;
 		//x rot
 		if (i_flipflop == 0) {
 			i_flipflop = 1;
