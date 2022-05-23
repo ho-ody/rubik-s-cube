@@ -11,6 +11,7 @@ public:
 	glm::vec3 color[6];
 	glm::vec3 rotation;
 	int rot[3] = { 0,0,0 };
+	int prevRot[3] = { 0,0,0 };
 
 	bool roll = false;
 
@@ -32,4 +33,5 @@ public:
 	//Block(glm::vec3 = glm::vec3(0.0, 0.0, 0.0), glm::vec3 = glm::vec3(0.3, 0.3, 0.3), glm::vec3 = glm::vec3(0.0, 0.0, 0.0), short = 7);
 	Block();
 	void rotate(int n, int toSide, float time, int side);
+	void update(); //updates block - reset rotations, swap colors
 };

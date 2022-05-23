@@ -186,7 +186,7 @@ void rotate(int side) {
 	*/
 }
 
-
+bool block = false;
 bool p_flipflop = 0;
 bool i_flipflop = 0;
 bool u_flipflop = 0;
@@ -250,8 +250,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 						GLOBALblocks[i].blockOffsetFix = 0;
 				}
 				GLOBALblocks[i].rot[2]++;
-				if (GLOBALblocks[i].rot[2] == 4)
+				if (GLOBALblocks[i].rot[2] == 4) {
 					GLOBALblocks[i].rot[2] = 0;
+					GLOBALblocks[i].prevRot[2] = -1;
+				}
+					
 			}
 			//order
 			int t = neworder[0];
@@ -295,7 +298,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				if (j % 9 == 4)
 					GLOBALblocks[i].blockOffsetFix = -1;
 				else if (j % 2 == 0) {
-					cerr << "c:";
+					//cerr << "c:";
 					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
 					if (GLOBALblocks[i].position.z < 1 && GLOBALblocks[i].position.y < 1)
 						GLOBALblocks[i].blockOffsetFix = 1;
@@ -307,7 +310,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 						GLOBALblocks[i].blockOffsetFix = 2;
 				}
 				else {
-					cerr << " d:";
+					//cerr << " d:";
 					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
 					if (GLOBALblocks[i].position.z > 0.5 && GLOBALblocks[i].position.z < 1.5)
 						if (GLOBALblocks[i].position.y > 1)
@@ -319,11 +322,14 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 					else
 						GLOBALblocks[i].blockOffsetFix = 0;
 				}
-				GLOBALblocks[i].rot[1]--;
-				if (GLOBALblocks[i].rot[1] == -1)
-					GLOBALblocks[i].rot[1] = 3;
+				GLOBALblocks[i].rot[0]--;
+				if (GLOBALblocks[i].rot[0] == -1) {
+					GLOBALblocks[i].rot[0] = 3;
+					GLOBALblocks[i].prevRot[0] = 4;
+				}
+					
 				//cerr << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << "\t" << GLOBALblocks[i].position.z << "  ->  " << GLOBALblocks[i].blockOffsetFix << endl;
-				cerr << GLOBALblocks[i].position << endl;
+				//cerr << GLOBALblocks[i].position << endl;
 				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
 			}
 			//order
@@ -652,9 +658,9 @@ int main() {
 	for (int i = 0; i < 27; i++)
 		for (int j = 0; j < 6; j++)
 			colorSave[i][j] = blocks[i].color[j];
-
 	while (!glfwWindowShouldClose(window))
 	{
+		/*
 		counterFlex--;
 		if (counterFlex == 0) {
 			counterFlex = 50;
@@ -685,6 +691,7 @@ int main() {
 			if (idFlex2 == 27)
 				idFlex2 = 0;
 		}
+		*/
 
 		//ROTATION
 		if (rotateCounter >= 0) {
@@ -695,9 +702,13 @@ int main() {
 					blocks[j].rotate((j + 1) % 2, ccc, time, 0);
 			}
 			if (rotateCounter == 0) {
-				//roll reset
-				for (int j = 0; j < 3 * 3 * 3; j++)
-					blocks[j].roll = false;
+				//roll reset && block update
+				for (int j = 0; j < 3 * 3 * 3; j++) {
+					if (blocks[j].roll) {
+						blocks[j].roll = false;
+						blocks[j].update();
+					}
+				}				
 				//order rotation
 				for (int j = 0; j < 3 * 3 * 3; j++)
 					order[j] = neworder[j];
@@ -795,12 +806,14 @@ int main() {
 			glm::mat4 model = glm::mat4(1.0f);
 			//transformacje konkretnego modelu - odpowiednia rotacja
 			model = glm::translate(model, blocks[i].position);
+
 			if (blocks[i].rotation.x)
 				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.x, glm::vec3(1, 0, 0));
 			if (blocks[i].rotation.y)
 				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.y, glm::vec3(0, 1, 0));
 			if (blocks[i].rotation.z)
 				model *= glm::rotate(glm::mat4(1.0f), blocks[i].rotation.z, glm::vec3(0, 0, 1));
+
 			//przekazanie modelu
 			int modelLoc = glGetUniformLocation(shaderProgram.ID, "model");
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
