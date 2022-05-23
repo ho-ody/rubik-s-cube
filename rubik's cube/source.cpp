@@ -322,6 +322,9 @@ void pr() {
 
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
+int code_input = 0; 
+int code_input_index = 0;
+string code_input_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -332,30 +335,6 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) { //move
 		if (move_cube == 0) {
 			move_cube = 1;
-			/*
-			axis = 0;
-			//ccc = 2;
-			direction = 1;
-			//rotate(0,1, indexesOfRotationX);
-			rotate(direction, 1, indexesOfRotationX);
-			return;
-
-
-			string moves = "";
-			cin >> moves;
-			for (int i = 0; i < moves.length(); i++) {
-				switch (moves[i]) {
-				case 'F':
-					axis = 2;
-					ccc = 0;
-					rotate(1,0,indexesOfRotationZ);
-					break;
-				case 'f':
-					break;
-
-				}
-			}
-			*/
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
@@ -420,7 +399,63 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			Position -= cameraSpeed * Up;
 	}
-
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) { //code input
+		if (code_input == 0) {
+			code_input = 1;
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
+		if (code_input == 2)
+			code_input = 0;
+	}
+	if (code_input == 1) {
+		getline(cin, code_input_s);
+		code_input = 2;
+		code_input_index = 0;
+	}
+	if (code_input_index < code_input_s.length() && rotateCounter < 0) {
+		direction = 0;
+		switch (code_input_s[code_input_index]) {
+		case 'F':
+			direction = 1;
+		case 'f':
+			axis = 2;
+			rotate(direction, indexesOfRotationZ, 0);
+			break;
+		case 'r': //fix -> zamiana 'R' z 'r'
+			direction = 1;
+		case 'R':
+			axis = 0;
+			rotate(direction, indexesOfRotationX, 0);
+			break;
+		case 'D':
+			direction = 1;
+		case 'd':
+			axis = 1;
+			rotate(direction, indexesOfRotationY, 0);
+			break;
+		case 'b':
+			direction = 1;
+		case 'B':
+			axis = 8;
+			rotate(direction, indexesOfRotationZ, 2);
+			break;
+		case 'L':
+			direction = 1;
+		case 'l':
+			axis = 6;
+			rotate(direction, indexesOfRotationX, 2);
+			break;
+		case 'U':
+			direction = 1;
+		case 'u':
+			axis = 7;
+			rotate(direction, indexesOfRotationY, 2);
+			break;
+		}
+		code_input_index++;
+	}
+	cerr << code_input_index << endl;
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
