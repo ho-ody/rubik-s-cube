@@ -51,7 +51,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 70;
+int ANIMATION_DURATION = 40;
 int MOVEMENT_FREEZE_AFTER_MOVE = 15;
 
 
@@ -324,7 +324,7 @@ void pr() {
 int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
-string code_input_s = "";
+string code_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -409,13 +409,41 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			code_input = 0;
 	}
 	if (code_input == 1) {
-		getline(cin, code_input_s);
+		getline(cin, code_s);
+		for (int i = 0; i <= code_s.length(); i++) {
+			if (code_s[i] == '\'') {	// ' zamiana na du¿¹ literê
+				i--;
+				char t = code_s[i] - 'Z' + 'z';
+				code_s.erase(i, 2);
+				code_s.insert(i, string(1, t));
+			}
+			if (code_s[i] == ' ') {		// usuniecie spacji
+				code_s.erase(i, 1);
+			}		
+			if (code_s[i] == '2') {		// zastapienie znaku 2
+				code_s.erase(i, 1);
+				code_s.insert(i, string(1, code_s[i-1]));
+			}
+		}
+		for (int i = 0; i <= code_s.length(); i++) {
+			if (code_s[i] >= 'a' && code_s[i] <= 'z') { //zamiana duzych liter na male i na odwrót
+				char t = code_s[i] + 'Z' - 'z';
+				code_s.erase(i, 1);
+				code_s.insert(i, string(1, t));
+			}
+			else if (code_s[i] >= 'A' && code_s[i] <= 'Z') {
+				char t = code_s[i] - 'Z' + 'z';
+				code_s.erase(i, 1);
+				code_s.insert(i, string(1, t));
+			}
+		}
+		cerr << code_s;
 		code_input = 2;
 		code_input_index = 0;
 	}
-	if (code_input_index < code_input_s.length() && rotateCounter < 0) {
+	if (code_input_index < code_s.length() && rotateCounter < 0) {
 		direction = 0;
-		switch (code_input_s[code_input_index]) {
+		switch (code_s[code_input_index]) {
 		case 'F':
 			direction = 1;
 		case 'f':
@@ -428,9 +456,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			axis = 0;
 			rotate(direction, indexesOfRotationX, 0);
 			break;
-		case 'D':
-			direction = 1;
 		case 'd':
+			direction = 1;
+		case 'D':
 			axis = 1;
 			rotate(direction, indexesOfRotationY, 0);
 			break;
@@ -455,7 +483,6 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 		code_input_index++;
 	}
-	cerr << code_input_index << endl;
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
