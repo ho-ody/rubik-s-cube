@@ -195,10 +195,10 @@ void rotate(int side) {
 int axis;
 int* toRotate;
 int direction;
-void orderUpdateRotateMatrix(bool clockwise)
+void orderUpdateRotateMatrix(bool direction)
 {
 	int N = 3;
-	if (clockwise==0) {
+	if ((direction == 0 && axis % 3 != 0) || (direction == 1 && axis % 3 == 0)) {
 		for (int x = 0; x < N / 2; x++) {
 			for (int y = x; y < N - x - 1; y++) {
 
@@ -247,7 +247,7 @@ int indexesOfRotationZ(int j, int offset) {
 }
 
 //clockwise: 0 -> yep, 1 -> also yep
-void rotate(int clockwise, int indexsOfRotation(int,int), int offset) {
+void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	int N = 3;
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
@@ -274,26 +274,26 @@ void rotate(int clockwise, int indexsOfRotation(int,int), int offset) {
 			GLOBALblocks[i].blockOffsetFix = -1;
 		else if (j % 2 == 0) { //!!!
 			if (a < 1 && b < 1)
-				GLOBALblocks[i].blockOffsetFix = 1 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 1 + direction;
 			else if (a > 1 && b < 1)
-				GLOBALblocks[i].blockOffsetFix = 0 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 0 + direction;
 			else if (a > 1 && b > 1)
-				GLOBALblocks[i].blockOffsetFix = 3 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 3 + direction;
 			else
-				GLOBALblocks[i].blockOffsetFix = 2 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		}
 		else {
 			if (a > 0.5 && a < 1.5)
 				if (b > 1)
-					GLOBALblocks[i].blockOffsetFix = 3 + clockwise;
+					GLOBALblocks[i].blockOffsetFix = 3 + direction;
 				else
-					GLOBALblocks[i].blockOffsetFix = 1 + clockwise;
+					GLOBALblocks[i].blockOffsetFix = 1 + direction;
 			else if (a < 1)
-				GLOBALblocks[i].blockOffsetFix = 2 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 			else
-				GLOBALblocks[i].blockOffsetFix = 0 + clockwise;
+				GLOBALblocks[i].blockOffsetFix = 0 + direction;
 		}
-		if (clockwise) {
+		if (direction) {
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
 				GLOBALblocks[i].rot[axis] = 0;
@@ -308,7 +308,7 @@ void rotate(int clockwise, int indexsOfRotation(int,int), int offset) {
 			}
 		}
 	}
-	orderUpdateRotateMatrix(clockwise);
+	orderUpdateRotateMatrix(direction);
 }
 
 
