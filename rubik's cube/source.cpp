@@ -11,11 +11,9 @@ using namespace std;
 #include "EBO.h"
 #include "ShaderClass.h"
 #include "Camera.h"
-#include "Tile.h"
 #include <vector>
 #include "Block.h"
 
-Tile* GLOBALtiles;
 Block* GLOBALblocks;
 
 ostream& operator<<(ostream& stream, const glm::vec3& v)
@@ -57,141 +55,6 @@ int MOVEMENT_FREEZE_AFTER_MOVE = 15;
 
 int* order;
 int* neworder;
-
-/*
-void rotate(int side) {
-	rotateCounter = ANIMATION_DURATION;
-	for (int i = side * 9; i < (side + 1) * 9; i++) {
-		GLOBALtiles[order[i]].rotate = 1;
-		//cerr << order[i] << " - ";
-		if (order[i] % 2)
-			GLOBALtiles[order[i]].genPositionOffset(true);
-		else
-			GLOBALtiles[order[i]].genPositionOffset(false);
-	}	
-	//cerr << order[1] << "\t" << GLOBALtiles[order[1]].placeOfBlock << "\t" << GLOBALtiles[order[1]].posOffset << "\t" << GLOBALtiles[order[1]].rotate << "\t" << GLOBALtiles[order[1]].side << "\t" << GLOBALtiles[order[1]].vao << "\t" << GLOBALtiles[order[1]].position.x << "\t" << GLOBALtiles[order[1]].position.y << "\t" << GLOBALtiles[order[1]].position.z << "\t" << GLOBALtiles[order[1]].rotation.x << "\t" << GLOBALtiles[order[1]].rotation.y << "\t" << GLOBALtiles[order[1]].rotation.z << "\n";
-
-
-	int sides_0[] = { 2,5,3,4 };
-	int blocks_0[] = { 2,5,8 };
-	int orders_0[] = { 2,5,3,4 };
-
-	int sides_1[] = { 0,4,1,5 };
-	int blocks_1[] = { 0,1,2 };
-	int orders_1[] = { 4,0,5,1 };
-
-	int* sides = NULL, * blocks = NULL, *orders = NULL;
-	if (ccc == 2) {
-		sides = sides_1; blocks = blocks_1; orders = orders_1;
-	}
-	else {
-		sides = sides_0; blocks = blocks_0; orders = orders_0;
-	}
-	for (int i = 0; i < 4; i++) { //every side around
-		for (int j = 0; j < 3; j++) { //blocks (3 of them)
-			GLOBALtiles[order[sides[i] * 9 + blocks[j]]].rotate = 2;
-			cerr << GLOBALtiles[order[sides[i] * 9 + blocks[j]]].side << " > ";
-			if (i < 2)
-				GLOBALtiles[order[sides[i] * 9 + blocks[j]]].genPositionOffsetPerpendicular(side, 2-j); //!!!!!!!
-			else
-				GLOBALtiles[order[sides[i] * 9 + blocks[j]]].genPositionOffsetPerpendicular(side, j);
-		}
-	}
-	cerr << endl;
-	//for (int i = 0; i < 6 * 9; i++)
-	//	cerr << GLOBALtiles[i].rotate << (i % 3 == 2 ? "\n" : "\t") << (i % 9 == 8 ? "\n" : "");
-	//cerr << endl;
-
-	for (int i = 0; i < 6 * 9; i++)
-	cerr << order[i] << " (" << GLOBALtiles[order[i]].rotate << ")" << (i % 3 == 2 ? "\n" : "\t") << (i % 9 == 8 ? "\n" : "");
-	//order update
-	for (int i = 0; i < 3; i++) {
-		int temp = order[orders[0] * 9 + blocks[i]];
-		order[orders[0] * 9 + blocks[i]] = order[orders[1] * 9 + blocks[i]];
-		order[orders[1] * 9 + blocks[i]] = order[orders[2] * 9 + blocks[i]];
-		order[orders[2] * 9 + blocks[i]] = order[orders[3] * 9 + blocks[i]];
-		order[orders[3] * 9 + blocks[i]] = temp;
-	}
-	
-	/*
-	int temp = order[side * 9 + 8];
-	order[side * 9 + 8] = order[side * 9 + 0];
-	order[side * 9 + 0] = order[side * 9 + 2];
-	order[side * 9 + 2] = temp;
-	*/
-
-	/*
-	int temp = order[order[side * 9 + 0]];
-	order[order[side * 9 + 0]] = order[order[side * 9 + 2]];
-	order[order[side * 9 + 2]] = order[order[side * 9 + 8]];
-	order[order[side * 9 + 8]] = order[order[side * 9 + 6]];
-	order[order[side * 9 + 6]] = temp;
-	temp = order[order[side * 9 + 1]];
-	order[order[side * 9 + 1]] = order[order[side * 9 + 5]];
-	order[order[side * 9 + 5]] = order[order[side * 9 + 7]];
-	order[order[side * 9 + 7]] = order[order[side * 9 + 3]];
-	order[order[side * 9 + 3]] = temp;
-	*/
-	/*
-	temp = order[side * 9 + 0];
-	order[side * 9 + 0] = order[side * 9 + 3];
-	order[side * 9 + 3] = order[side * 9 + 6];
-	order[side * 9 + 6] = order[side * 9 + 7];
-	order[side * 9 + 7] = order[side * 9 + 8];
-	order[side * 9 + 8] = order[side * 9 + 5];
-	order[side * 9 + 5] = order[side * 9 + 2];
-	order[side * 9 + 2] = order[side * 9 + 1];
-	order[side * 9 + 1] = temp;
-	*/
-
-	//cerr << "    into    \n\n";
-	//for (int i = 0; i < 6 * 9; i++)
-	//	cerr << order[i] << (i%3==2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
-	//cerr << "\n\n\n\n";
-	
-	/*
-	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(1);
-	*/
-	/*
-	GLOBALtiles[2 * 9 + 2].rotate = 2;
-	GLOBALtiles[2 * 9 + 2].genPositionOffsetPerpendicular(0);
-	GLOBALtiles[2 * 9 + 5].rotate = 2;
-	GLOBALtiles[2 * 9 + 5].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[2 * 9 + 8].rotate = 2;
-	GLOBALtiles[2 * 9 + 8].genPositionOffsetPerpendicular(2);
-	
-	GLOBALtiles[3 * 9 + 2].rotate = 2;
-	GLOBALtiles[3 * 9 + 2].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[3 * 9 + 5].rotate = 2;
-	GLOBALtiles[3 * 9 + 5].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[3 * 9 + 8].rotate = 2;
-	GLOBALtiles[3 * 9 + 8].genPositionOffsetPerpendicular(0);
-	
-	GLOBALtiles[4 * 9 + 2].rotate = 2;
-	GLOBALtiles[4 * 9 + 2].genPositionOffsetPerpendicular(2);
-	GLOBALtiles[4 * 9 + 5].rotate = 2;
-	GLOBALtiles[4 * 9 + 5].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[4 * 9 + 8].rotate = 2;
-	GLOBALtiles[4 * 9 + 8].genPositionOffsetPerpendicular(0);
-	
-	GLOBALtiles[5 * 9 + 2].rotate = 2;
-	GLOBALtiles[5 * 9 + 2].genPositionOffsetPerpendicular(0);
-	GLOBALtiles[5 * 9 + 5].rotate = 2;
-	GLOBALtiles[5 * 9 + 5].genPositionOffsetPerpendicular(1);
-	GLOBALtiles[5 * 9 + 8].rotate = 2;
-	GLOBALtiles[5 * 9 + 8].genPositionOffsetPerpendicular(2);
-	
-}
-*/
-
-//axis: x->0, y->1, z->2
 int axis;
 int* toRotate;
 int direction;
@@ -235,7 +98,6 @@ int rotateIndex[9][9] = {
 	{18,19,20,21,22,23,24,25,26} //z+2
 };
 
-
 int indexesOfRotationX(int j, int offset) {
 	return order[3 * j + offset];
 }
@@ -245,8 +107,6 @@ int indexesOfRotationY(int j, int offset) {
 int indexesOfRotationZ(int j, int offset) {
 	return order[j + offset*9];
 }
-
-//clockwise: 0 -> yep, 1 -> also yep
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	int N = 3;
 	float a, b;
@@ -272,7 +132,7 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 
 		if (j % 9 == 4)
 			GLOBALblocks[i].blockOffsetFix = -1;
-		else if (j % 2 == 0) { //!!!
+		else if (j % 2 == 0) {
 			if (a < 1 && b < 1)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
 			else if (a > 1 && b < 1)
@@ -310,22 +170,12 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	}
 	orderUpdateRotateMatrix(direction);
 }
-
-
-void pr() {
-	for (int i = 0; i < 27; i++)
-		cerr << neworder[i] << (i % 3 == 2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
-}
-
-
-
-
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
 string code_s = "";
-void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
+void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
 	Orientation = cameraFront;
 
@@ -385,7 +235,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 	}
 	else if (ANIMATION_DURATION - MOVEMENT_FREEZE_AFTER_MOVE > rotateCounter) {
-		const float cameraSpeed = 7.00f * deltaTime; // adjust accordingly
+		const float cameraSpeed = 12.0 * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			Position += cameraSpeed * Orientation;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -486,13 +336,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
-	if (firstMouse)
-	{
+	if (firstMouse) {
 		lastX = xpos;
 		lastY = ypos;
 		firstMouse = false;
 	}
-
 	float xoffset = xpos - lastX;
 	float yoffset = lastY - ypos;
 	lastX = xpos;
@@ -516,11 +364,6 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
 }
-
-
-
-VAO* vao_x, *vao_y, *vao_z;
-
 
 int width = 800, height = 800;
 int main() {
@@ -553,7 +396,6 @@ int main() {
 	// Utwórz obiekt Vertex Shader
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
-	//
 	float v = 0.45;
 	GLfloat vertices[] = {
 		-v, -v, -v,
@@ -578,75 +420,13 @@ int main() {
 		4, 5, 0, 0, 5, 1
 	};
 	int n_indices = 6 * 6;
-	/*
-	int n_vertices = 4 * 3;
-	GLfloat vertices_z[] = {
-		//x    y      z
-		-0.5f, -0.5f, 0.0f,
-		+0.5f, -0.5f, 0.0f,
-		-0.5f, +0.5f, 0.0f,
-		+0.5f, +0.5f, 0.0f
-	};
-	int n_indices = 2 * 3;
-	GLuint indices[] = {
-		0,1,2,
-		1,2,3
-	};
-	int n_lineIndices = 4 * 2;
-	GLuint lineIndices[] = {
-		0,1,
-		0,2,
-		3,1,
-		3,2
-	};
-	GLfloat vertices_x[] = {
-		//x    y      z
-		-0.5f, 0.0f, -0.5f,
-		+0.5f, 0.0f, -0.5f,
-		-0.5f, 0.0f, +0.5f,
-		+0.5f, 0.0f, +0.5f
-	};
-	GLfloat vertices_y[] = {
-		//x    y      z
-		0.0f, -0.5f, -0.5f,
-		0.0f, +0.5f, -0.5f,
-		0.0f, -0.5f, +0.5f,
-		0.0f, +0.5f, +0.5f
-	};
-	*/
-	// VAO, VBO, EBO
-	/*
-	VBO VBO_z(vertices_z, sizeof(GLfloat) * n_vertices);
-	VBO VBO_x(vertices_x, sizeof(GLfloat) * n_vertices);
-	VBO VBO_y(vertices_y, sizeof(GLfloat) * n_vertices);
-	EBO EBO1(indices, sizeof(GLuint) * n_indices);
-	EBO EBO2(lineIndices, sizeof(GLuint) * n_lineIndices);
-	*/
+	
 	VBO blockVBO(vertices, sizeof(GLfloat) * n_vertices);
 	EBO blockEBO(indices, sizeof(GLuint) * n_indices);
 	VAO blockVAO;
 	blockVAO.Bind();
 	blockVAO.LinkVBO(blockVBO, 0, 1);
 	blockVAO.Unbind();
-	/*
-	VAO VAO_z;
-	VAO_z.Bind();
-	VAO_z.LinkVBO(VBO_z, 0, 1);
-	VAO_z.Unbind();
-	VAO VAO_x;
-	VAO_x.Bind();
-	VAO_x.LinkVBO(VBO_x, 0, 1);
-	VAO_x.Unbind();
-	VAO VAO_y;
-	VAO_y.Bind();
-	VAO_y.LinkVBO(VBO_y, 0, 1);
-	VAO_y.Unbind();
-	vao_x = &VAO_x;
-	vao_y = &VAO_y;
-	vao_z = &VAO_z;
-	*/
-	//
-
 	
 	int order_[3*3*3];
 	int order__[3*3*3];
@@ -666,8 +446,6 @@ int main() {
 	int n_blocks = 3 * 3 * 3;
 	for (int i = 0; i < 3 * 3 * 3; i++) {
 		blocks[i].position = glm::vec3(i % 3, (i / 3)%3, i / 9);
-		//for (int j = 0; j < 3; j++)
-		//	blocks[i].color[j] = glm::vec3(0.9, 0.1, 0.1);
 		if (i < 1*9) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -698,102 +476,14 @@ int main() {
 		*/
 	}
 
-	/*
-	Tile tiles[6*9];
-	GLOBALtiles = tiles;
-	int n_tiles = 6*9;
-	int j = 0;
-	for (int i = 0; j < 1 * 9; j++, i++) { //front side - red
-		tiles[j].color = glm::vec3(0.9,0.1,0.1);
-		tiles[j].position = glm::vec3(i%3, i/3, 0.0);
-		tiles[j].vao = &VAO_z;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	for (int i = 0; j < 2 * 9; j++, i++) { //back side - orange
-		tiles[j].color = glm::vec3(0.9, 0.5, 0.1);
-		tiles[j].position = glm::vec3(i % 3, i / 3, -3.0);
-		tiles[j].vao = &VAO_z;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	for (int i = 0; j < 3 * 9; j++, i++) { //bottom side - green
-		tiles[j].color = glm::vec3(0.1, 0.9, 0.1);
-		tiles[j].position = glm::vec3(i / 3, -0.5, i % 3 - 2.5);
-		tiles[j].vao = &VAO_x;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	for (int i = 0; j < 4 * 9; j++, i++) { //top side - blue
-		tiles[j].color = glm::vec3(0.1, 0.1, 0.9);
-		tiles[j].position = glm::vec3(i / 3, 2.5, i % 3 - 2.5);
-		tiles[j].vao = &VAO_x;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	for (int i = 0; j < 5 * 9; j++, i++) { //left side - white
-		tiles[j].color = glm::vec3(0.9, 0.9, 0.9);
-		tiles[j].position = glm::vec3(-0.5, i/3, i % 3 - 2.5);
-		tiles[j].vao = &VAO_y;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	for (int i = 0; j < 6 * 9; j++, i++) { //right side - yellow
-		tiles[j].color = glm::vec3(0.9, 0.9, 0.1);
-		tiles[j].position = glm::vec3(2.5, i / 3, i % 3 - 2.5);
-		tiles[j].vao = &VAO_y;
-		if (i != 4) tiles[j].side = j / 9; else tiles[j].side = j / 9 + 10;
-	}
-	//
-	*/
-
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //kontury
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); kontury
 	glLineWidth(3);
 	float time = 0;
 	Camera camera(width, height);
-	int counterFlex = 50;
-	int idFlex = 0;
-	glm::vec3 colorSave[27][6], flex = glm::vec3(0.8, 0.2, 0.8);
-	int counterFlex2 = 50;
-	int idFlex2 = 0;
-	glm::vec3 flex2 = glm::vec3(0.2, 0.8, 0.2);
-
-	for (int i = 0; i < 27; i++)
-		for (int j = 0; j < 6; j++)
-			colorSave[i][j] = blocks[i].color[j];
 	while (!glfwWindowShouldClose(window))
 	{
-		/*
-		counterFlex--;
-		if (counterFlex == 0) {
-			counterFlex = 50;
-			for (int i = 0; i < 6; i++) {
-				glm::vec3 t = blocks[order[idFlex]].color[i];
-				blocks[order[idFlex]].color[i] = flex;
-				if (idFlex != 0)
-					blocks[order[idFlex-1]].color[i] = colorSave[order[idFlex - 1]][i];
-				else
-					blocks[order[26]].color[i] = colorSave[26][i];
-			}	
-			idFlex++;
-			if (idFlex == 27)
-				idFlex = 0;
-		}
-		
-		counterFlex2--;
-		if (counterFlex2 == 0) {
-			counterFlex2 = 50;
-			for (int i = 0; i < 6; i++) {
-				glm::vec3 t = blocks[idFlex2].color[i];
-				//blocks[idFlex2].color[i] = flex2;
-				if (idFlex2 != 0)
-					blocks[idFlex2 - 1].color[i] = colorSave[idFlex2 - 1][i];
-				else
-					blocks[order[26]].color[i] = colorSave[26][i];
-			}
-			idFlex2++;
-			if (idFlex2 == 27)
-				idFlex2 = 0;
-		}
-		*/
-
 		//ROTATION
 		if (rotateCounter >= 0) {
 			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
@@ -814,75 +504,13 @@ int main() {
 				for (int j = 0; j < 3 * 3 * 3; j++)
 					order[j] = neworder[j];
 			}
-				
-			rotateCounter--;
-
-			/*
-			blocks[0].rotate(1, 0, time, 0);
-			blocks[1].rotate(0, 0, time, 1);
-			blocks[2].rotate(1, 0, time, 0);
-			blocks[3].rotate(0, 0, time, 2);
-			blocks[4].rotate(0, 0, time, -1);
-			blocks[5].rotate(0, 0, time, 0);
-			blocks[6].rotate(1, 0, time, 0);
-			blocks[7].rotate(0, 0, time, 3);
-			blocks[8].rotate(1, 0, time, 0);
-			*/
-			/*
-			blocks[9].rotate(1, 0, time, 0);
-			blocks[10].rotate(0, 0, time, 1);
-			blocks[11].rotate(1, 0, time, 0);
-			blocks[12].rotate(0, 0, time, 2);
-			blocks[13].rotate(0, 0, time, -1);
-			blocks[14].rotate(0, 0, time, 0);
-			blocks[15].rotate(1, 0, time, 0);
-			blocks[16].rotate(0, 0, time, 3);
-			blocks[17].rotate(1, 0, time, 0);
-			*/
-			//blocks[ccc].rotate(1, 0, time, 0);
-			/*
-			blocks[0].rotate(1, 2, time, 0);
-			blocks[3].rotate(0, 2, time, 1); 
-			blocks[6].rotate(1, 2, time, 0);
-			blocks[9].rotate(0, 2, time, 2);
-			blocks[12].rotate(0, 2, time, -1); 
-			blocks[15].rotate(0, 2, time, 0);
-			blocks[18].rotate(1, 2, time, 0);
-			blocks[21].rotate(0, 2, time, 3); 
-			blocks[24].rotate(1, 2, time, 0);
-			rotateCounter--;
-			*/
-		}
-
-
-
-		/* 
-		if (rotateCounter >= 0) { 
-			float multi = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
-			for (int i = 0; i < n_tiles; i++) {
-				if (tiles[order[i]].rotate == 1) {
-					if ((order[i] % 2 && !(tiles[order[i]].side % 2)) || (!(order[i] % 2) && tiles[order[i]].side % 2))
-						tiles[order[i]].genRotationPosition(multi, 1.);
-					else
-						tiles[order[i]].genRotationPosition(multi, sqrt(2));
-				}
-				if (tiles[order[i]].rotate == 2) {
-					tiles[order[i]].genRotationPositionPerpendicular(ccc, multi, 1.5); ///!!!!!!!! ccc
-					if (rotateCounter == 0)
-						tiles[order[i]].updateSide(ccc); ///!!!!!!!! ccc
-				}
-			}
-			if (rotateCounter == 0)
-				for (int i = 0; i < n_tiles; i++)
-					tiles[order[i]].rotate = 0;
 			rotateCounter--;
 		}
-		*/
 		//time logic
 		float currentFrame = glfwGetTime();
 		deltaTime = currentFrame - lastFrame;
 		lastFrame = currentFrame;
-		//cerr << "time= " << time << "\tdelta= " << deltaTime << "\tc= " << counter << endl;
+		//input
 		input(window, camera.Position, camera.Orientation, camera.Up);
 		//logika koloru t³a
 		time += deltaTime;
@@ -896,14 +524,10 @@ int main() {
 		// Wybierz, który shader bêdzie u¿ywany
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.5f, 20.0f, shaderProgram, "camMatrix");
-
-		//VAO_z.Bind();
 		// Narysuj trójk¹ty
 		blockVAO.Bind();
 		for (int i = 0; i < n_blocks; i++)
 		{
-			//tiles[i].vao->Bind();
-			//model
 			glm::mat4 model = glm::mat4(1.0f);
 			//transformacje konkretnego modelu - odpowiednia rotacja
 			model = glm::translate(model, blocks[i].position);
@@ -930,13 +554,6 @@ int main() {
 				glUniform3f(colorLoc, blocks[i].color[j].x, blocks[i].color[j].y, blocks[i].color[j].z);
 				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
 			}
-
-
-
-			//EBO2.Bind();
-			//glUniform3f(colorLoc, 0.1, 0.1, 0.1);
-			//glDrawElements(GL_LINES, 4, GL_UNSIGNED_INT, 0);
-			//tiles[i].vao->Unbind();
 		}
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
@@ -946,20 +563,8 @@ int main() {
 	glfwDestroyWindow(window); //Delete window before ending the program
 	glfwTerminate(); //Terminate GLFW before ending the program
 
-	/*
-	VAO_x.Delete();
-	VAO_y.Delete();
-	VAO_z.Delete();
-	VBO_x.Delete();
-	VBO_y.Delete();
-	VBO_z.Delete();
-	EBO1.Delete();
-	EBO2.Delete();
-	*/
 	blockVAO.Delete();
 	blockVBO.Delete();
 	blockEBO.Delete();
-	//delete[] vertices;
-	//delete[] indices;
 	return 0;
 }

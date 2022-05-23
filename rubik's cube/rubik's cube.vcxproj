@@ -148,7 +148,6 @@
     <ClCompile Include="glad.c" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="source.cpp" />
-    <ClCompile Include="Tile.cpp" />
     <ClCompile Include="VAO.cpp" />
     <ClCompile Include="VBO.cpp" />
   </ItemGroup>
@@ -164,7 +163,6 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="EBO.h" />
     <ClInclude Include="ShaderClass.h" />
-    <ClInclude Include="Tile.h" />
     <ClInclude Include="VAO.h" />
     <ClInclude Include="VBO.h" />
   </ItemGroup>

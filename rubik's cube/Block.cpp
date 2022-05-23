@@ -21,7 +21,6 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			posOffset = atan(n);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
-		//float tx = position.x, ty = position.y;
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
 				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 1;
@@ -32,37 +31,12 @@ void Block::rotate(int n, int axis, float time, int direction) {
 				position.y = offset * cos(time + posOffset + blockOffset) + 1;
 			}
 		}
-		//if (side == 2 || side == 3)
-		//rotation.x = M_PI / 2. * rot[1];
 		if (direction)
 			rotation.z = 3*M_PI / 2. + time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
 		else
 			rotation.z = 3*M_PI / 2. - time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
 		return;
 	}
-	/*
-	if (toSide == 0) { //red
-		if (n == 0) { //cross
-			offset = 1.0;
-			posOffset = 0.;
-			blockOffset = M_PI / 2. * blockOffsetFix;
-		}
-		else { //not cross
-			offset = sqrt(1. + abs(n) * abs(n));
-			posOffset = atan(n);
-			blockOffset = M_PI / 2. * blockOffsetFix;
-		}
-		//float tx = position.x, ty = position.y;
-		if (blockOffsetFix != -1) { //center fix
-			position.x = offset * sin(time + posOffset + blockOffset) + 1;
-			position.y = offset * cos(time + posOffset + blockOffset) + 1;
-		}
-		//if (side == 2 || side == 3)
-		//rotation.x = M_PI / 2. * rot[1];
-		rotation.z = M_PI / 2. - time + (rot[2] - prevRot[2] - 1) * M_PI / 2.;
-		return;
-	}
-	*/
 	if (axis == 0) { //yellow
 		if (n == 0) { //cross
 			offset = 1.0;
@@ -112,7 +86,6 @@ void Block::rotate(int n, int axis, float time, int direction) {
 				position.z = offset * cos(time + posOffset + blockOffset) + 1;
 			}
 		}
-		//if (side == 2 || side == 3)
 		if (direction)
 			rotation.y = M_PI / 2. - time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
 		else
@@ -122,12 +95,6 @@ void Block::rotate(int n, int axis, float time, int direction) {
 }
 
 void Block::update(int direction) {
-	/*
-	int x_rot = round(rotation.x / M_PI * 2.);
-	int y_rot = round(rotation.y / M_PI * 2.);
-	int z_rot = round(rotation.z / M_PI * 2.);
-	std::cerr << x_rot << "," << y_rot << "," << z_rot << "\n";
-	*/
 	glm::vec3 t;
 	for (int i = 0; i < abs( rot[0] - prevRot[0]); i++) {
 		if (direction) {
