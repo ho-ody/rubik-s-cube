@@ -186,35 +186,79 @@ void rotate(int side) {
 	*/
 }
 
-int* toRotate;
-void rotateMatrix()
-{
-	neworder[toRotate[0]];
-	int N = 3;
-	// Consider all squares one by one
-	for (int x = 0; x < 3 / 2; x++) {
-		// Consider elements in group
-		// of 4 in current square
-		for (int y = x; y < N - x - 1; y++) {
-			// Store current cell in
-			// temp variable
-			int temp = neworder[toRotate[x + N*y]];
-
-			// Move values from right to top
-			neworder[toRotate[x + 3 * y]] = neworder[toRotate[y + (N-1-x)*N]];
-
-			// Move values from bottom to right
-			neworder[toRotate[y + (N - 1 - x) * N]] = neworder[toRotate[(N - 1 - x) + (N - 1 - y)*N]];
-
-			// Move values from left to bottom
-			neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]] = neworder[toRotate[(N - 1 - y) + x * N]];
-
-			// Assign temp to left
-			neworder[toRotate[(N - 1 - y) + x * N]] = temp;
-		}
-	}
+void pr() {
+	for (int i = 0; i < 27; i++)
+		cerr << neworder[i] << (i % 3 == 2 ? "\n" : "\t") << (i%9==8 ? "\n" : "");
 }
 
+int* toRotate;
+void rotateMatrix(bool clockwise)
+{
+	for (int i = 0; i < 9; i++)
+		cerr << toRotate[i] << (i % 3 == 2 ? "\n" : "\t");
+	int N = 3;
+
+	//for (int i = 0; i < N * N; i++)
+	//	cerr << neworder[i] << (i % 3 == N - 1 ? "\n" : "\t");
+
+	if (clockwise == 0) {
+		// Consider all squares one by one
+		for (int x = 0; x < N / 2; x++) {
+			// Consider elements in group
+			// of 4 in current square
+			for (int y = x; y < N - x - 1; y++) {
+				// Store current cell in
+				// temp variable
+				int temp = neworder[toRotate[x + N * y]];
+
+				// Move values from right to top
+				neworder[toRotate[x + N * y]] = neworder[toRotate[y + (N - 1 - x) * N]];
+
+				// Move values from bottom to right
+				neworder[toRotate[y + (N - 1 - x) * N]] = neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]];
+
+				// Move values from left to bottom
+				neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]] = neworder[toRotate[(N - 1 - y) + x * N]];
+
+				// Assign temp to left
+				neworder[toRotate[(N - 1 - y) + x * N]] = temp;
+			}
+		}
+	}
+	else {
+		for (int x = 0; x < N / 2; x++) {
+			for (int y = x; y < N - x - 1; y++) {
+
+				int temp = neworder[toRotate[x + N * y]];
+				neworder[toRotate[x + N * y]] = neworder[toRotate[(N - 1 - y) + x * N]];
+				neworder[toRotate[(N - 1 - y) + x * N]] = neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]];
+				neworder[toRotate[(N - 1 - x) + (N - 1 - y) * N]] = neworder[toRotate[y + (N - 1 - x) * N]];
+				neworder[toRotate[y + (N - 1 - x) * N]] = temp;
+			}
+		}
+	}
+
+
+	//cerr << "\n\t|\n\tV\n\n";
+	//for (int i = 0; i < N * N; i++)
+	//	cerr << neworder[i] << (i % 3 == N-1 ? "\n" : "\t");
+	//cerr << "\n\n\n\n";
+}
+/*
+// Traverse each cycle
+	for (int x = 0; x < N / 2; x++) {
+		for (int y = i; y < N - i - 1; y++) {
+
+			// Swap elements of each cycle
+			// in clockwise direction
+			int temp = a[x][y];
+			a[x][y] = a[N - 1 - y][x];
+			a[N - 1 - y][x] = a[N - 1 - x][N - 1 - y];
+			a[N - 1 - x][N - 1 - y] = a[y][N - 1 - x];
+			a[y][N - 1 - x] = temp;
+		}
+	}
+*/
 
 bool block = false;
 bool p_flipflop = 0;
@@ -251,9 +295,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			//rotate(ccc);
 			ccc = 0;
 			rotateCounter = ANIMATION_DURATION;
+			int tr[] = {0,1,2,3,4,5,6,7,8}; toRotate = tr;
 			for (int i = 0, j = 0; j < 9; j++) {
 				i = order[j];
 				GLOBALblocks[i].roll = true;
+				//toRotate[j] = i;
 				if (j % 9 == 4)
 					GLOBALblocks[i].blockOffsetFix = -1;
 				else if (j % 2 == 0) {
@@ -287,23 +333,26 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 					
 			}
 			//order
+			rotateMatrix(0);
+			/*
+			rotateMatrix(1);
 			int t = neworder[0];
 			neworder[0] = neworder[6];
 			neworder[6] = neworder[8];
 			neworder[8] = neworder[2];
 			neworder[2] = t;
-			
+
 			t = neworder[1];
 			neworder[1] = neworder[3];
 			neworder[3] = neworder[7];
 			neworder[7] = neworder[5];
 			neworder[5] = t;
-
 			//for (int i = 0; i < 27; i++)
 			//	cerr << order[i] << " ";
 			//cerr << endl;
 			//for (int i = 0; i < 27; i++)
 			//	cerr << neworder[i] << " ";
+			*/
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
@@ -321,8 +370,10 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			//rotate(ccc);
 			ccc = 2;
 			rotateCounter = ANIMATION_DURATION;
+			int tr[] = { 0,3,6,9,12,15,18,21,24 }; toRotate = tr;
 			for (int i = 0, j = 0; j < 9; j++) {
 				i = order[3*j];
+				//toRotate[j] = i;
 				//cerr << i << " -> ";
 				GLOBALblocks[i].roll = true;
 				if (j % 9 == 4)
@@ -363,6 +414,10 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
 			}
 			//order
+			rotateMatrix(1);
+			/*
+			pr();
+			rotateMatrix(0);
 			int t = neworder[0];
 			neworder[0] = neworder[6];
 			neworder[6] = neworder[24];
@@ -374,6 +429,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			neworder[3] = neworder[15];
 			neworder[15] = neworder[21];
 			neworder[21] = t;
+			cerr << "\n\nxxx\n\n";
+			pr();
+			*/
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
@@ -387,10 +445,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			//rotate(ccc);
 			ccc = 4;
 			rotateCounter = ANIMATION_DURATION;
+			int tr[] = { 0,1,2,9,10,11,18,19,20 }; toRotate = tr;
 			for (int i = 0, j = 0; j < 9; j++) {
 				i = order[j%3 + j/3 * 9];
-				toRotate[j] = i;
-				cerr << i << endl;
+				//toRotate[j] = i;
+				//cerr << i << endl;
 				GLOBALblocks[i].roll = true;
 				if (j % 9 == 4)
 					GLOBALblocks[i].blockOffsetFix = -1;
@@ -424,9 +483,10 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				}
 
 			}
-			rotateMatrix();
 			//order
-			/*
+			rotateMatrix(0);
+			/*pr();
+			rotateMatrix(1);
 			int t = neworder[0];
 			neworder[0] = neworder[18];
 			neworder[18] = neworder[20];
@@ -438,6 +498,8 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			neworder[9] = neworder[19];
 			neworder[19] = neworder[11];
 			neworder[11] = t;
+			cerr << "\n\nxxx\n\n";
+			pr();
 			*/
 		}
 	}
@@ -737,6 +799,7 @@ int main() {
 			if (idFlex == 27)
 				idFlex = 0;
 		}
+		
 		counterFlex2--;
 		if (counterFlex2 == 0) {
 			counterFlex2 = 50;
