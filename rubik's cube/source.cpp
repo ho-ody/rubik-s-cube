@@ -52,6 +52,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 int ccc = 0;
 int rotateCounter = -1;
 int ANIMATION_DURATION = 70;
+int MOVEMENT_FREEZE_AFTER_MOVE = 15;
+
 
 int* order;
 int* neworder;
@@ -318,13 +320,8 @@ void pr() {
 
 
 
-
-bool block = false;
-bool p_flipflop = 0;
-bool i_flipflop = 0;
-bool u_flipflop = 0;
-int m_flipflop = 0;
-double xxx = 0.0, yyy = 0.0;
+// 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
+int move_cube = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)                                      // input
 {
 	Orientation = cameraFront;
@@ -332,234 +329,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)          // sprawdzanie czy wybrany klawisz jest wciœniêty (Esc)     GLFW_PRESS | GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka
 
-	const float cameraSpeed = 7.00f * deltaTime; // adjust accordingly
-	if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
-		Position += cameraSpeed * Orientation;
-	if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
-		Position -= cameraSpeed * Orientation;
-	if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
-		Position -= glm::normalize(glm::cross(Orientation, Up)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
-		Position += glm::normalize(glm::cross(Orientation, Up)) * cameraSpeed;
-	if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
-		Position += cameraSpeed * Up;
-	if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
-		Position -= cameraSpeed * Up;
-
-	/*
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) {
-		if (p_flipflop == 0 && rotateCounter > -1)
-			p_flipflop = 1;
-		//z rot
-		if (p_flipflop == 0) {
-			p_flipflop = 1;
-			//rotate(ccc);
-			ccc = 0;
-			rotateCounter = ANIMATION_DURATION;
-			int tr[] = {0,1,2,3,4,5,6,7,8}; toRotate = tr;
-			for (int i = 0, j = 0; j < 9; j++) {
-				i = order[j];
-				GLOBALblocks[i].roll = true;
-				//toRotate[j] = i;
-				if (j % 9 == 4)
-					GLOBALblocks[i].blockOffsetFix = -1;
-				else if (j % 2 == 0) {
-					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 2;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.y > 1)
-						GLOBALblocks[i].blockOffsetFix = 0;
-					else
-						GLOBALblocks[i].blockOffsetFix = 3;
-				}
-				else {
-					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.x > 0.5 && GLOBALblocks[i].position.x < 1.5)
-						if (GLOBALblocks[i].position.y > 1)
-							GLOBALblocks[i].blockOffsetFix = 0;
-						else
-							GLOBALblocks[i].blockOffsetFix = 2;
-					else if (GLOBALblocks[i].position.x < 1)
-						GLOBALblocks[i].blockOffsetFix = 3;
-					else
-						GLOBALblocks[i].blockOffsetFix = 1;
-				}
-				//GLOBALblocks[i].rot[2]++;
-				//if (GLOBALblocks[i].rot[2] == 4) {
-				//	GLOBALblocks[i].rot[2] = 0;
-				//	GLOBALblocks[i].prevRot[2] = -1;
-				//}
-				GLOBALblocks[i].rot[2]--;
-				if (GLOBALblocks[i].rot[2] == -1) {
-					GLOBALblocks[i].rot[2] = 3;
-					GLOBALblocks[i].prevRot[2] = 4;
-				}
-			}
-			//order
-			orderUpdateRotateMatrix(1);
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
-		p_flipflop = 0;
-	}
-	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_PRESS) {
-
-	}
-	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) {
-		if (i_flipflop == 0 && rotateCounter > -1)
-			i_flipflop = 1;
-		//x rot
-		if (i_flipflop == 0) {
-			i_flipflop = 1;
-			//rotate(ccc);
-			ccc = 2;
-			rotateCounter = ANIMATION_DURATION;
-			int tr[] = { 0,3,6,9,12,15,18,21,24 }; toRotate = tr;
-			for (int i = 0, j = 0; j < 9; j++) {
-				i = order[3*j];
-				//toRotate[j] = i;
-				//cerr << i << " -> ";
-				GLOBALblocks[i].roll = true;
-				if (j % 9 == 4)
-					GLOBALblocks[i].blockOffsetFix = -1;
-				else if (j % 2 == 0) {
-					//cerr << "c:";
-					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.z < 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.z > 1 && GLOBALblocks[i].position.y < 1)
-						GLOBALblocks[i].blockOffsetFix = 0;
-					else if (GLOBALblocks[i].position.z > 1 && GLOBALblocks[i].position.y > 1)
-						GLOBALblocks[i].blockOffsetFix = 3;
-					else
-						GLOBALblocks[i].blockOffsetFix = 2;
-				}
-				else {
-					//cerr << " d:";
-					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.z > 0.5 && GLOBALblocks[i].position.z < 1.5)
-						if (GLOBALblocks[i].position.y > 1)
-							GLOBALblocks[i].blockOffsetFix = 3;
-						else
-							GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.z < 1)
-						GLOBALblocks[i].blockOffsetFix = 2;
-					else
-						GLOBALblocks[i].blockOffsetFix = 0;
-				}
-				GLOBALblocks[i].rot[0]--;
-				if (GLOBALblocks[i].rot[0] == -1) {
-					GLOBALblocks[i].rot[0] = 3;
-					GLOBALblocks[i].prevRot[0] = 4;
-				}
-				//GLOBALblocks[i].rot[0]++;
-				//if (GLOBALblocks[i].rot[0] == 4) {
-				//	GLOBALblocks[i].rot[0] = 0;
-				//	GLOBALblocks[i].prevRot[0] = -1;
-				//}
-				//cerr << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << "\t" << GLOBALblocks[i].position.z << "  ->  " << GLOBALblocks[i].blockOffsetFix << endl;
-				//cerr << GLOBALblocks[i].position << endl;
-				//cerr << GLOBALblocks[i].blockOffsetFix << endl;
-			}
-			//order
-			orderUpdateRotateMatrix(1);
-			/*
-			pr();
-			rotateMatrix(0);
-			int t = neworder[0];
-			neworder[0] = neworder[6];
-			neworder[6] = neworder[24];
-			neworder[24] = neworder[18];
-			neworder[18] = t;
-
-			t = neworder[9];
-			neworder[9] = neworder[3];
-			neworder[3] = neworder[15];
-			neworder[15] = neworder[21];
-			neworder[21] = t;
-			cerr << "\n\nxxx\n\n";
-			pr();
-			
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
-		i_flipflop = 0;
-	}
-	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-		if (u_flipflop == 0 && rotateCounter > -1)
-			u_flipflop = 1;
-		if (u_flipflop == 0) {
-			u_flipflop = 1;
-			//rotate(ccc);
-			ccc = 4;
-			rotateCounter = ANIMATION_DURATION;
-			int tr[] = { 0,1,2,9,10,11,18,19,20 }; toRotate = tr;
-			for (int i = 0, j = 0; j < 9; j++) {
-				i = order[j%3 + j/3 * 9];
-				//toRotate[j] = i;
-				//cerr << i << endl;
-				GLOBALblocks[i].roll = true;
-				if (j % 9 == 4)
-					GLOBALblocks[i].blockOffsetFix = -1;
-				else if (j % 2 == 0) {
-					//cerr << "c:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.x < 1 && GLOBALblocks[i].position.z < 1)
-						GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.z < 1)
-						GLOBALblocks[i].blockOffsetFix = 0;
-					else if (GLOBALblocks[i].position.x > 1 && GLOBALblocks[i].position.z > 1)
-						GLOBALblocks[i].blockOffsetFix = 3;
-					else
-						GLOBALblocks[i].blockOffsetFix = 2;
-				}
-				else {
-					//cerr << "d:" << GLOBALblocks[i].position.x << "\t" << GLOBALblocks[i].position.y << endl;
-					if (GLOBALblocks[i].position.x > 0.5 && GLOBALblocks[i].position.x < 1.5)
-						if (GLOBALblocks[i].position.z > 1)
-							GLOBALblocks[i].blockOffsetFix = 3;
-						else
-							GLOBALblocks[i].blockOffsetFix = 1;
-					else if (GLOBALblocks[i].position.x < 1)
-						GLOBALblocks[i].blockOffsetFix = 2;
-					else
-						GLOBALblocks[i].blockOffsetFix = 0;
-				}
-				GLOBALblocks[i].rot[1]++;
-				if (GLOBALblocks[i].rot[1] == 4) {
-					GLOBALblocks[i].rot[1] = 0;
-					GLOBALblocks[i].prevRot[1] = -1;
-				}
-
-			}
-			//order
-			orderUpdateRotateMatrix(0);
-			/*pr();
-			rotateMatrix(1);
-			int t = neworder[0];
-			neworder[0] = neworder[18];
-			neworder[18] = neworder[20];
-			neworder[20] = neworder[2];
-			neworder[2] = t;
-
-			t = neworder[1];
-			neworder[1] = neworder[9];
-			neworder[9] = neworder[19];
-			neworder[19] = neworder[11];
-			neworder[11] = t;
-			cerr << "\n\nxxx\n\n";
-			pr();
-			
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_U) == GLFW_RELEASE) {
-		u_flipflop = 0;
-	}
-	*/
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) { //move
-		if (m_flipflop == 0) {
-			m_flipflop = 1;
+		if (move_cube == 0) {
+			move_cube = 1;
 			/*
 			axis = 0;
 			//ccc = 2;
@@ -587,10 +359,10 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
-		if (m_flipflop==2)
-			m_flipflop = 0;
+		if (move_cube==2)
+			move_cube = 0;
 	}
-	if (m_flipflop == 1 && rotateCounter < 0) {
+	if (move_cube == 1 && rotateCounter < 0) {
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			direction = 1;
 		else
@@ -599,33 +371,54 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		if (glfwGetKey(window, GLFW_KEY_F) == GLFW_PRESS) {
 			axis = 2;
 			rotate(direction, indexesOfRotationZ,0);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 0;
 			rotate(direction, indexesOfRotationX,0);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 1;
 			rotate(direction, indexesOfRotationY,0);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 8;
 			rotate(direction, indexesOfRotationZ,2);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 			axis = 6;
 			rotate(direction, indexesOfRotationX,2);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
 			axis = 7;
 			rotate(direction, indexesOfRotationY,2);
-			m_flipflop = 2;
+			move_cube = 2;
 		}
+		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+			move_cube = 2;
+		}
+	}
+	else if (ANIMATION_DURATION - MOVEMENT_FREEZE_AFTER_MOVE > rotateCounter) {
+		const float cameraSpeed = 7.00f * deltaTime; // adjust accordingly
+		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
+			Position += cameraSpeed * Orientation;
+		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
+			Position -= cameraSpeed * Orientation;
+		if (glfwGetKey(window, GLFW_KEY_A) == GLFW_PRESS)
+			Position -= glm::normalize(glm::cross(Orientation, Up)) * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS)
+			Position += glm::normalize(glm::cross(Orientation, Up)) * cameraSpeed;
+		if (glfwGetKey(window, GLFW_KEY_SPACE) == GLFW_PRESS)
+			Position += cameraSpeed * Up;
+		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			Position -= cameraSpeed * Up;
 	}
 
 }
