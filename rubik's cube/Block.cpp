@@ -22,6 +22,12 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			posOffset = atan(offset_ / radius_);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			//offset = posOffset = blockOffset = 0.;
+			if (offsetSideFix == true) {
+				posOffset *= -1;
+				blockOffset += M_PI / 2.;
+				//for (int l = 0; l < 6; l++)
+				//	color[l] = glm::vec3(0.7, 0, 0.7);
+			}
 
 		}
 		if (blockOffsetFix != -1) { //center fix

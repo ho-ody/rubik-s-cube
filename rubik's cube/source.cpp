@@ -22,8 +22,8 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 5;
-float v = 1.;
+int N = 7;
+float v = 0.5;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
@@ -129,19 +129,79 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			a = GLOBALblocks[i].position.x;
 			b = GLOBALblocks[i].position.y;
 		}
-		
+		/*
 		float c = (N - 1) * v;
 		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
 			GLOBALblocks[i].blockOffsetFix = -1;
-		else if (b < a - v && b > -a + (N-2)*2*v)
+		if (b < a - v && b > c)
 			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > a +v && b < -a + (N ) * 2 * v)
+		else if (a < c && b > -a + (N - 1) * 2 * v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > a && b < c)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (a > c && b < -a + (N - 1) * 2 * v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		*/
+		float c = (N - 1) * v;
+		if (b < c - v && a < c + v)
+			GLOBALblocks[i].blockOffsetFix = 1 + direction;
+		else if (b < c + v && a > c + v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > c + v && a > c - v)
+			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+		else if (b > c - v && a < c - v)
+			GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		/*
+		float c = (N - 1) * v;
+		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
+			GLOBALblocks[i].blockOffsetFix = -1;
+		else if (b < a - v && b > -a + (N - 2) * 2 * v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > a + v && b < -a + (N) * 2 * v)
 			GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		else if (b < c)
 			GLOBALblocks[i].blockOffsetFix = 1 + direction;
 		else
 			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+		*/
 
+			/*
+			else if (b < c)
+				GLOBALblocks[i].blockOffsetFix = 1 + direction;
+			else
+				GLOBALblocks[i].blockOffsetFix = 3 + direction;
+
+		/*
+		float c = (N - 1) * v;
+		//if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
+		//	GLOBALblocks[i].blockOffsetFix = -1;
+		
+		if (b < a - v && b > c)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (a < c && b > -a + (N - 1) * 2 * v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > a && b < c)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (a > c && b < -a + (N - 1) * 2 * v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+			*/
+		/*
+		else if (b < c)
+			GLOBALblocks[i].blockOffsetFix = 1 + direction;
+		else
+			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+		*/
+		/*
+		float c = (N - 1) * v;
+		if (b < c - v && a < c + v)
+			GLOBALblocks[i].blockOffsetFix = 1 + direction;
+		else if (b < c + v && a > c + v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > c + v && a > c - v)
+			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+		else if (b > c - v && a < c - v)
+			GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		*/
 		if (direction) {
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
@@ -158,8 +218,9 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 		}
 	}
 	orderUpdateRotateMatrix(direction);
-
 	
+	
+	/*
 	for (int i = 0; i < N*N*N; i++) {
 		for (int l = 0; l < 6; l++)
 			GLOBALblocks[i].color[l] = glm::vec3(0, 0, 0);
@@ -177,6 +238,8 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			for (int l = 0; l < 6; l++)
 				GLOBALblocks[i].color[l] = glm::vec3(.8, .8, .8);
 	}
+	
+	*/
 }
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
@@ -404,7 +467,8 @@ int main() {
 	// Utwórz obiekt Vertex Shader
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
-	v = 0.95;
+	float dv = v / 10.;
+	v -= dv;
 	GLfloat vertices[] = {
 		-v, -v, -v,
 		+v, -v, -v,
@@ -418,7 +482,7 @@ int main() {
 		+v, +v, +v,
 		-v, +v, +v
 	};
-	v = 1.0;
+	v += dv;
 	int n_vertices = 4 * 2 * 3;
 	GLuint indices[] = {
 		0, 1, 3, 3, 1, 2,
@@ -463,8 +527,11 @@ int main() {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
 				blocks[i].offset_ = (N - 1) / 2 - j;
 		}
+		
+
 		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
+		//blocks[i].offsetSideFix = false;
 		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -485,6 +552,28 @@ int main() {
 			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
 			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
+		float c = (N - 1) * v;
+		//if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
+		//	GLOBALblocks[i].blockOffsetFix = -1;
+
+		float a = blocks[i].position.x;
+		float b = blocks[i].position.y;
+		if ((b < a - v && b > c) || (a < c && b > -a + (N - 1) * 2 * v) || (b > a && b < c) || (a > c && b < -a + (N - 1) * 2 * v)) {
+			blocks[i].offsetSideFix = true;
+			//blocks[i].offset_ *= -1;
+			//if (i < 25)
+			//for (int l = 0; l < 6; l++)
+			//	blocks[i].color[l] = glm::vec3(0, 0, 0);
+		}
+		/*
+		else if (a < c && b > -a + (N - 1) * 2 * v)
+			blocks[i].offset_ *= -1;
+		else if (b > a && b < c)
+			blocks[i].offset_ *= -1;
+		else if (a > c && b < -a + (N - 1) * 2 * v)
+			blocks[i].offset_ *= -1;
+			*/
+
 		/*
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -521,7 +610,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
-		if (rotateCounter >= 0 && time == -2) {
+		if (rotateCounter >= 0 && time > 2) {
 			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 
 			for (int j = 0; j < n_blocks; j++) {
@@ -559,7 +648,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Wybierz, który shader bêdzie u¿ywany
 		shaderProgram.Activate();
-		camera.Matrix(45.0f, 0.5f, 40.0f, shaderProgram, "camMatrix");
+		camera.Matrix(45.0f, 0.5f, 50.0f, shaderProgram, "camMatrix");
 		// Narysuj trójk¹ty
 		blockVAO.Bind();
 		for (int i = 0; i < n_blocks; i++)

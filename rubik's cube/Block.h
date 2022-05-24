@@ -19,6 +19,7 @@ public:
 
 	float offset_ = 0.;
 	float radius_ = 0.;
+	bool offsetSideFix = false;
 
 	Block();
 	void rotate(int n, int axis, float time, int direction);
