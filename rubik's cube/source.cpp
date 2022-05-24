@@ -22,6 +22,9 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
+int N = 3;
+float v = 1.;
+
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
 	for (int i = 0; i <= size; i++) {
@@ -32,7 +35,6 @@ void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 		}
 	}
 }
-
 
 bool firstMouse = true;
 float yaw = -90.0f;	// yaw is initialized to -90.0 degrees since a yaw of 0.0 results in a direction vector pointing to the right so we initially rotate a bit to the left.
@@ -51,7 +53,6 @@ int ccc = 0;
 int rotateCounter = -1;
 int ANIMATION_DURATION = 40;
 int MOVEMENT_FREEZE_AFTER_MOVE = 15;
-
 
 int* order;
 int* neworder;
@@ -108,7 +109,6 @@ int indexesOfRotationZ(int j, int offset) {
 	return order[j + offset*9];
 }
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
-	int N = 3;
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
 	toRotate = rotateIndex[axis];
@@ -133,22 +133,22 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 		if (j % 9 == 4)
 			GLOBALblocks[i].blockOffsetFix = -1;
 		else if (j % 2 == 0) {
-			if (a < 1 && b < 1)
+			if (a < 2*v && b < 2*v)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a > 1 && b < 1)
+			else if (a > 2*v && b < 2*v)
 				GLOBALblocks[i].blockOffsetFix = 0 + direction;
-			else if (a > 1 && b > 1)
+			else if (a > 2*v && b > 2*v)
 				GLOBALblocks[i].blockOffsetFix = 3 + direction;
 			else
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		}
 		else {
-			if (a > 0.5 && a < 1.5)
-				if (b > 1)
+			if (a > 0.5*2*v && a < 1.5*2*v)
+				if (b > 2*v)
 					GLOBALblocks[i].blockOffsetFix = 3 + direction;
 				else
 					GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a < 1)
+			else if (a < 2*v)
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 			else
 				GLOBALblocks[i].blockOffsetFix = 0 + direction;
@@ -396,7 +396,7 @@ int main() {
 	// Utwórz obiekt Vertex Shader
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
-	float v = 0.45;
+	v = 0.95;
 	GLfloat vertices[] = {
 		-v, -v, -v,
 		+v, -v, -v,
@@ -410,6 +410,7 @@ int main() {
 		+v, +v, +v,
 		-v, +v, +v
 	};
+	v = 1.0;
 	int n_vertices = 4 * 2 * 3;
 	GLuint indices[] = {
 		0, 1, 3, 3, 1, 2,
@@ -428,43 +429,41 @@ int main() {
 	blockVAO.LinkVBO(blockVBO, 0, 1);
 	blockVAO.Unbind();
 	
-	int order_[3*3*3];
-	int order__[3*3*3];
-	toRotate = new int[3 * 3];
-	order = order_;
-	neworder = order__;
-	for (int i = 0; i < 3*3*3; i++) {
+	order = new int[pow(N, 3)];
+	neworder = new int[pow(N, 3)];
+	toRotate = new int[pow(N, 2)];
+
+	for (int i = 0; i < pow(N, 3); i++) {
 		order[i] = i;
-	}
-	for (int i = 0; i < 3 * 3 * 3; i++) {
 		neworder[i] = i;
 	}
 	
-
-	Block blocks[3 * 3 * 3];
+	Block* blocks;
+	blocks = new Block[pow(N, 3)];
 	GLOBALblocks = blocks;
-	int n_blocks = 3 * 3 * 3;
-	for (int i = 0; i < 3 * 3 * 3; i++) {
-		blocks[i].position = glm::vec3(i % 3, (i / 3)%3, i / 9);
-		if (i < 1*9) { //first side - red
+	int n_blocks = pow(N, 3);
+
+	for (int i = 0; i < n_blocks; i++) {
+		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
+		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
-			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i > 0 * 9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i < 0 * 9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) >= N*(N-1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
-		else if (i < 2 * 9) {
-			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i > 1*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i < 1*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		else if (i < N * N* (N-1)) {
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
-		else if (i < 3 * 9) {
+		else {
 			blocks[i].color[2] = glm::vec3(0.9, 0.5, 0.1); //orange
-			if (i % 3 == 2) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % 3 == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i > 2*9 + 5) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i < 2*9 + 3) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
 		/*
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
@@ -488,7 +487,7 @@ int main() {
 		if (rotateCounter >= 0) {
 			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 
-			for (int j = 0; j < 3 * 3 * 3; j++) {
+			for (int j = 0; j < n_blocks; j++) {
 				if (blocks[j].roll)
 					blocks[j].rotate((j + 1) % 2, axis, time, direction);
 			}
@@ -501,7 +500,7 @@ int main() {
 					}
 				}				
 				//order rotation
-				for (int j = 0; j < 3 * 3 * 3; j++)
+				for (int j = 0; j < n_blocks; j++)
 					order[j] = neworder[j];
 			}
 			rotateCounter--;
@@ -523,7 +522,7 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 		// Wybierz, który shader bêdzie u¿ywany
 		shaderProgram.Activate();
-		camera.Matrix(45.0f, 0.5f, 20.0f, shaderProgram, "camMatrix");
+		camera.Matrix(45.0f, 0.5f, 40.0f, shaderProgram, "camMatrix");
 		// Narysuj trójk¹ty
 		blockVAO.Bind();
 		for (int i = 0; i < n_blocks; i++)
@@ -552,6 +551,8 @@ int main() {
 			for (int j = 0; j < 6; j++) {
 				//cerr << (j + 1) * n_indices / 6 << endl;
 				glUniform3f(colorLoc, blocks[i].color[j].x, blocks[i].color[j].y, blocks[i].color[j].z);
+				//if (blocks[i].color[j].x > 0.05 && blocks[i].color[j].x < 0.15 && blocks[i].color[j].y > 0.05 && blocks[i].color[j].y < 0.15 && blocks[i].color[j].z > 0.05 && blocks[i].color[j].z < 0.15);
+				//else
 				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
 			}
 		}
@@ -566,5 +567,6 @@ int main() {
 	blockVAO.Delete();
 	blockVBO.Delete();
 	blockEBO.Delete();
+	delete[]order, neworder, toRotate, blocks;
 	return 0;
 }
