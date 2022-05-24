@@ -129,41 +129,19 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			a = GLOBALblocks[i].position.x;
 			b = GLOBALblocks[i].position.y;
 		}
-		if (N%2 == 1 && j % (N*N) == (N*N-1)/2)
+		
+		float c = (N - 1) * v;
+		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
 			GLOBALblocks[i].blockOffsetFix = -1;
-
-		float c = (N-1) * v;
-		if (b < c - v && a < c + v)
-			GLOBALblocks[i].blockOffsetFix = 1 + direction;
-		else if (b < c + v && a > c + v)
+		else if (b < a - v && b > -a + (N-2)*2*v)
 			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > c + v && a > c - v)
-			GLOBALblocks[i].blockOffsetFix = 3 + direction;
-		else if (b > c - v && a < c - v)
+		else if (b > a +v && b < -a + (N ) * 2 * v)
 			GLOBALblocks[i].blockOffsetFix = 2 + direction;
-		/*
-		else if (j % 2 == 0) {
-			if (a < (N - 1) * v && b < (N - 1) * v)
-				GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a > (N - 1) * v && b < (N - 1) * v)
-				GLOBALblocks[i].blockOffsetFix = 0 + direction;
-			else if (a > (N - 1) * v && b > (N - 1) * v)
-				GLOBALblocks[i].blockOffsetFix = 3 + direction;
-			else
-				GLOBALblocks[i].blockOffsetFix = 2 + direction;
-		}
-		else {
-			if (a > 0.5* (N - 1) * v && a < 1.5* (N - 1) * v)
-				if (b > (N - 1) * v)
-					GLOBALblocks[i].blockOffsetFix = 3 + direction;
-				else
-					GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a < (N - 1) * v)
-				GLOBALblocks[i].blockOffsetFix = 2 + direction;
-			else
-				GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		}
-		*/
+		else if (b < c)
+			GLOBALblocks[i].blockOffsetFix = 1 + direction;
+		else
+			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+
 		if (direction) {
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
@@ -199,9 +177,6 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			for (int l = 0; l < 6; l++)
 				GLOBALblocks[i].color[l] = glm::vec3(.8, .8, .8);
 	}
-	
-
-
 }
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;

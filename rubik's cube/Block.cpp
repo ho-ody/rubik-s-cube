@@ -18,10 +18,10 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		}
 		else { //not cross
 			//offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
-			offset = sqrt(pow(offset_, 2) + pow(radius_, 2));
+			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2*v;
 			posOffset = atan(offset_ / radius_);
 			blockOffset = M_PI / 2. * blockOffsetFix;
-			offset = posOffset = blockOffset = 0.;
+			//offset = posOffset = blockOffset = 0.;
 
 		}
 		if (blockOffsetFix != -1) { //center fix
