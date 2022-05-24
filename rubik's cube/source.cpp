@@ -22,7 +22,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 3;
+int N = 5;
 float v = 1.;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -100,13 +100,13 @@ int rotateIndex[9][9] = {
 };
 
 int indexesOfRotationX(int j, int offset) {
-	return order[3 * j + offset];
+	return order[N * j + offset];
 }
 int indexesOfRotationY(int j, int offset) {
-	return order[j % 3 + j / 3 * 9 + offset*3];
+	return order[j % N + j / N * N * N + offset*N];
 }
 int indexesOfRotationZ(int j, int offset) {
-	return order[j + offset*9];
+	return order[j + offset*N*N];
 }
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	float a, b;
@@ -129,26 +129,25 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			a = GLOBALblocks[i].position.x;
 			b = GLOBALblocks[i].position.y;
 		}
-
-		if (j % 9 == 4)
+		if (N%2 == 1 && j % (N*N) == (N*N-1)/2)
 			GLOBALblocks[i].blockOffsetFix = -1;
 		else if (j % 2 == 0) {
-			if (a < 2*v && b < 2*v)
+			if (a < (N - 1) * v && b < (N - 1) * v)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a > 2*v && b < 2*v)
+			else if (a > (N - 1) * v && b < (N - 1) * v)
 				GLOBALblocks[i].blockOffsetFix = 0 + direction;
-			else if (a > 2*v && b > 2*v)
+			else if (a > (N - 1) * v && b > (N - 1) * v)
 				GLOBALblocks[i].blockOffsetFix = 3 + direction;
 			else
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		}
 		else {
-			if (a > 0.5*2*v && a < 1.5*2*v)
-				if (b > 2*v)
+			if (a > 0.5* (N - 1) * v && a < 1.5* (N - 1) * v)
+				if (b > (N - 1) * v)
 					GLOBALblocks[i].blockOffsetFix = 3 + direction;
 				else
 					GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else if (a < 2*v)
+			else if (a < (N - 1) * v)
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 			else
 				GLOBALblocks[i].blockOffsetFix = 0 + direction;
@@ -442,8 +441,22 @@ int main() {
 	blocks = new Block[pow(N, 3)];
 	GLOBALblocks = blocks;
 	int n_blocks = pow(N, 3);
-
 	for (int i = 0; i < n_blocks; i++) {
+		int k = i % (N * N);
+		blocks[i].radius = (N - 1) / 2;
+		for (int j = 1; j < (N + 1) / 2; j++) {
+			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
+				blocks[i].radius = (N - 1) / 2 - j;
+		}
+		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
+
+		blocks[i].offset = (N - 1) / 2;
+		for (int j = 1; j < (N + 1) / 2; j++) {
+			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
+				blocks[i].offset = (N - 1) / 2 - j;
+		}
+		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
+
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red

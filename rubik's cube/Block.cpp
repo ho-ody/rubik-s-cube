@@ -12,23 +12,23 @@ void Block::rotate(int n, int axis, float time, int direction) {
 	float offset, posOffset, blockOffset;
 	if (axis == 2) { //red
 		if (n == 0) { //cross
-			offset = 2*v;
+			offset = (N - 1) * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow(2 * v, 2) + pow(abs(n)*2*v,2));
+			offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
 			posOffset = atan(n);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 2*v;
-				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 2*v;	
+				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
 			}
 			else {
-				position.x = offset * sin(time + posOffset + blockOffset) + 2*v;
-				position.y = offset * cos(time + posOffset + blockOffset) + 2*v;
+				position.x = offset * sin(time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(time + posOffset + blockOffset) + (N - 1) * v;
 			}
 		}
 		if (direction)
@@ -39,23 +39,23 @@ void Block::rotate(int n, int axis, float time, int direction) {
 	}
 	if (axis == 0) { //yellow
 		if (n == 0) { //cross
-			offset = 2*v;
+			offset = (N - 1) * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow(2 * v, 2) + pow(abs(n) * 2 * v, 2));
+			offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
 			posOffset = atan(n);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.z = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 2*v;
-				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 2*v;
+				position.z = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
 			}
 			else {
-				position.z = offset * sin(time + posOffset + blockOffset) + 2*v;
-				position.y = offset * cos(time + posOffset + blockOffset) + 2*v;
+				position.z = offset * sin(time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(time + posOffset + blockOffset) + (N - 1) * v;
 			}	
 		}
 		if (direction)
@@ -66,24 +66,24 @@ void Block::rotate(int n, int axis, float time, int direction) {
 	}
 	if (axis == 1) { //green
 		if (n == 0) { //cross
-			offset = 2*v;
+			offset = (N - 1) * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow(2 * v, 2) + pow(abs(n) * 2 * v, 2));
+			offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
 			posOffset = atan(n);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		//float tx = position.x, ty = position.y;
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
-				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + 2*v;
-				position.z = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + 2*v;
+				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+				position.z = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
 			}
 			else {
-				position.x = offset * sin(time + posOffset + blockOffset) + 2*v;
-				position.z = offset * cos(time + posOffset + blockOffset) + 2*v;
+				position.x = offset * sin(time + posOffset + blockOffset) + (N - 1) * v;
+				position.z = offset * cos(time + posOffset + blockOffset) + (N - 1) * v;
 			}
 		}
 		if (direction)
