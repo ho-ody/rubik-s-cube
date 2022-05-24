@@ -131,6 +131,17 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 		}
 		if (N%2 == 1 && j % (N*N) == (N*N-1)/2)
 			GLOBALblocks[i].blockOffsetFix = -1;
+
+		float c = (N-1) * v;
+		if (b < c - v && a < c + v)
+			GLOBALblocks[i].blockOffsetFix = 1 + direction;
+		else if (b < c + v && a > c + v)
+			GLOBALblocks[i].blockOffsetFix = 0 + direction;
+		else if (b > c + v && a > c - v)
+			GLOBALblocks[i].blockOffsetFix = 3 + direction;
+		else if (b > c - v && a < c - v)
+			GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		/*
 		else if (j % 2 == 0) {
 			if (a < (N - 1) * v && b < (N - 1) * v)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
@@ -152,6 +163,7 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			else
 				GLOBALblocks[i].blockOffsetFix = 0 + direction;
 		}
+		*/
 		if (direction) {
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
@@ -168,6 +180,28 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 		}
 	}
 	orderUpdateRotateMatrix(direction);
+
+	
+	for (int i = 0; i < N*N*N; i++) {
+		for (int l = 0; l < 6; l++)
+			GLOBALblocks[i].color[l] = glm::vec3(0, 0, 0);
+
+		if (GLOBALblocks[i].blockOffsetFix == 0)
+			for (int l = 0; l < 6; l++)
+				GLOBALblocks[i].color[l] = glm::vec3(.2, .2, .2);
+		if (GLOBALblocks[i].blockOffsetFix == 1)
+			for (int l = 0; l < 6; l++)
+				GLOBALblocks[i].color[l] = glm::vec3(.4,.4,.4);
+		if (GLOBALblocks[i].blockOffsetFix == 2)
+			for (int l = 0; l < 6; l++)
+				GLOBALblocks[i].color[l] = glm::vec3(.6, .6, .6);
+		if (GLOBALblocks[i].blockOffsetFix == 3)
+			for (int l = 0; l < 6; l++)
+				GLOBALblocks[i].color[l] = glm::vec3(.8, .8, .8);
+	}
+	
+
+
 }
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
@@ -443,20 +477,18 @@ int main() {
 	int n_blocks = pow(N, 3);
 	for (int i = 0; i < n_blocks; i++) {
 		int k = i % (N * N);
-		blocks[i].radius = (N - 1) / 2;
+		blocks[i].radius_ = (N - 1) / 2;
 		for (int j = 1; j < (N + 1) / 2; j++) {
 			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
-				blocks[i].radius = (N - 1) / 2 - j;
+				blocks[i].radius_ = (N - 1) / 2 - j;
 		}
 		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
-
-		blocks[i].offset = (N - 1) / 2;
+		blocks[i].offset_ = (N - 1) / 2;
 		for (int j = 1; j < (N + 1) / 2; j++) {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
-				blocks[i].offset = (N - 1) / 2 - j;
+				blocks[i].offset_ = (N - 1) / 2 - j;
 		}
 		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
-
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
@@ -486,6 +518,23 @@ int main() {
 			blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
 			blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		*/
+		/*
+		for (int l = 0; l < 6; l++)
+			blocks[i].color[l] = glm::vec3(0, 0, 0);
+
+		if (blocks[i].offset_ == 1)
+			for (int l = 0; l < 6; l++)
+				blocks[i].color[l].y = .5;
+		if (blocks[i].offset_ == 2)
+			for (int l = 0; l < 6; l++)
+				blocks[i].color[l].y = 1.;
+		if (blocks[i].radius_ == 1)
+			for (int l = 0; l < 6; l++)
+				blocks[i].color[l].x = .5;
+		if (blocks[i].radius_ == 2)
+			for (int l = 0; l < 6; l++)
+				blocks[i].color[l].x = 1.;
+		*/
 	}
 
 	float backgroud_r, backgroud_g, backgroud_b;
@@ -497,7 +546,7 @@ int main() {
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
-		if (rotateCounter >= 0) {
+		if (rotateCounter >= 0 && time == -2) {
 			float time = rotateCounter * M_PI / 2. / ANIMATION_DURATION;
 
 			for (int j = 0; j < n_blocks; j++) {

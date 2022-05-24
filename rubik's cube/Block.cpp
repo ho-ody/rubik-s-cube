@@ -11,15 +11,18 @@ extern int N; extern float v; //skalowanie
 void Block::rotate(int n, int axis, float time, int direction) {
 	float offset, posOffset, blockOffset;
 	if (axis == 2) { //red
-		if (n == 0) { //cross
-			offset = (N - 1) * v;
+		if (offset_ == 0) { //cross
+			offset = radius_ * 2 * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
-			posOffset = atan(n);
+			//offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
+			offset = sqrt(pow(offset_, 2) + pow(radius_, 2));
+			posOffset = atan(offset_ / radius_);
 			blockOffset = M_PI / 2. * blockOffsetFix;
+			offset = posOffset = blockOffset = 0.;
+
 		}
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {

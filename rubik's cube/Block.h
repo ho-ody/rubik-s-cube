@@ -17,8 +17,8 @@ public:
 
 	int blockOffsetFix;
 
-	float offset = 0.;
-	float radius = 0.;
+	float offset_ = 0.;
+	float radius_ = 0.;
 
 	Block();
 	void rotate(int n, int axis, float time, int direction);
