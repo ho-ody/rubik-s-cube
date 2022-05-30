@@ -9,6 +9,7 @@ Block::Block() {
 
 extern int N; extern float v; //skalowanie
 void Block::rotate(int n, int axis, float time, int direction) {
+
 	float offset, posOffset, blockOffset;
 	if (axis == 2) { //red
 		if (offset_ == 0) { //cross
@@ -22,7 +23,7 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			posOffset = atan(offset_ / radius_);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			//offset = posOffset = blockOffset = 0.;
-			if (offsetSideFix == true) {
+			if (offsetSideFix[2] == true) {
 				posOffset *= -1;
 				blockOffset += M_PI / 2.;
 				//for (int l = 0; l < 6; l++)
@@ -55,7 +56,7 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2 * v;
 			posOffset = atan(offset_ / radius_);
 			blockOffset = M_PI / 2. * blockOffsetFix;
-			if (offsetSideFix == true) {
+			if (offsetSideFix[0] == true) {
 				posOffset *= -1;
 				blockOffset += M_PI / 2.;
 			}
@@ -104,6 +105,36 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		*/
 	}
 	if (axis == 1) { //green
+		if (offset_ == 0) { //cross
+			offset = radius_ * 2 * v;
+			posOffset = 0.;
+			blockOffset = M_PI / 2. * blockOffsetFix;
+		}
+		else { //not cross
+			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2 * v;
+			posOffset = atan(offset_ / radius_);
+			blockOffset = M_PI / 2. * blockOffsetFix;
+			if (offsetSideFix[1] == true) {
+				posOffset *= -1;
+				blockOffset += M_PI / 2.;
+			}
+		}
+		if (blockOffsetFix != -1) { //center fix
+			if (direction) {
+				position.x = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+				position.z = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+			}
+			else {
+				position.x = offset * sin(time + posOffset + blockOffset) + (N - 1) * v;
+				position.z = offset * cos(time + posOffset + blockOffset) + (N - 1) * v;
+			}
+		}
+		if (direction)
+			rotation.y = M_PI / 2. - time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
+		else
+			rotation.y = M_PI / 2. + time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
+		return;
+		/*
 		if (n == 0) { //cross
 			offset = (N - 1) * v;
 			posOffset = 0.;
@@ -130,6 +161,7 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		else
 			rotation.y = M_PI / 2. + time + (rot[1] - prevRot[1] - 1) * M_PI / 2.;
 		return;
+		*/
 	}
 }
 

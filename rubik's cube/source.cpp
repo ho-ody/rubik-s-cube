@@ -21,7 +21,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 5;
+int N = 11;
 float v = 0.5;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -141,6 +141,22 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	for (int i = 0, j = 0; j < N*N; j++) {
 		i = indexsOfRotation(j,offset);
 		GLOBALblocks[i].roll = true;
+
+
+		float _x = GLOBALblocks[i].position.x;
+		float _y = GLOBALblocks[i].position.y;
+		float _z = GLOBALblocks[i].position.z;
+		float _c = (N - 1) * v;
+		GLOBALblocks[i].offsetSideFix[2] = false;
+		GLOBALblocks[i].offsetSideFix[0] = false;
+		GLOBALblocks[i].offsetSideFix[1] = false;
+		if ((_y < _x - v && _y > _c) || (_x < _c && _y > -_x + (N - 1) * 2 * v) || (_y > _x && _y < _c) || (_x > _c && _y < -_x + (N - 1) * 2 * v))
+			GLOBALblocks[i].offsetSideFix[2] = true;
+		if ((_y < _z - v && _y > _c) || (_z < _c && _y > -_z + (N - 1) * 2 * v) || (_y > _z && _y < _c) || (_z > _c && _y < -_z + (N - 1) * 2 * v))
+			GLOBALblocks[i].offsetSideFix[0] = true;
+		if ((_z < _x - v && _z > _c) || (_x < _c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < _c) || (_x > _c && _z < -_x + (N - 1) * 2 * v))
+			GLOBALblocks[i].offsetSideFix[1] = true;
+
 
 		if (axis == 0) {
 			a = GLOBALblocks[i].position.z;
@@ -270,6 +286,7 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
+int COLORtest = 0;
 string code_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
@@ -429,6 +446,23 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 		code_input_index++;
 	}
+
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { //code input
+		if (COLORtest == 0) {
+			COLORtest = 1;
+			for (int i = 0; i < N * N * N; i++) {
+				for (int j = 0; j < 6; j++)
+					GLOBALblocks[i].color[j] = glm::vec3(static_cast<float>(order[i])/pow(N,3), 0, 0);
+			}
+
+
+
+		}
+	}
+	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE) {
+		if (COLORtest == 2)
+			COLORtest = 0;
+	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -567,27 +601,20 @@ int main() {
 	bool skip_radius_offset = true;
 	for (int i = 0; i < n_blocks; i++) {
 		int k = i % (N * N);
-		skip_radius_offset = true;
-
-		
+		skip_radius_offset = false;	
 		if (i < N*N || i >= (N - 1) * N * N) { //front + back side  //|| i >= (N - 1) * N * N
-			skip_radius_offset = false;
 		}
 		else if (i % N == 0) { //left side
 			k = reverseRotateIndex(i, 0);
-			skip_radius_offset = false;
 		}
 		else if (i % N == N - 1) { //right
 			k = reverseRotateIndex(i, 0 + (N-1) * 3);
-			skip_radius_offset = false;
 		}
 		else if (i % (N * N) < N) { //down side
 			k = reverseRotateIndex(i, 1);
-			skip_radius_offset = false;
 		}
 		else if (i % (N * N) > (N - 1) * N) {// up
 			k = reverseRotateIndex(i, 1 + (N-1) * 3);
-			skip_radius_offset = false;
 		}
 		else
 			skip_radius_offset = true;
@@ -605,10 +632,7 @@ int main() {
 					blocks[i].offset_ = (N - 1) / 2 - j;
 			}
 		}
-		else {
-			//blocks[i].radius_ = -1;
-			//blocks[i].offset_ = -1;
-		}
+
 
 		/*
 		if (i < N * N || i >= (N - 1) * N * N) {
@@ -629,6 +653,9 @@ int main() {
 		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		//blocks[i].offsetSideFix = false;
+
+		
+
 		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -653,8 +680,11 @@ int main() {
 		//if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
 		//	GLOBALblocks[i].blockOffsetFix = -1;
 
-		float a = blocks[i].position.x;
-		float b = blocks[i].position.y;
+		float _x = blocks[i].position.x;
+		float _y = blocks[i].position.y;
+		float _z = blocks[i].position.z;
+
+		/*
 		if ((b < a - v && b > c) || (a < c && b > -a + (N - 1) * 2 * v) || (b > a && b < c) || (a > c && b < -a + (N - 1) * 2 * v)) {
 			blocks[i].offsetSideFix = true;
 			//blocks[i].offset_ *= -1;
@@ -662,6 +692,21 @@ int main() {
 			//for (int l = 0; l < 6; l++)
 			//	blocks[i].color[l] = glm::vec3(0, 0, 0);
 		}
+		*/
+		/*
+		if ((_y < _x - v && _y > c) || (_x < c && _y > -_x + (N - 1) * 2 * v) || (_y > _x && _y < c) || (_x > c && _y < -_x + (N - 1) * 2 * v))
+			blocks[i].offsetSideFix[2] = 1;
+		if ((_y < _z - v && _y > c) || (_z < c && _y > -_z + (N - 1) * 2 * v) || (_y > _z && _y < c) || (_z > c && _y < -_z + (N - 1) * 2 * v))
+			blocks[i].offsetSideFix[0] = 1;
+		if ((_z < _x - v && _z > c) || (_x < c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < c) || (_x > c && _z < -_x + (N - 1) * 2 * v))
+			blocks[i].offsetSideFix[1] = 1;
+			*/
+		//if (blocks[i].offsetSideFix[0] == true || blocks[i].offsetSideFix[1] == true || blocks[i].offsetSideFix[2] == true) {
+			//blocks[i].offsetSideFix[0] = true;
+			//blocks[i].offsetSideFix[1] = true;
+			//blocks[i].offsetSideFix[2] = true;
+		//}
+
 		/*
 		else if (a < c && b > -a + (N - 1) * 2 * v)
 			blocks[i].offset_ *= -1;
@@ -679,7 +724,7 @@ int main() {
 			blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
 			blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		*/
-		
+		/*
 		for (int l = 0; l < 6; l++)
 			blocks[i].color[l] = glm::vec3(0, 0, 0);
 
@@ -698,7 +743,7 @@ int main() {
 		if (blocks[i].offset_ == 7)
 			for (int l = 0; l < 6; l++)
 				blocks[i].color[l].z = 1;
-		
+		*/
 	}
 
 	float backgroud_r, backgroud_g, backgroud_b;
@@ -719,7 +764,7 @@ int main() {
 			}
 			if (rotateCounter == 0) {
 				//roll reset && block update
-				for (int j = 0; j < 3 * 3 * 3; j++) {
+				for (int j = 0; j < n_blocks; j++) {
 					if (blocks[j].roll) {
 						blocks[j].roll = false;
 						blocks[j].update(direction);
