@@ -265,35 +265,35 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			rotate(direction, indexesOfRotationZ,row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_R) == GLFW_PRESS) {
 			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 0 + row * 3;
 			rotate(direction, indexesOfRotationX,row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_D) == GLFW_PRESS) {
 			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 1 + row * 3;
 			rotate(direction, indexesOfRotationY,row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
 			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
 			axis = 2 + (N-1) * 3 - row * 3;
 			rotate(direction, indexesOfRotationZ,N-1-row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
 			axis = 0 + (N-1) * 3 - row * 3;
 			rotate(direction, indexesOfRotationX,N-1-row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
 			axis = 1 + (N-1) * 3 - row * 3;
 			rotate(direction, indexesOfRotationY,N-1-row);
 			move_cube = 2;
 		}
-		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
+		else if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
 			move_cube = 2;
 		}
 	}
