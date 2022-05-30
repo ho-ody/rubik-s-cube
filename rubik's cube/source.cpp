@@ -21,7 +21,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 9;
+int N = 8;
 float v = 0.5;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -172,6 +172,8 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			GLOBALblocks[i].offsetSideFix[1] = true;
 
 
+
+
 		if (axis == 0) {
 			a = GLOBALblocks[i].position.z;
 			b = GLOBALblocks[i].position.y;
@@ -198,14 +200,27 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			GLOBALblocks[i].blockOffsetFix = 0 + direction;
 		*/
 		float c = (N - 1) * v;
-		if (b < c - v && a < c + v)
-			GLOBALblocks[i].blockOffsetFix = 1 + direction;
-		else if (b < c + v && a > c + v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > c + v && a > c - v)
-			GLOBALblocks[i].blockOffsetFix = 3 + direction;
-		else if (b > c - v && a < c - v)
-			GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		if (N % 2) {
+			if (b < c - v && a < c + v)
+				GLOBALblocks[i].blockOffsetFix = 1 + direction;
+			else if (b < c + v && a > c + v)
+				GLOBALblocks[i].blockOffsetFix = 0 + direction;
+			else if (b > c + v && a > c - v)
+				GLOBALblocks[i].blockOffsetFix = 3 + direction;
+			else if (b > c - v && a < c - v)
+				GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		}
+		else {
+			if (b < c && a < c)
+				GLOBALblocks[i].blockOffsetFix = 1 + direction;
+			else if (b < c && a > c)
+				GLOBALblocks[i].blockOffsetFix = 0 + direction;
+			else if (b > c && a > c)
+				GLOBALblocks[i].blockOffsetFix = 3 + direction;
+			else if (b > c && a < c)
+				GLOBALblocks[i].blockOffsetFix = 2 + direction;
+		}
+		
 		/*
 		float c = (N - 1) * v;
 		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
@@ -501,27 +516,39 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 
 			Block* blocks = GLOBALblocks;
 
+			
+
 			for (int i = 0; i < N * N * N; i++) {
+
+				float _x = GLOBALblocks[i].position.x;
+				float _y = GLOBALblocks[i].position.y;
+				float _z = GLOBALblocks[i].position.z;
+				float _c = (N - 1) * v;
+				GLOBALblocks[i].offsetSideFix[2] = false;
+				GLOBALblocks[i].offsetSideFix[0] = false;
+				GLOBALblocks[i].offsetSideFix[1] = false;
+				if ((_y < _x - v && _y > _c) || (_x < _c && _y > -_x + (N - 1) * 2 * v) || (_y > _x && _y < _c) || (_x > _c && _y < -_x + (N - 1) * 2 * v))
+					GLOBALblocks[i].offsetSideFix[2] = true;
+				if ((_y < _z - v && _y > _c) || (_z < _c && _y > -_z + (N - 1) * 2 * v) || (_y > _z && _y < _c) || (_z > _c && _y < -_z + (N - 1) * 2 * v))
+					GLOBALblocks[i].offsetSideFix[0] = true;
+				if ((_z < _x - v && _z > _c) || (_x < _c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < _c) || (_x > _c && _z < -_x + (N - 1) * 2 * v))
+					GLOBALblocks[i].offsetSideFix[1] = true;
 
 				for (int l = 0; l < 6; l++)
 					blocks[i].color[l] = glm::vec3(0, 0, 0);
 
-				if (blocks[i].offset_[TESTTEST] == 1)
+				//for (int l = 0; l < 6; l++)
+				//	blocks[i].color[l].x = static_cast<float>(blocks[i].offset_[TESTTEST]) / N * 2.;
+				//for (int l = 0; l < 6; l++)
+				//	blocks[i].color[l].z = static_cast<float>(blocks[i].radius_[TESTTEST]) / N * 2.;
+				
+
+				if (blocks[i].offsetSideFix[TESTTEST] == true)
 					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].y = .5;
-				if (blocks[i].offset_[TESTTEST] == 2)
-					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].y = 1.;
-				if (blocks[i].radius_[TESTTEST] == 1)
-					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].x = .5;
-				if (blocks[i].radius_[TESTTEST] == 2)
-					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].x = 1.;
-				if (blocks[i].offset_[TESTTEST] == 7)
-					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].z = 1;
+						blocks[i].color[l].z = 0.8;
 			}
+
+
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE) {
@@ -725,6 +752,17 @@ int main() {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
 				blocks[i].offset_[1] = (N - 1) / 2 - j;
 		}
+		/*
+		cerr << blocks[i].offset_[1]<< "\t" << blocks[i].radius_[1] << endl;
+		blocks[i].radius_[0] += v;
+		blocks[i].radius_[1] += v;
+		blocks[i].radius_[2] += v;
+		blocks[i].offset_[0] += 1;
+		blocks[i].offset_[1] += 1;
+		blocks[i].offset_[2] += 1;
+		*/
+		//blocks[i].offset_[1] += 1;
+
 		/*
 		if (i < N * N || i >= (N - 1) * N * N) {
 			blocks[i].radius_ = (N - 1) / 2;
