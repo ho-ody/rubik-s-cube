@@ -28,7 +28,6 @@ void Block::rotate(int n, int axis, float time, int direction) {
 				//for (int l = 0; l < 6; l++)
 				//	color[l] = glm::vec3(0.7, 0, 0.7);
 			}
-
 		}
 		if (blockOffsetFix != -1) { //center fix
 			if (direction) {
@@ -47,6 +46,36 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		return;
 	}
 	if (axis == 0) { //yellow
+		if (offset_ == 0) { //cross
+			offset = radius_ * 2 * v;
+			posOffset = 0.;
+			blockOffset = M_PI / 2. * blockOffsetFix;
+		}
+		else { //not cross
+			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2 * v;
+			posOffset = atan(offset_ / radius_);
+			blockOffset = M_PI / 2. * blockOffsetFix;
+			if (offsetSideFix == true) {
+				posOffset *= -1;
+				blockOffset += M_PI / 2.;
+			}
+		}
+		if (blockOffsetFix != -1) { //center fix
+			if (direction) {
+				position.z = offset * sin(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(M_PI / 2. - time + posOffset + blockOffset) + (N - 1) * v;
+			}
+			else {
+				position.z = offset * sin(time + posOffset + blockOffset) + (N - 1) * v;
+				position.y = offset * cos(time + posOffset + blockOffset) + (N - 1) * v;
+			}
+		}
+		if (direction)
+			rotation.x = M_PI / 2. - time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
+		else
+			rotation.x = M_PI / 2. + time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
+		return;
+		/*
 		if (n == 0) { //cross
 			offset = (N - 1) * v;
 			posOffset = 0.;
@@ -72,6 +101,7 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		else
 			rotation.x = M_PI / 2. + time + (rot[0] - prevRot[0] - 1) * M_PI / 2.;
 		return;
+		*/
 	}
 	if (axis == 1) { //green
 		if (n == 0) { //cross

@@ -1,4 +1,3 @@
-
 #define _USE_MATH_DEFINES
 #include <cmath>
 #include <iostream>
@@ -22,7 +21,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 7;
+int N = 5;
 float v = 0.5;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -61,7 +60,6 @@ int* toRotate;
 int direction;
 void orderUpdateRotateMatrix(bool direction)
 {
-	int N = 3;
 	if ((direction == 0 && axis % 3 != 0) || (direction == 1 && axis % 3 == 0)) {
 		for (int x = 0; x < N / 2; x++) {
 			for (int y = x; y < N - x - 1; y++) {
@@ -87,6 +85,7 @@ void orderUpdateRotateMatrix(bool direction)
 		}
 	}
 }
+/*
 int rotateIndex[9][9] = {
 	{0,3,6,9,12,15,18,21,24},	 //x 
 	{0,1,2,9,10,11,18,19,20},	 //y
@@ -98,6 +97,8 @@ int rotateIndex[9][9] = {
 	{6,7,8,15,16,17,24,25,26},	 //y+2
 	{18,19,20,21,22,23,24,25,26} //z+2
 };
+*/
+int** rotateIndex;
 
 int indexesOfRotationX(int j, int offset) {
 	return order[N * j + offset];
@@ -108,6 +109,30 @@ int indexesOfRotationY(int j, int offset) {
 int indexesOfRotationZ(int j, int offset) {
 	return order[j + offset*N*N];
 }
+
+void generateRotateIndexAxis() {
+	rotateIndex = new int*[N * N];
+	for (int i = 0; i < N * N; i++)
+		rotateIndex[i] = new int[N * N];
+
+	for (int i = 0; i < N * N; i++) {
+		for (int j = 0; j < N; j++) {
+			rotateIndex[3*j+0][i] = N * i + j; //x
+			rotateIndex[3*j+1][i] = i % N + (i / N) * N * N + N*j; //y
+			rotateIndex[3*j+2][i] = i + j*N*N; //z
+			//cerr << rotateIndex[3 * j + 0][i] << "\t" << rotateIndex[3 * j + 1][i] << "\t" << rotateIndex[3 * j + 2][i] << "\n";
+		}
+	}
+}
+int reverseRotateIndex(int k, int axis) {
+	for (int i = 0; i < N * N; i++) {
+		if (rotateIndex[axis][i] == k)
+			return i;
+	}
+	return -1;
+}
+
+
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
@@ -435,6 +460,11 @@ void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
 }
+void delete2dArray(int** tab, int n) {
+	for (int i = 0; i < n; ++i)
+		delete[] tab[i];
+	delete[] tab;
+}
 
 int width = 800, height = 800;
 int main() {
@@ -510,25 +540,92 @@ int main() {
 		neworder[i] = i;
 	}
 	
+	generateRotateIndexAxis();
+
+	/*
+	rotateIndex[3*j+0][i] = N * i + j; //x
+	rotateIndex[3*j+1][i] = i % N + (i / N) * N * N + N*j; //y
+	rotateIndex[3*j+2][i] = i + j*N*N; //z
+
+	int rotateIndex[9][9] = {
+	{0,3,6,9,12,15,18,21,24},	 //x
+	{0,1,2,9,10,11,18,19,20},	 //y
+	{0,1,2,3,4,5,6,7,8},		 //z
+	{1,4,7,10,13,16,19,22,25},	 //x+1
+	{3,4,5,12,13,14,21,22,23},	 //y+1
+	{9,10,11,12,13,14,15,16,17}, //z+1
+	{2,5,8,11,14,17,20,23,26},	 //x+2
+	{6,7,8,15,16,17,24,25,26},	 //y+2
+	{18,19,20,21,22,23,24,25,26} //z+2
+};
+	*/
+
 	Block* blocks;
 	blocks = new Block[pow(N, 3)];
 	GLOBALblocks = blocks;
 	int n_blocks = pow(N, 3);
+	bool skip_radius_offset = true;
 	for (int i = 0; i < n_blocks; i++) {
 		int k = i % (N * N);
-		blocks[i].radius_ = (N - 1) / 2;
-		for (int j = 1; j < (N + 1) / 2; j++) {
-			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
-				blocks[i].radius_ = (N - 1) / 2 - j;
-		}
-		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
-		blocks[i].offset_ = (N - 1) / 2;
-		for (int j = 1; j < (N + 1) / 2; j++) {
-			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
-				blocks[i].offset_ = (N - 1) / 2 - j;
-		}
-		
+		skip_radius_offset = true;
 
+		
+		if (i < N*N || i >= (N - 1) * N * N) { //front + back side  //|| i >= (N - 1) * N * N
+			skip_radius_offset = false;
+		}
+		else if (i % N == 0) { //left side
+			k = reverseRotateIndex(i, 0);
+			skip_radius_offset = false;
+		}
+		else if (i % N == N - 1) { //right
+			k = reverseRotateIndex(i, 0 + (N-1) * 3);
+			skip_radius_offset = false;
+		}
+		else if (i % (N * N) < N) { //down side
+			k = reverseRotateIndex(i, 1);
+			skip_radius_offset = false;
+		}
+		else if (i % (N * N) > (N - 1) * N) {// up
+			k = reverseRotateIndex(i, 1 + (N-1) * 3);
+			skip_radius_offset = false;
+		}
+		else
+			skip_radius_offset = true;
+
+		if (!skip_radius_offset) {
+			blocks[i].radius_ = (N - 1) / 2;
+			for (int j = 1; j < (N + 1) / 2; j++) {
+				if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
+					blocks[i].radius_ = (N - 1) / 2 - j;
+			}
+			//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
+			blocks[i].offset_ = (N - 1) / 2;
+			for (int j = 1; j < (N + 1) / 2; j++) {
+				if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
+					blocks[i].offset_ = (N - 1) / 2 - j;
+			}
+		}
+		else {
+			//blocks[i].radius_ = -1;
+			//blocks[i].offset_ = -1;
+		}
+
+		/*
+		if (i < N * N || i >= (N - 1) * N * N) {
+			blocks[i].radius_ = (N - 1) / 2;
+			for (int j = 1; j < (N + 1) / 2; j++) {
+				if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
+					blocks[i].radius_ = (N - 1) / 2 - j;
+			}
+			//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
+			blocks[i].offset_ = (N - 1) / 2;
+			for (int j = 1; j < (N + 1) / 2; j++) {
+				if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
+					blocks[i].offset_ = (N - 1) / 2 - j;
+			}
+		}
+		*/
+		
 		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		//blocks[i].offsetSideFix = false;
@@ -582,7 +679,7 @@ int main() {
 			blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
 			blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		*/
-		/*
+		
 		for (int l = 0; l < 6; l++)
 			blocks[i].color[l] = glm::vec3(0, 0, 0);
 
@@ -598,7 +695,10 @@ int main() {
 		if (blocks[i].radius_ == 2)
 			for (int l = 0; l < 6; l++)
 				blocks[i].color[l].x = 1.;
-		*/
+		if (blocks[i].offset_ == 7)
+			for (int l = 0; l < 6; l++)
+				blocks[i].color[l].z = 1;
+		
 	}
 
 	float backgroud_r, backgroud_g, backgroud_b;
@@ -694,5 +794,6 @@ int main() {
 	blockVBO.Delete();
 	blockEBO.Delete();
 	delete[]order, neworder, toRotate, blocks;
+	delete2dArray(rotateIndex, N*N);
 	return 0;
 }
