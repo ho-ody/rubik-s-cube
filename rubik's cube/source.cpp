@@ -25,7 +25,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 8;
+int N = 7;
 float v = 1;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {

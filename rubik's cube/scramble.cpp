@@ -80,13 +80,60 @@ void makeMoves(string code_s) {
 string generateScramble(int length) {
 	string* everyMove = new string[6 * N];
 	string baseMoves = "FfRrDdBbLlUu";
-	
-	string output = "", curr = "", prev = "";
+	int i = 0;
+	string output = "", curr = "";
+	int prev = -1;
 	if (N%2) //nieparzyste
-		for (int i = 0; i < 12; i++) {
-
-
-
+		for (i = 0; i < length; i++) {
+			curr = "";
+			if (rand() % 2) {
+				curr = "";
+				int temp = rand() % ((N - 1) / 2);
+				if (temp)
+					curr += to_string(temp + 1);
+				int letter = rand() % 6;
+				if (letter % 2)
+					if (prev == letter - 1) {
+						i--;
+					}
+					else {
+						output += curr;
+						output += baseMoves[letter];
+						prev = letter;
+					}
+				else if (prev == letter + 1) {
+					i--;
+				}
+				else {
+					output += curr;
+					output += baseMoves[letter];
+					prev = letter;
+				}	
+			}
+			else {
+				curr = "";
+				int temp = rand() % ((N - 1) / 2);
+				if (temp)
+					curr += to_string(temp + 1);
+				int letter = rand() % 6 + 6;
+				if (letter % 2)
+					if (prev == letter - 1) {
+						i--;
+					}
+					else {
+						output += curr;
+						output += baseMoves[letter];
+						prev = letter;
+					}
+				else if (prev == letter + 1) {
+					i--;
+				}
+				else {
+					output += curr;
+					output += baseMoves[letter];
+					prev = letter;
+				}
+			}
 		}
 	else //parzyste
 		for (int i = 0; i < length; i++) {
@@ -94,18 +141,27 @@ string generateScramble(int length) {
 			int temp = rand() % (N / 2);
 			if (temp)
 				curr += to_string(temp+1);
-			curr += baseMoves[rand() % 12];
-			if (curr != prev) {
-				output += curr;
-				prev = curr;
+			int letter = rand() % 12;
+			if (letter % 2)
+				if (prev == letter - 1) {
+					i--;
+				}
+				else {
+					output += curr;
+					output += baseMoves[letter];
+					prev = letter;
+				}
+			else if (prev == letter + 1) {
+				i--;
 			}
 			else {
-				i--;
+				output += curr;
+				output += baseMoves[letter];
+				prev = letter;
 			}
 		}
 
 	cerr << output << endl;
-
 
 	code_s = output;
 	code_input_index = 0;
