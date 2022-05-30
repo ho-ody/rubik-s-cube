@@ -112,8 +112,8 @@ void Block::rotate(int n, int axis, float time, int direction) {
 	}
 	else { //even cube size
 		if (axis == 2) { //red
-			offset = sqrt(pow(offset_[2]+v, 2) + pow(radius_[2]+v, 2)) * 2 * v;
-			posOffset = atan((offset_[2]+v) / (radius_[2]+v));
+			offset = sqrt(pow(offset_[2]+.5, 2) + pow(radius_[2]+.5, 2)) * 2 * v;
+			posOffset = atan((offset_[2]+.5) / (radius_[2]+.5));
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			if (offsetSideFix[2] == true ) {
 				posOffset *= -1;

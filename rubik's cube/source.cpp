@@ -21,8 +21,8 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 8;
-float v = 0.5;
+int N = 11;
+float v = 1;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
@@ -102,7 +102,6 @@ void generateRotateIndexAxis() {
 	rotateIndex = new int*[N * N];
 	for (int i = 0; i < N * N; i++)
 		rotateIndex[i] = new int[N * N];
-
 	for (int i = 0; i < N * N; i++) {
 		for (int j = 0; j < N; j++) {
 			rotateIndex[3*j+0][i] = N * i + j; //x
@@ -445,6 +444,9 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+	v = 3. / N;
+
+
 	GLFWwindow* window = glfwCreateWindow(width, height, "glhf", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
@@ -583,7 +585,8 @@ int main() {
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //kontury
 	glLineWidth(3);
 	float time = 0;
-	Camera camera(width, height);
+	Camera camera(width, height, glm::vec3(-8,11,-8));
+	cameraFront = glm::vec3(0.628001, -0.480989, 0.611772); pitch = -28.75; yaw = 44.25;
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
