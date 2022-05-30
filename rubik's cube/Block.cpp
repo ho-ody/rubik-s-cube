@@ -136,8 +136,8 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			return;
 		}
 		if (axis == 0) { //yellow
-			offset = sqrt(pow(offset_[0] + v, 2) + pow(radius_[0] + v, 2)) * 2 * v;
-			posOffset = atan((offset_[0] + v) / (radius_[0] + v));
+			offset = sqrt(pow(offset_[0] + .5, 2) + pow(radius_[0] + .5, 2)) * 2 * v;
+			posOffset = atan((offset_[0] + .5) / (radius_[0] + .5));
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			if (offsetSideFix[0] == true) {
 				posOffset *= -1;
@@ -160,8 +160,8 @@ void Block::rotate(int n, int axis, float time, int direction) {
 			return;
 		}
 		if (axis == 1) { //green
-			offset = sqrt(pow(offset_[1] + v, 2) + pow(radius_[1] + v, 2)) * 2 * v;
-			posOffset = atan((offset_[1] + v) / (radius_[1] + v));
+			offset = sqrt(pow(offset_[1] + .5, 2) + pow(radius_[1] + .5, 2)) * 2 * v;
+			posOffset = atan((offset_[1] + .5) / (radius_[1] + .5));
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			if (offsetSideFix[1] == true) {
 				posOffset *= -1;

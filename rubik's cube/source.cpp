@@ -13,6 +13,10 @@ using namespace std;
 #include <vector>
 #include "Block.h"
 
+extern void makeMoves(string code_s);
+extern string generateScramble(int length);
+string code_s = "";
+
 Block* GLOBALblocks;
 
 ostream& operator<<(ostream& stream, const glm::vec3& v)
@@ -21,7 +25,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 11;
+int N = 8;
 float v = 1;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -51,7 +55,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 int ccc = 0;
 int rotateCounter = -1;
 int ANIMATION_DURATION = 40;
-int MOVEMENT_FREEZE_AFTER_MOVE = 15;
+int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 
 int* order;
 int* neworder;
@@ -217,7 +221,6 @@ int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
 int row = 0;
-string code_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
 	Orientation = cameraFront;
@@ -322,9 +325,11 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		if (code_input == 2)
 			code_input = 0;
 	}
-	//input w postaci kodu - wersja NIEAKTUALNA (TYLKO 3x3)
+	//input w postaci kodu
+	//https://www.worldcubeassociation.org/regulations/history/files/scrambles/scramble_cube.htm?size=7&num=5&len=60&col=gwobyr&subbutton=Scramble%21
 	if (code_input == 1) {
 		getline(cin, code_s);
+		code_s += " ";
 		for (int i = 0; i <= code_s.length(); i++) {
 			if (code_s[i] == '\'') {	// ' zamiana na du¿¹ literê
 				i--;
@@ -335,9 +340,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			if (code_s[i] == ' ') {		// usuniecie spacji
 				code_s.erase(i, 1);
 			}		
-			if (code_s[i] == '2') {		// zastapienie znaku 2
+			if (code_s[i] == '2' && code_s[i+1] == ' ') {		// zastapienie znaku 2
 				code_s.erase(i, 1);
-				code_s.insert(i, string(1, code_s[i-1]));
+				code_s.insert(i,"^");
 			}
 		}
 		for (int i = 0; i <= code_s.length(); i++) {
@@ -352,51 +357,9 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 				code_s.insert(i, string(1, t));
 			}
 		}
-		cerr << code_s;
+		//cerr << code_s << endl;
 		code_input = 2;
-		code_input_index = 0;
-	}
-	if (code_input_index < code_s.length() && rotateCounter < 0) {
-		direction = 0;
-		switch (code_s[code_input_index]) {
-		case 'F':
-			direction = 1;
-		case 'f':
-			axis = 2;
-			rotate(direction, indexesOfRotationZ, 0);
-			break;
-		case 'r': //fix -> zamiana 'R' z 'r'
-			direction = 1;
-		case 'R':
-			axis = 0;
-			rotate(direction, indexesOfRotationX, 0);
-			break;
-		case 'd':
-			direction = 1;
-		case 'D':
-			axis = 1;
-			rotate(direction, indexesOfRotationY, 0);
-			break;
-		case 'b':
-			direction = 1;
-		case 'B':
-			axis = 8;
-			rotate(direction, indexesOfRotationZ, 2);
-			break;
-		case 'L':
-			direction = 1;
-		case 'l':
-			axis = 6;
-			rotate(direction, indexesOfRotationX, 2);
-			break;
-		case 'U':
-			direction = 1;
-		case 'u':
-			axis = 7;
-			rotate(direction, indexesOfRotationY, 2);
-			break;
-		}
-		code_input_index++;
+		code_input_index = 0;	
 	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
@@ -445,7 +408,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	v = 3. / N;
-
+	generateScramble(50);
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "glhf", NULL, NULL);
 	// Error check if the window fails to create
@@ -617,6 +580,7 @@ int main() {
 		lastFrame = currentFrame;
 		//input
 		input(window, camera.Position, camera.Orientation, camera.Up);
+		makeMoves(code_s);
 		//logika koloru t³a
 		time += deltaTime;
 		//time += 0.003;

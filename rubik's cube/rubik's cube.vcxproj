@@ -146,6 +146,7 @@
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="EBO.cpp" />
     <ClCompile Include="glad.c" />
+    <ClCompile Include="scramble.cpp" />
     <ClCompile Include="ShaderClass.cpp" />
     <ClCompile Include="source.cpp" />
     <ClCompile Include="VAO.cpp" />
