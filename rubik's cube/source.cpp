@@ -287,6 +287,7 @@ int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
 int COLORtest = 0;
+int row = 0;
 string code_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
@@ -305,6 +306,27 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			move_cube = 0;
 	}
 	if (move_cube == 1 && rotateCounter < 0) {
+		if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
+			row = 0;
+		if (glfwGetKey(window, GLFW_KEY_1) == GLFW_PRESS)
+			row = 1;
+		if (glfwGetKey(window, GLFW_KEY_2) == GLFW_PRESS)
+			row = 2;
+		if (glfwGetKey(window, GLFW_KEY_3) == GLFW_PRESS)
+			row = 3;
+		if (glfwGetKey(window, GLFW_KEY_4) == GLFW_PRESS)
+			row = 4;
+		if (glfwGetKey(window, GLFW_KEY_5) == GLFW_PRESS)
+			row = 5;
+		if (glfwGetKey(window, GLFW_KEY_6) == GLFW_PRESS)
+			row = 6;
+		if (glfwGetKey(window, GLFW_KEY_7) == GLFW_PRESS)
+			row = 7;
+		if (glfwGetKey(window, GLFW_KEY_8) == GLFW_PRESS)
+			row = 8;
+		if (glfwGetKey(window, GLFW_KEY_9) == GLFW_PRESS)
+			row = 9;
+
 		if (glfwGetKey(window, GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
 			direction = 1;
 		else
@@ -329,18 +351,18 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 		if (glfwGetKey(window, GLFW_KEY_B) == GLFW_PRESS) {
 			if (direction) direction = 0; else direction = 1; //fix clockwise-anticlockwise
-			axis = 8;
-			rotate(direction, indexesOfRotationZ,2);
+			axis = 2 + (N-1) * 3;
+			rotate(direction, indexesOfRotationZ,N-1);
 			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_L) == GLFW_PRESS) {
-			axis = 6;
-			rotate(direction, indexesOfRotationX,2);
+			axis = 0 + (N-1) * 3;
+			rotate(direction, indexesOfRotationX,N-1);
 			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_U) == GLFW_PRESS) {
-			axis = 7;
-			rotate(direction, indexesOfRotationY,2);
+			axis = 1 + (N-1) * 3;
+			rotate(direction, indexesOfRotationY,N-1);
 			move_cube = 2;
 		}
 		if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS) {
@@ -365,6 +387,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_PRESS) { //code input
 		if (code_input == 0) {
 			code_input = 1;
+			row = 0; //reset row
 		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_C) == GLFW_RELEASE) {
