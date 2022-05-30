@@ -12,15 +12,15 @@ void Block::rotate(int n, int axis, float time, int direction) {
 
 	float offset, posOffset, blockOffset;
 	if (axis == 2) { //red
-		if (offset_ == 0) { //cross
-			offset = radius_ * 2 * v;
+		if (offset_[2] == 0) { //cross
+			offset = radius_[2] * 2 * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
 			//offset = sqrt(pow((N - 1) * v, 2) + pow(abs(n) * (N - 1) * v, 2));
-			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2*v;
-			posOffset = atan(offset_ / radius_);
+			offset = sqrt(pow(offset_[2], 2) + pow(radius_[2], 2)) * 2 * v;
+			posOffset = atan(offset_[2] / radius_[2]);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			//offset = posOffset = blockOffset = 0.;
 			if (offsetSideFix[2] == true) {
@@ -47,14 +47,14 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		return;
 	}
 	if (axis == 0) { //yellow
-		if (offset_ == 0) { //cross
-			offset = radius_ * 2 * v;
+		if (offset_[0] == 0) { //cross
+			offset = radius_[0] * 2 * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2 * v;
-			posOffset = atan(offset_ / radius_);
+			offset = sqrt(pow(offset_[0], 2) + pow(radius_[0], 2)) * 2 * v;
+			posOffset = atan(offset_[0] / radius_[0]);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			if (offsetSideFix[0] == true) {
 				posOffset *= -1;
@@ -105,14 +105,14 @@ void Block::rotate(int n, int axis, float time, int direction) {
 		*/
 	}
 	if (axis == 1) { //green
-		if (offset_ == 0) { //cross
-			offset = radius_ * 2 * v;
+		if (offset_[1] == 0) { //cross
+			offset = radius_[1] * 2 * v;
 			posOffset = 0.;
 			blockOffset = M_PI / 2. * blockOffsetFix;
 		}
 		else { //not cross
-			offset = sqrt(pow(offset_, 2) + pow(radius_, 2)) * 2 * v;
-			posOffset = atan(offset_ / radius_);
+			offset = sqrt(pow(offset_[1], 2) + pow(radius_[1], 2)) * 2 * v;
+			posOffset = atan(offset_[1] / radius_[1]);
 			blockOffset = M_PI / 2. * blockOffsetFix;
 			if (offsetSideFix[1] == true) {
 				posOffset *= -1;

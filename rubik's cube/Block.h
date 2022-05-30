@@ -17,8 +17,8 @@ public:
 
 	int blockOffsetFix;
 
-	float offset_ = 0.;
-	float radius_ = 0.;
+	float offset_[3] = { 0., 0., 0. };
+	float radius_[3] = { 0., 0., 0. };
 	bool offsetSideFix[3] = { false, false, false };
 
 	Block();
