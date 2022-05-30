@@ -58,6 +58,7 @@ int* neworder;
 int axis;
 int* toRotate;
 int direction;
+//obracanie tablicy order w lewo lub prawo w zaleznosi od kierunku obrotu
 void orderUpdateRotateMatrix(bool direction)
 {
 	if ((direction == 0 && axis % 3 != 0) || (direction == 1 && axis % 3 == 0)) {
@@ -85,21 +86,8 @@ void orderUpdateRotateMatrix(bool direction)
 		}
 	}
 }
-/*
-int rotateIndex[9][9] = {
-	{0,3,6,9,12,15,18,21,24},	 //x 
-	{0,1,2,9,10,11,18,19,20},	 //y
-	{0,1,2,3,4,5,6,7,8},		 //z
-	{1,4,7,10,13,16,19,22,25},	 //x+1
-	{3,4,5,12,13,14,21,22,23},	 //y+1
-	{9,10,11,12,13,14,15,16,17}, //z+1
-	{2,5,8,11,14,17,20,23,26},	 //x+2
-	{6,7,8,15,16,17,24,25,26},	 //y+2
-	{18,19,20,21,22,23,24,25,26} //z+2
-};
-*/
-int** rotateIndex;
-
+int** rotateIndex; //ustawiane raz, na pocz¹tku dzia³ania programu na podstawie wielkoœci koœci
+//reinterpretacja indexów na odpowiadaj¹ce w zale¿noœci od konkretnej œciany
 int indexesOfRotationX(int j, int offset) {
 	return order[N * j + offset];
 }
@@ -109,7 +97,7 @@ int indexesOfRotationY(int j, int offset) {
 int indexesOfRotationZ(int j, int offset) {
 	return order[j + offset*N*N];
 }
-
+//generowanie rotateIndex'ów
 void generateRotateIndexAxis() {
 	rotateIndex = new int*[N * N];
 	for (int i = 0; i < N * N; i++)
@@ -120,10 +108,10 @@ void generateRotateIndexAxis() {
 			rotateIndex[3*j+0][i] = N * i + j; //x
 			rotateIndex[3*j+1][i] = i % N + (i / N) * N * N + N*j; //y
 			rotateIndex[3*j+2][i] = i + j*N*N; //z
-			//cerr << rotateIndex[3 * j + 0][i] << "\t" << rotateIndex[3 * j + 1][i] << "\t" << rotateIndex[3 * j + 2][i] << "\n";
 		}
 	}
 }
+//zwracanie odpowiedniego indexu po odwrotnej interpretacji tablicy rotateIndex
 int reverseRotateIndex(int k, int axis) {
 	for (int i = 0; i < N * N; i++) {
 		for (int j = 0; j < N; j++) {
@@ -133,14 +121,14 @@ int reverseRotateIndex(int k, int axis) {
 	}
 	return -1;
 }
-
-
+//podstawowa funkcja poprzez ktora wydaje sie polecenie obrotu
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
 	toRotate = rotateIndex[axis];
 	axis %= 3;
 	for (int i = 0, j = 0; j < N*N; j++) {
+		//zamiana offsetów i radiusów przy nieparzystej iloœci obrotów danej œciany, fix do krawêdzi
 		if (axis == 0) {
 			swap(GLOBALblocks[i].offset_[1], GLOBALblocks[i].offset_[2]);
 			swap(GLOBALblocks[i].radius_[1], GLOBALblocks[i].radius_[2]);
@@ -153,10 +141,11 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			swap(GLOBALblocks[i].offset_[1], GLOBALblocks[i].offset_[0]);
 			swap(GLOBALblocks[i].radius_[1], GLOBALblocks[i].radius_[0]);
 		}
+		//reinterpretacja i w zale¿noœci od j i wzoru na i
 		i = indexsOfRotation(j,offset);
+		//info o tym, ¿e bêdzie siê dany blok obraca³
 		GLOBALblocks[i].roll = true;
-
-
+		//oblicanie offsetSideFixów -> generalnie po której stronie jest dany blok (dodatniej czy ujemnej)
 		float _x = GLOBALblocks[i].position.x;
 		float _y = GLOBALblocks[i].position.y;
 		float _z = GLOBALblocks[i].position.z;
@@ -170,10 +159,8 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			GLOBALblocks[i].offsetSideFix[0] = true;
 		if ((_z < _x - v && _z > _c) || (_x < _c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < _c) || (_x > _c && _z < -_x + (N - 1) * 2 * v))
 			GLOBALblocks[i].offsetSideFix[1] = true;
-
-
-
-
+		//obliczanie k¹ta przesuniêcia zglêdem po³o¿nienia 0 - blockOffsetFix, jest to k¹t obrotu (x * pi/2)
+		//w zale¿noœci od osi rotacji, pod uwagê brane s¹ ró¿ne wspó³rzêdne
 		if (axis == 0) {
 			a = GLOBALblocks[i].position.z;
 			b = GLOBALblocks[i].position.y;
@@ -186,21 +173,8 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			a = GLOBALblocks[i].position.x;
 			b = GLOBALblocks[i].position.y;
 		}
-		/*
 		float c = (N - 1) * v;
-		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
-			GLOBALblocks[i].blockOffsetFix = -1;
-		if (b < a - v && b > c)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (a < c && b > -a + (N - 1) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > a && b < c)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (a > c && b < -a + (N - 1) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		*/
-		float c = (N - 1) * v;
-		if (N % 2) {
+		if (N % 2) { // nieparzyste <-> poprawka wzglêdem œrodka o +-'v'
 			if (b < c - v && a < c + v)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
 			else if (b < c + v && a > c + v)
@@ -210,7 +184,7 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			else if (b > c - v && a < c - v)
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		}
-		else {
+		else { //parzyste
 			if (b < c && a < c)
 				GLOBALblocks[i].blockOffsetFix = 1 + direction;
 			else if (b < c && a > c)
@@ -220,66 +194,15 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			else if (b > c && a < c)
 				GLOBALblocks[i].blockOffsetFix = 2 + direction;
 		}
-		
-		/*
-		float c = (N - 1) * v;
-		if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
-			GLOBALblocks[i].blockOffsetFix = -1;
-		else if (b < a - v && b > -a + (N - 2) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > a + v && b < -a + (N) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 2 + direction;
-		else if (b < c)
-			GLOBALblocks[i].blockOffsetFix = 1 + direction;
-		else
-			GLOBALblocks[i].blockOffsetFix = 3 + direction;
-		*/
-
-			/*
-			else if (b < c)
-				GLOBALblocks[i].blockOffsetFix = 1 + direction;
-			else
-				GLOBALblocks[i].blockOffsetFix = 3 + direction;
-
-		/*
-		float c = (N - 1) * v;
-		//if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
-		//	GLOBALblocks[i].blockOffsetFix = -1;
-		
-		if (b < a - v && b > c)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (a < c && b > -a + (N - 1) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > a && b < c)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (a > c && b < -a + (N - 1) * 2 * v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-			*/
-		/*
-		else if (b < c)
-			GLOBALblocks[i].blockOffsetFix = 1 + direction;
-		else
-			GLOBALblocks[i].blockOffsetFix = 3 + direction;
-		*/
-		/*
-		float c = (N - 1) * v;
-		if (b < c - v && a < c + v)
-			GLOBALblocks[i].blockOffsetFix = 1 + direction;
-		else if (b < c + v && a > c + v)
-			GLOBALblocks[i].blockOffsetFix = 0 + direction;
-		else if (b > c + v && a > c - v)
-			GLOBALblocks[i].blockOffsetFix = 3 + direction;
-		else if (b > c - v && a < c - v)
-			GLOBALblocks[i].blockOffsetFix = 2 + direction;
-		*/
-		if (direction) {
+		// przepe³enienie rotacji, zakres od 0 do 3
+		if (direction) { //obrót w lewo (przeciwna strona do podstawowej)
 			GLOBALblocks[i].rot[axis]++;
 			if (GLOBALblocks[i].rot[axis] == 4) {
 				GLOBALblocks[i].rot[axis] = 0;
 				GLOBALblocks[i].prevRot[axis] = -1;
 			}
 		}
-		else {
+		else { //obrót w prawo
 			GLOBALblocks[i].rot[axis]--;
 			if (GLOBALblocks[i].rot[axis] == -1) {
 				GLOBALblocks[i].rot[axis] = 3;
@@ -287,57 +210,29 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 			}
 		}
 	}
+	//aktualizacja tablciy order
 	orderUpdateRotateMatrix(direction);
-	
-	
-	/*
-	for (int i = 0; i < N*N*N; i++) {
-		for (int l = 0; l < 6; l++)
-			GLOBALblocks[i].color[l] = glm::vec3(0, 0, 0);
-
-		if (GLOBALblocks[i].blockOffsetFix == 0)
-			for (int l = 0; l < 6; l++)
-				GLOBALblocks[i].color[l] = glm::vec3(.2, .2, .2);
-		if (GLOBALblocks[i].blockOffsetFix == 1)
-			for (int l = 0; l < 6; l++)
-				GLOBALblocks[i].color[l] = glm::vec3(.4,.4,.4);
-		if (GLOBALblocks[i].blockOffsetFix == 2)
-			for (int l = 0; l < 6; l++)
-				GLOBALblocks[i].color[l] = glm::vec3(.6, .6, .6);
-		if (GLOBALblocks[i].blockOffsetFix == 3)
-			for (int l = 0; l < 6; l++)
-				GLOBALblocks[i].color[l] = glm::vec3(.8, .8, .8);
-	}
-	
-	*/
 }
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
-int COLORtest = 0;
-int TESTTEST = 0;
 int row = 0;
-
-
-
 string code_s = "";
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
 	Orientation = cameraFront;
-
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)          // sprawdzanie czy wybrany klawisz jest wciœniêty (Esc)     GLFW_PRESS | GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka
-
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_PRESS) { //move
-		if (move_cube == 0) {
+		if (move_cube == 0)
 			move_cube = 1;
-		}
 	}
 	if (glfwGetKey(window, GLFW_KEY_M) == GLFW_RELEASE) {
 		if (move_cube==2)
 			move_cube = 0;
 	}
+	//g³ówna logika inputu do obracania
 	if (move_cube == 1 && rotateCounter < 0) {
 		if (glfwGetKey(window, GLFW_KEY_0) == GLFW_PRESS)
 			row = 0;
@@ -402,6 +297,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			move_cube = 2;
 		}
 	}
+	//ruch kamery
 	else if (ANIMATION_DURATION - MOVEMENT_FREEZE_AFTER_MOVE > rotateCounter) {
 		const float cameraSpeed = 12.0 * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
@@ -427,6 +323,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		if (code_input == 2)
 			code_input = 0;
 	}
+	//input w postaci kodu - wersja NIEAKTUALNA (TYLKO 3x3)
 	if (code_input == 1) {
 		getline(cin, code_s);
 		for (int i = 0; i <= code_s.length(); i++) {
@@ -502,59 +399,6 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 		}
 		code_input_index++;
 	}
-
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_PRESS) { //code input
-		if (COLORtest == 0) {
-			COLORtest = 1;
-			//for (int i = 0; i < N * N * N; i++) {
-			//	for (int j = 0; j < 6; j++)
-			//		GLOBALblocks[i].color[j] = glm::vec3(static_cast<float>(order[i])/pow(N,3), 0, 0);
-			//}
-			TESTTEST++;
-			if (TESTTEST == 3)
-				TESTTEST = 0;
-
-			Block* blocks = GLOBALblocks;
-
-			
-
-			for (int i = 0; i < N * N * N; i++) {
-
-				float _x = GLOBALblocks[i].position.x;
-				float _y = GLOBALblocks[i].position.y;
-				float _z = GLOBALblocks[i].position.z;
-				float _c = (N - 1) * v;
-				GLOBALblocks[i].offsetSideFix[2] = false;
-				GLOBALblocks[i].offsetSideFix[0] = false;
-				GLOBALblocks[i].offsetSideFix[1] = false;
-				if ((_y < _x - v && _y > _c) || (_x < _c && _y > -_x + (N - 1) * 2 * v) || (_y > _x && _y < _c) || (_x > _c && _y < -_x + (N - 1) * 2 * v))
-					GLOBALblocks[i].offsetSideFix[2] = true;
-				if ((_y < _z - v && _y > _c) || (_z < _c && _y > -_z + (N - 1) * 2 * v) || (_y > _z && _y < _c) || (_z > _c && _y < -_z + (N - 1) * 2 * v))
-					GLOBALblocks[i].offsetSideFix[0] = true;
-				if ((_z < _x - v && _z > _c) || (_x < _c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < _c) || (_x > _c && _z < -_x + (N - 1) * 2 * v))
-					GLOBALblocks[i].offsetSideFix[1] = true;
-
-				for (int l = 0; l < 6; l++)
-					blocks[i].color[l] = glm::vec3(0, 0, 0);
-
-				//for (int l = 0; l < 6; l++)
-				//	blocks[i].color[l].x = static_cast<float>(blocks[i].offset_[TESTTEST]) / N * 2.;
-				//for (int l = 0; l < 6; l++)
-				//	blocks[i].color[l].z = static_cast<float>(blocks[i].radius_[TESTTEST]) / N * 2.;
-				
-
-				if (blocks[i].offsetSideFix[TESTTEST] == true)
-					for (int l = 0; l < 6; l++)
-						blocks[i].color[l].z = 0.8;
-			}
-
-
-		}
-	}
-	if (glfwGetKey(window, GLFW_KEY_Q) == GLFW_RELEASE) {
-		if (COLORtest == 1)
-			COLORtest = 0;
-	}
 }
 void mouse_callback(GLFWwindow* window, double xpos, double ypos)
 {
@@ -601,7 +445,7 @@ int main() {
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
-	GLFWwindow* window = glfwCreateWindow(800, 800, "glhf", NULL, NULL);
+	GLFWwindow* window = glfwCreateWindow(width, height, "glhf", NULL, NULL);
 	// Error check if the window fails to create
 	if (window == NULL)
 	{
@@ -665,53 +509,14 @@ int main() {
 		order[i] = i;
 		neworder[i] = i;
 	}
-	
+	//generowanie tablicy int** rotateIndex
 	generateRotateIndexAxis();
-
-	/*
-	rotateIndex[3*j+0][i] = N * i + j; //x
-	rotateIndex[3*j+1][i] = i % N + (i / N) * N * N + N*j; //y
-	rotateIndex[3*j+2][i] = i + j*N*N; //z
-
-	int rotateIndex[9][9] = {
-	{0,3,6,9,12,15,18,21,24},	 //x
-	{0,1,2,9,10,11,18,19,20},	 //y
-	{0,1,2,3,4,5,6,7,8},		 //z
-	{1,4,7,10,13,16,19,22,25},	 //x+1
-	{3,4,5,12,13,14,21,22,23},	 //y+1
-	{9,10,11,12,13,14,15,16,17}, //z+1
-	{2,5,8,11,14,17,20,23,26},	 //x+2
-	{6,7,8,15,16,17,24,25,26},	 //y+2
-	{18,19,20,21,22,23,24,25,26} //z+2
-};
-	*/
 
 	Block* blocks;
 	blocks = new Block[pow(N, 3)];
 	GLOBALblocks = blocks;
 	int n_blocks = pow(N, 3);
-	bool skip_radius_offset = true;
 	for (int i = 0; i < n_blocks; i++) {
-		//int k = i % (N * N);
-		skip_radius_offset = false;	
-		if (i < N*N || i >= (N - 1) * N * N) { //front + back side  //|| i >= (N - 1) * N * N
-		}
-		else if (i % N == 0) { //left side
-			//k = reverseRotateIndex(i, 0);
-		}
-		else if (i % N == N - 1) { //right
-			//k = reverseRotateIndex(i, 0 + (N-1) * 3);
-		}
-		else if (i % (N * N) < N) { //down side
-			//k = reverseRotateIndex(i, 1);
-		}
-		else if (i % (N * N) > (N - 1) * N) {// up
-			//k = reverseRotateIndex(i, 1 + (N-1) * 3);
-		}
-		else
-			skip_radius_offset = true;
-		skip_radius_offset = false;
-
 		// RADIUS + OFFSET EACH AXIS
 		// Z AXIS
 		int k = i % (N * N);
@@ -720,7 +525,6 @@ int main() {
 			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
 				blocks[i].radius_[2] = (N - 1) / 2 - j;
 		}
-		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].offset_[2] = (N - 1) / 2;
 		for (int j = 1; j < (N + 1) / 2; j++) {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
@@ -733,7 +537,6 @@ int main() {
 			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
 				blocks[i].radius_[0] = (N - 1) / 2 - j;
 		}
-		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].offset_[0] = (N - 1) / 2;
 		for (int j = 1; j < (N + 1) / 2; j++) {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
@@ -746,45 +549,14 @@ int main() {
 			if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
 				blocks[i].radius_[1] = (N - 1) / 2 - j;
 		}
-		//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
 		blocks[i].offset_[1] = (N - 1) / 2;
 		for (int j = 1; j < (N + 1) / 2; j++) {
 			if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
 				blocks[i].offset_[1] = (N - 1) / 2 - j;
 		}
-		/*
-		cerr << blocks[i].offset_[1]<< "\t" << blocks[i].radius_[1] << endl;
-		blocks[i].radius_[0] += v;
-		blocks[i].radius_[1] += v;
-		blocks[i].radius_[2] += v;
-		blocks[i].offset_[0] += 1;
-		blocks[i].offset_[1] += 1;
-		blocks[i].offset_[2] += 1;
-		*/
-		//blocks[i].offset_[1] += 1;
-
-		/*
-		if (i < N * N || i >= (N - 1) * N * N) {
-			blocks[i].radius_ = (N - 1) / 2;
-			for (int j = 1; j < (N + 1) / 2; j++) {
-				if (k % N >= j && k % N < N - j && k / N >= j && k / N < N - j)
-					blocks[i].radius_ = (N - 1) / 2 - j;
-			}
-			//cerr << blocks[i].radius << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
-			blocks[i].offset_ = (N - 1) / 2;
-			for (int j = 1; j < (N + 1) / 2; j++) {
-				if ((k % N >= j && k % N < N - j) || (k / N >= j && k / N < N - j))
-					blocks[i].offset_ = (N - 1) / 2 - j;
-			}
-		}
-		*/
-		
-		//cerr << blocks[i].offset << (i % 5 == 4 ? "\n" : "\t") << (i % 25 == 24 ? "\n" : "");
+		// POZYCJA DANEGO BLOKU
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
-		//blocks[i].offsetSideFix = false;
-
-		
-
+		// KOLORY KONKRETYNCH BLOKÓW
 		if (i < 1*N*N) { //first side - red
 			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
 			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
@@ -805,79 +577,10 @@ int main() {
 			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
 			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
 		}
-		float c = (N - 1) * v;
-		//if (N % 2 == 1 && j % (N * N) == (N * N - 1) / 2)
-		//	GLOBALblocks[i].blockOffsetFix = -1;
-
-		float _x = blocks[i].position.x;
-		float _y = blocks[i].position.y;
-		float _z = blocks[i].position.z;
-
-		/*
-		if ((b < a - v && b > c) || (a < c && b > -a + (N - 1) * 2 * v) || (b > a && b < c) || (a > c && b < -a + (N - 1) * 2 * v)) {
-			blocks[i].offsetSideFix = true;
-			//blocks[i].offset_ *= -1;
-			//if (i < 25)
-			//for (int l = 0; l < 6; l++)
-			//	blocks[i].color[l] = glm::vec3(0, 0, 0);
-		}
-		*/
-		/*
-		if ((_y < _x - v && _y > c) || (_x < c && _y > -_x + (N - 1) * 2 * v) || (_y > _x && _y < c) || (_x > c && _y < -_x + (N - 1) * 2 * v))
-			blocks[i].offsetSideFix[2] = 1;
-		if ((_y < _z - v && _y > c) || (_z < c && _y > -_z + (N - 1) * 2 * v) || (_y > _z && _y < c) || (_z > c && _y < -_z + (N - 1) * 2 * v))
-			blocks[i].offsetSideFix[0] = 1;
-		if ((_z < _x - v && _z > c) || (_x < c && _z > -_x + (N - 1) * 2 * v) || (_z > _x && _z < c) || (_x > c && _z < -_x + (N - 1) * 2 * v))
-			blocks[i].offsetSideFix[1] = 1;
-			*/
-		//if (blocks[i].offsetSideFix[0] == true || blocks[i].offsetSideFix[1] == true || blocks[i].offsetSideFix[2] == true) {
-			//blocks[i].offsetSideFix[0] = true;
-			//blocks[i].offsetSideFix[1] = true;
-			//blocks[i].offsetSideFix[2] = true;
-		//}
-
-		/*
-		else if (a < c && b > -a + (N - 1) * 2 * v)
-			blocks[i].offset_ *= -1;
-		else if (b > a && b < c)
-			blocks[i].offset_ *= -1;
-		else if (a > c && b < -a + (N - 1) * 2 * v)
-			blocks[i].offset_ *= -1;
-			*/
-
-		/*
-			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
-			blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			blocks[i].color[2] = glm::vec3(0.9, 0.5, 0.1); //orange
-			blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
-		*/
-		/*
-		for (int l = 0; l < 6; l++)
-			blocks[i].color[l] = glm::vec3(0, 0, 0);
-
-		if (blocks[i].offset_[TESTTEST] == 1)
-			for (int l = 0; l < 6; l++)
-				blocks[i].color[l].y = .5;
-		if (blocks[i].offset_[TESTTEST] == 2)
-			for (int l = 0; l < 6; l++)
-				blocks[i].color[l].y = 1.;
-		if (blocks[i].radius_[TESTTEST] == 1)
-			for (int l = 0; l < 6; l++)
-				blocks[i].color[l].x = .5;
-		if (blocks[i].radius_[TESTTEST] == 2)
-			for (int l = 0; l < 6; l++)
-				blocks[i].color[l].x = 1.;
-		if (blocks[i].offset_[TESTTEST] == 7)
-			for (int l = 0; l < 6; l++)
-				blocks[i].color[l].z = 1;
-		*/
 	}
-
 	float backgroud_r, backgroud_g, backgroud_b;
 	glfwSwapInterval(1); //ograniczenie fps to synchronizacji vsync
-	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); kontury
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); //kontury
 	glLineWidth(3);
 	float time = 0;
 	Camera camera(width, height);
@@ -946,13 +649,8 @@ int main() {
 			glUniform3f(colorLoc, blocks[i].color[0].x, blocks[i].color[0].y, blocks[i].color[0].z);
 			//rysowanie konkretnego kwadratu (2 trójk¹tów)
 			blockEBO.Bind();
-			//glDrawElements(GL_TRIANGLES, n_indices, GL_UNSIGNED_INT, 0);
-
 			for (int j = 0; j < 6; j++) {
-				//cerr << (j + 1) * n_indices / 6 << endl;
 				glUniform3f(colorLoc, blocks[i].color[j].x, blocks[i].color[j].y, blocks[i].color[j].z);
-				//if (blocks[i].color[j].x > 0.05 && blocks[i].color[j].x < 0.15 && blocks[i].color[j].y > 0.05 && blocks[i].color[j].y < 0.15 && blocks[i].color[j].z > 0.05 && blocks[i].color[j].z < 0.15);
-				//else
 				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
 			}
 		}
