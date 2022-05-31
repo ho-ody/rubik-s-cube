@@ -15,6 +15,9 @@ using namespace std;
 
 extern void makeMoves(string code_s);
 extern string generateScramble(int length);
+extern void letsGoAiStart();
+extern void letsGoAiLoop();
+extern void letsGoAiEnd();
 string code_s = "";
 
 Block* GLOBALblocks;
@@ -54,7 +57,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 20;
+int ANIMATION_DURATION = 1;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 
 int* order;
@@ -552,6 +555,7 @@ int main() {
 	Camera camera(width, height, glm::vec3(-8,11,-8));
 	cameraFront = glm::vec3(0.628001, -0.480989, 0.611772); pitch = -28.75; yaw = 44.25;
 	glm::vec3 colorTemp;
+	letsGoAiStart();
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
@@ -646,11 +650,13 @@ int main() {
 				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
 			}
 		}
+		// AI
+		letsGoAiLoop();
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
 		glfwPollEvents();
 	}
-	
+	letsGoAiEnd();
 	glfwDestroyWindow(window); //Delete window before ending the program
 	glfwTerminate(); //Terminate GLFW before ending the program
 
