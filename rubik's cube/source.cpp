@@ -401,6 +401,8 @@ void delete2dArray(int** tab, int n) {
 	delete[] tab;
 }
 
+
+int ai_counter = 0;
 int width = 800, height = 800;
 int main() {
 	srand(time(NULL));
@@ -411,7 +413,6 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	v = 3. / N;
-	generateScramble(20);
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "glhf", NULL, NULL);
 	// Error check if the window fails to create
@@ -556,6 +557,7 @@ int main() {
 	cameraFront = glm::vec3(0.628001, -0.480989, 0.611772); pitch = -28.75; yaw = 44.25;
 	glm::vec3 colorTemp;
 	letsGoAiStart();
+	//generateScramble(20);
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
@@ -651,7 +653,11 @@ int main() {
 			}
 		}
 		// AI
-		letsGoAiLoop();
+		if (ai_counter <= 0) {
+			letsGoAiLoop();
+			ai_counter = 100;
+		}	
+		ai_counter--;
 		// Odœwie¿ widok
 		glfwSwapBuffers(window);
 		glfwPollEvents();
