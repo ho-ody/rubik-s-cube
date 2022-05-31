@@ -8,7 +8,8 @@ class Block
 {
 public:
 	glm::vec3 position; //relative to center
-	glm::vec3 color[6];
+	// (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
+	int color[6];
 	glm::vec3 rotation;
 	int rot[3] = { 0,0,0 };
 	int prevRot[3] = { 0,0,0 };

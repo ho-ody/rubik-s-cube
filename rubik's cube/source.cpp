@@ -54,7 +54,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 40;
+int ANIMATION_DURATION = 20;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 
 int* order;
@@ -301,7 +301,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 	}
 	//ruch kamery
 	else if (ANIMATION_DURATION - MOVEMENT_FREEZE_AFTER_MOVE > rotateCounter) {
-		const float cameraSpeed = 12.0 * deltaTime; // adjust accordingly
+		const float cameraSpeed = 20.0 * deltaTime; // adjust accordingly
 		if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
 			Position += cameraSpeed * Orientation;
 		if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
@@ -522,25 +522,26 @@ int main() {
 		// POZYCJA DANEGO BLOKU
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		// KOLORY KONKRETYNCH BLOKÓW
+		// (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
 		if (i < 1*N*N) { //first side - blue
-			blocks[i].color[0] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
-			if (i % (N*N) >= N*(N-1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
+			blocks[i].color[0] = 4; //blue
+			if (i % N == N-1) blocks[i].color[1] = 3; //orange
+			if (i % N == 0) blocks[i].color[3] = 2; //red
+			if (i % (N*N) >= N*(N-1)) blocks[i].color[4] = 1; //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = 0; //white
 		}
 		else if (i < N * N* (N-1)) {
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
-			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
+			if (i % N == N-1) blocks[i].color[1] = 3; //orange
+			if (i % N == 0) blocks[i].color[3] = 2; //red
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = 1; //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = 0; //white
 		}
 		else {
-			blocks[i].color[2] = glm::vec3(0.1, 0.9, 0.1); //green
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
-			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
+			blocks[i].color[2] = 5; //green
+			if (i % N == N-1) blocks[i].color[1] = 3; //orange
+			if (i % N == 0) blocks[i].color[3] = 2; //red
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = 1; //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = 0; //white
 		}
 	}
 	float backgroud_r, backgroud_g, backgroud_b;
@@ -550,6 +551,7 @@ int main() {
 	float time = 0;
 	Camera camera(width, height, glm::vec3(-8,11,-8));
 	cameraFront = glm::vec3(0.628001, -0.480989, 0.611772); pitch = -28.75; yaw = 44.25;
+	glm::vec3 colorTemp;
 	while (!glfwWindowShouldClose(window))
 	{
 		//ROTATION
@@ -613,11 +615,34 @@ int main() {
 			glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
 			//przekazanie koloru
 			int colorLoc = glGetUniformLocation(shaderProgram.ID, "color");
-			glUniform3f(colorLoc, blocks[i].color[0].x, blocks[i].color[0].y, blocks[i].color[0].z);
 			//rysowanie konkretnego kwadratu (2 trójk¹tów)
 			blockEBO.Bind();
 			for (int j = 0; j < 6; j++) {
-				glUniform3f(colorLoc, blocks[i].color[j].x, blocks[i].color[j].y, blocks[i].color[j].z);
+				switch (blocks[i].color[j]) {
+				// (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
+				case -1:
+					colorTemp = glm::vec3(.1, .1, .1);
+					break;
+				case 0:
+					colorTemp = glm::vec3(.9, .9, .9);
+					break;
+				case 1:
+					colorTemp = glm::vec3(.9, .9, .1);
+					break;
+				case 2:
+					colorTemp = glm::vec3(.9, .1, .1);
+					break;
+				case 3:
+					colorTemp = glm::vec3(.9, .5, .1);
+					break;
+				case 4:
+					colorTemp = glm::vec3(.1, .1, .9);
+					break;
+				case 5:
+					colorTemp = glm::vec3(.1, .9, .1);
+					break;
+				}
+				glUniform3f(colorLoc, colorTemp.x, colorTemp.y, colorTemp.z);
 				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
 			}
 		}

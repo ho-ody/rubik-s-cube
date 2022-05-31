@@ -4,7 +4,7 @@
 Block::Block() {
 	rotation = glm::vec3(0, 0, 0);
 	for (int i = 0; i < 6; i++)
-		color[i] = glm::vec3(0.1, 0.1, 0.1);
+		color[i] = -1;
 }
 
 extern int N; extern float v; //skalowanie
@@ -187,7 +187,7 @@ void Block::rotate(int n, int axis, float time, int direction) {
 }
 
 void Block::update(int direction) {
-	glm::vec3 t;
+	int t;
 	for (int i = 0; i < abs( rot[0] - prevRot[0]); i++) {
 		if (direction) {
 			t = color[0];
