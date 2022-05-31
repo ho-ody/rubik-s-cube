@@ -25,7 +25,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 7;
+int N = 3;
 float v = 1;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -408,7 +408,7 @@ int main() {
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
 	v = 3. / N;
-	generateScramble(50);
+	generateScramble(20);
 
 	GLFWwindow* window = glfwCreateWindow(width, height, "glhf", NULL, NULL);
 	// Error check if the window fails to create
@@ -522,25 +522,25 @@ int main() {
 		// POZYCJA DANEGO BLOKU
 		blocks[i].position = glm::vec3(i % N, (i / N)% N, i / (N*N)) * glm::vec3(2*v,2*v,2*v);
 		// KOLORY KONKRETYNCH BLOKÓW
-		if (i < 1*N*N) { //first side - red
-			blocks[i].color[0] = glm::vec3(0.9, 0.1, 0.1); //red
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) >= N*(N-1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+		if (i < 1*N*N) { //first side - blue
+			blocks[i].color[0] = glm::vec3(0.1, 0.1, 0.9); //blue
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
+			if (i % (N*N) >= N*(N-1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
 		}
 		else if (i < N * N* (N-1)) {
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
 		}
 		else {
-			blocks[i].color[2] = glm::vec3(0.9, 0.5, 0.1); //orange
-			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.9, 0.9); //white
-			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.9, 0.1); //yellow
-			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.1, 0.1, 0.9); //blue
-			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.1, 0.9, 0.1); //green
+			blocks[i].color[2] = glm::vec3(0.1, 0.9, 0.1); //green
+			if (i % N == N-1) blocks[i].color[1] = glm::vec3(0.9, 0.5, 0.1); //orange
+			if (i % N == 0) blocks[i].color[3] = glm::vec3(0.9, 0.1, 0.1); //red
+			if (i % (N*N) >= N * (N - 1)) blocks[i].color[4] = glm::vec3(0.9, 0.9, 0.1); //yellow
+			if (i % (N*N) < N) blocks[i].color[5] = glm::vec3(0.9, 0.9, 0.9); //white
 		}
 	}
 	float backgroud_r, backgroud_g, backgroud_b;
