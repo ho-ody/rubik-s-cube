@@ -81,11 +81,11 @@ void letsGoAiLoop() {
 		
 
 
-		if (code_input_index == -1)
-			f2l();
 		//if (code_input_index == -1)
-		//	if (cross() == -1)
-		//		f2l();
+		//	f2l();
+		if (code_input_index == -1)
+			//if (cross() == -1)
+				f2l();
 		//showSides();
 	}
 }
@@ -174,7 +174,8 @@ string turnBottomToMatchCorner(int distance) {
 }
 
 enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
-// (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
+// (0): white, (1): yellow, (2): red,   (3): orange, (4): blue,  (5): green
+// (0): down,  (1): up,     (2): right, (3): left,   (4): front, (5): back
 int cross() {
 	//cerr << "cross!\n";
 	string superFlip = "rflbrd";
@@ -480,10 +481,87 @@ int cross() {
 //	x 3 x	1 x 3	1 3 3
 //	1 x 2	x x x	1 x 2
 //	x 0 x	0 x 2	0 0 2
-// (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
+// 
+// (0): white, (1): yellow, (2): red,   (3): orange, (4): blue,  (5): green
+// (0): down,  (1): up,     (2): right, (3): left,   (4): front, (5): back
 int f2l() {
 	//cerr << "f2l!\n";
 	string baseMove = "";
+	//Positions of corners and edges
+	int corners[4]; //fr, rb, bl, lf	// 0 -> 8  8 -> 15  15 -> 23	w zale¿noœci od rotacji
+	int edges[4];   //fr, rb, bl, lf	// 0 -> 7  8 -> 15				w zale¿noœci od rotacji
+	//edges
+	int edges_colors[8][2] = { {sides[f][1][2],sides[r][1][0]}, {sides[r][1][2],sides[b][1][0]}, {sides[b][1][2],sides[l][1][0]}, {sides[l][1][2],sides[f][1][0]},{sides[f][2][1],sides[u][0][1]}, {sides[r][2][1],sides[u][1][2]}, {sides[b][2][1],sides[u][2][1]}, {sides[l][2][1],sides[u][1][0]} };
+	for (int i = 0; i < 8; i++) {
+		if (edges_colors[i][0] == r) {
+			if (edges_colors[i][1] == b)
+				edges[1] = i;
+			else if (edges_colors[i][1] == f)
+				edges[0] = i + 8;
+		}
+		else if (edges_colors[i][0] == b) {
+			if (edges_colors[i][1] == r)
+				edges[1] = i + 8;
+			else if (edges_colors[i][1] == l)
+				edges[2] = i;
+		}
+		else if (edges_colors[i][0] == l) {
+			if (edges_colors[i][1] == f)
+				edges[3] = i;
+			else if (edges_colors[i][1] == b)
+				edges[2] = i + 8;
+		}
+		else if (edges_colors[i][0] == f) {
+			if (edges_colors[i][1] == l)
+				edges[3] = i + 8;
+			else if (edges_colors[i][1] == r)
+				edges[0] = i;
+		}
+	}
+	//corners
+	int corners_colors[8][3] = { {sides[f][0][2], sides[r][0][0], sides[d][2][2]}, {sides[r][0][2], sides[b][0][0], sides[d][0][2]}, {sides[b][0][2], sides[l][0][0], sides[d][0][0]}, {sides[l][0][2], sides[f][0][0], sides[d][2][0]}, {sides[u][0][2], sides[r][2][0], sides[f][2][2]}, {sides[u][2][2], sides[b][2][0], sides[r][2][2]},{sides[u][2][0], sides[l][2][0], sides[b][2][2]},{sides[u][0][0], sides[f][2][0], sides[l][2][2]} };
+	for (int i = 0; i < 8; i++) {
+		if (corners_colors[i][0] == f) {
+			if (corners_colors[i][1] == r && corners_colors[i][2] == 0)
+				corners[0] = i;
+			else if (corners_colors[i][1] == d && corners_colors[i][2] == l)
+				corners[3] = i + 16;
+		}
+		if (corners_colors[i][0] == r) {
+			if (corners_colors[i][1] == b && corners_colors[i][2] == 0)
+				corners[1] = i;
+			else if (corners_colors[i][1] == d && corners_colors[i][2] == f)
+				corners[0] = i + 16;
+		}
+		if (corners_colors[i][0] == b) {
+			if (corners_colors[i][1] == l && corners_colors[i][2] == 0)
+				corners[2] = i;
+			else if (corners_colors[i][1] == d && corners_colors[i][2] == r)
+				corners[1] = i + 16;
+		}
+		if (corners_colors[i][0] == l) {
+			if (corners_colors[i][1] == f && corners_colors[i][2] == 0)
+				corners[3] = i;
+			else if (corners_colors[i][1] == d && corners_colors[i][2] == b)
+				corners[2] = i + 16;
+		}
+		if (corners_colors[i][0] == d) {
+			if (corners_colors[i][1] == f && corners_colors[i][2] == r)
+				corners[0] = i + 8;
+			else if (corners_colors[i][1] == r && corners_colors[i][2] == b)
+				corners[1] = i + 8;
+			else if (corners_colors[i][1] == b && corners_colors[i][2] == l)
+				corners[2] = i + 8;
+			else if (corners_colors[i][1] == l && corners_colors[i][2] == f)
+				corners[3] = i + 8;
+		}
+	}
+	for (int i = 0; i < 4; i++) cerr << corners[i] << ", ";
+	cerr << endl;
+
+
+
+
 	//1st: Easy cases
 	if ((sides[r][2][0] == 0 && sides[u][2][1] == sides[f][2][2] && sides[b][2][1] == sides[u][0][2]) ||
 		(sides[b][2][0] == 0 && sides[u][1][0] == sides[r][2][2] && sides[l][2][1] == sides[u][2][2]) ||
@@ -589,6 +667,44 @@ int f2l() {
 		code_input_index = 0;
 		//cerr << "d) ";
 	}
+	//2nd case: Corner in bottom, edge in top layer
+	else if ((sides[d][0][2] == 0 && sides[f][0][2] == sides[f][0][1]) ||
+	(sides[d][2][2] == 0 && sides[r][0][2] == sides[r][0][1]) ||
+	(sides[d][2][0] == 0 && sides[b][0][2] == sides[b][0][1]) ||
+	(sides[d][0][0] == 0 && sides[l][0][2] == sides[l][0][1])) {
+		int s1, s2;
+		if (sides[d][0][2] == 0) {
+			s1 = f, s2 = r;
+		}
+		else if (sides[d][2][2] == 0) {
+			s1 = r, s2 = b;
+		}
+		else if (sides[d][2][0] == 0) {
+			s1 = b, s2 = l;
+		}
+		else if (sides[d][0][0] == 0) {
+			s1 = l, s2 = f;
+		}
+	
+		if (sides[s1][1][2] == sides[s1][1][1] && sides[s2][1][0] == sides[s2][1][1]) { //git klocek
+			//nic
+		}
+		else if (sides[s1][1][2] == sides[s2][1][1] && sides[s2][1][0] == sides[s1][1][1]) { //reverse //6-1
+
+		}
+		else if (1) {
+
+		}
+	/*
+	sides[f][0][1] == sides[f][2][1] && sides[r][0][0] == sides[u][0][1]
+	sides[r][0][1] == sides[r][2][1] && sides[b][0][0] == sides[u][1][2]
+	sides[b][0][1] == sides[b][2][1] && sides[l][0][0] == sides[u][2][1]
+	sides[l][0][1] == sides[l][2][1] && sides[f][0][0] == sides[u][1][0]
+	*/
+	
+		cerr << "2nd case\n";
+	}
+
 
 	//cerr << code_s << endl;
 	//code_input_index = -1;
