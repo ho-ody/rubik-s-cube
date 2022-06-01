@@ -224,8 +224,21 @@ int move_cube = 0;
 int code_input = 0; 
 int code_input_index = 0;
 int row = 0;
+int ai_go = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) { //move
+		if (ai_go == 0)
+			ai_go = 1;
+		if (ai_go == 2)
+			ai_go = 3;
+	}
+	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_RELEASE) {
+		if (ai_go == 1)
+			ai_go = 2;
+		if (ai_go == 3)
+			ai_go = 0;
+	}
 	Orientation = cameraFront;
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)          // sprawdzanie czy wybrany klawisz jest wciœniêty (Esc)     GLFW_PRESS | GLFW_RELEASE
 		glfwSetWindowShouldClose(window, true);                     // zamykanie okienka

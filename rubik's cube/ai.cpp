@@ -73,13 +73,19 @@ void showSides() {
 	cerr << "\n";
 }
 void cross();
+extern int ai_go;
 void letsGoAiLoop() {
 	updateSidesFromOrder();
+	if (ai_go) {
+		
 
-	cross();
 
 
-	//showSides();
+
+
+		cross();
+		//showSides();
+	}
 }
 void delete3dArray(int*** tab) {
 	for (int i = 0; i < N; i++) {
@@ -148,7 +154,7 @@ void cross() {
 			code_input_index = 0;
 		}
 	//first type of move
-	else if (0 == 1) if (sides[f][1][0] == 0 || sides[f][1][2] == 0 || sides[r][1][0] == 0 || sides[r][1][2] == 0 ||
+	else if (sides[f][1][0] == 0 || sides[f][1][2] == 0 || sides[r][1][0] == 0 || sides[r][1][2] == 0 ||
 		sides[b][1][0] == 0 || sides[b][1][2] == 0 || sides[l][1][0] == 0 || sides[l][1][2] == 0) { 
 		//base move + colorID + finalPosition
 		// finalPosition:
@@ -254,8 +260,7 @@ void cross() {
 		}
 	}
 	//second type of move
-	else;
-	else if (0 == 1) if (sides[u][0][1] == 0 || sides[u][1][0] == 0 || sides[u][1][2] == 0 || sides[u][2][1] == 0 ) {
+	else if (sides[u][0][1] == 0 || sides[u][1][0] == 0 || sides[u][1][2] == 0 || sides[u][2][1] == 0 ) {
 		int colorID, finalPosition;
 		if (sides[u][0][1] == 0) {
 			baseMove = "ff";
@@ -272,7 +277,7 @@ void cross() {
 			colorID = sides[r][2][1];
 			finalPosition = 2;
 		}
-		else if (sides[u][1][0] == 0) {
+		else if (sides[u][2][1] == 0) {
 			baseMove = "bb";
 			colorID = sides[b][2][1];
 			finalPosition = 0;
@@ -334,9 +339,8 @@ void cross() {
 			code_input_index = 0;
 		}
 	}
-	else;
 	//third type of move
-	else if (0 == 1) if (sides[f][2][1] == 0 || sides[r][2][1] == 0 || sides[b][2][1] == 0 || sides[l][2][1] == 0) {
+	else if (sides[f][2][1] == 0 || sides[r][2][1] == 0 || sides[b][2][1] == 0 || sides[l][2][1] == 0) {
 		int colorID, finalPosition;
 		if (sides[f][2][1] == 0) {
 			baseMove = "URfr";
@@ -415,7 +419,6 @@ void cross() {
 			code_input_index = 0;
 		}
 	}
-	else;
 	//forth type of move
 	else if (sides[f][0][1] == 0 || sides[r][0][1] == 0 || sides[b][0][1] == 0 || sides[l][0][1] == 0) {
 		if (sides[f][0][1] == 0) {
