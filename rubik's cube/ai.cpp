@@ -72,7 +72,8 @@ void showSides() {
 	}
 	cerr << "\n";
 }
-void cross();
+int cross();
+int f2l();
 extern int ai_go;
 void letsGoAiLoop() {
 	updateSidesFromOrder();
@@ -80,10 +81,11 @@ void letsGoAiLoop() {
 		
 
 
-
-
-
-		cross();
+		if (code_input_index == -1)
+			f2l();
+		//if (code_input_index == -1)
+		//	if (cross() == -1)
+		//		f2l();
 		//showSides();
 	}
 }
@@ -139,10 +141,42 @@ string x3_pos_color_test(int new_pos, int new_color, int pos1, int color1, int p
 	return "";
 }
 
+int distance_p(int pos1, int pos2) {
+	int pos_rules[4][4] = { {0,3,1,2}, {1,0,2,3}, {3,2,0,1}, {2,1,3,0} };
+	return pos_rules[pos1][pos2];
+}
+
+int distance_c(int color1, int color2) {
+	int color_rules[6][6] = { {0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,2,1,3}, {0,0,2,0,3,1}, {0,0,3,1,0,2}, {0,0,1,3,2,0} };
+	//cerr << "d= " << color_rules[color1][color2] << endl;
+	return color_rules[color1][color2];
+}
+
+string turnTopToMatchCorner(int distance) {
+	if (distance == 0)
+		return "";
+	if (distance == 1)
+		return "U";
+	if (distance == 2)
+		return "uu";
+	if (distance == 3)
+		return "u";
+}
+string turnBottomToMatchCorner(int distance) {
+	if (distance == 0)
+		return "";
+	if (distance == 1)
+		return "D";
+	if (distance == 2)
+		return "dd";
+	if (distance == 3)
+		return "d";
+}
+
 enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
-void cross() {
-
+int cross() {
+	//cerr << "cross!\n";
 	string superFlip = "rflbrd";
 	string baseMove = "";
 
@@ -435,4 +469,129 @@ void cross() {
 		code_s = baseMove;
 		code_input_index = 0;
 	}
+	//fix bottom orientation
+	else if (sides[f][0][1] != sides[f][1][1]) {
+		baseMove = turnBottomToMatchCorner(distance_c(sides[f][1][1], sides[f][0][1]));
+		code_s = baseMove;
+		code_input_index = 0;
+	}
+	return code_input_index;
+}
+//	x 3 x	1 x 3	1 3 3
+//	1 x 2	x x x	1 x 2
+//	x 0 x	0 x 2	0 0 2
+// (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
+int f2l() {
+	//cerr << "f2l!\n";
+	string baseMove = "";
+	//1st: Easy cases
+	if ((sides[r][2][0] == 0 && sides[u][2][1] == sides[f][2][2] && sides[b][2][1] == sides[u][0][2]) ||
+		(sides[b][2][0] == 0 && sides[u][1][0] == sides[r][2][2] && sides[l][2][1] == sides[u][2][2]) ||
+		(sides[l][2][0] == 0 && sides[u][0][1] == sides[b][2][2] && sides[f][2][1] == sides[u][2][0]) ||
+		(sides[f][2][0] == 0 && sides[u][1][2] == sides[l][2][2] && sides[r][2][1] == sides[u][0][0])) {
+		//rotate up to be above right place
+		string moveBasedOnColor[] = { "","","buB","fuL","ruR","luL" };
+		if (sides[r][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][2], sides[f][1][1]));
+			baseMove += moveBasedOnColor[sides[f][2][2]];
+		}
+		else if (sides[b][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][2], sides[r][1][1]));
+			baseMove += moveBasedOnColor[sides[r][2][2]];
+		}
+		else if (sides[l][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][2], sides[b][1][1]));
+			baseMove += moveBasedOnColor[sides[b][2][2]];
+		}
+		else if (sides[f][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][2], sides[l][1][1]));
+			baseMove += moveBasedOnColor[sides[l][2][2]];
+		}
+		code_s = baseMove;
+		code_input_index = 0;
+		//cerr << "a) ";
+	}
+	else if ((sides[f][2][2] == 0 && sides[u][1][0] == sides[r][2][0] && sides[l][2][1] == sides[u][0][2]) ||
+		(sides[r][2][2] == 0 && sides[u][0][1] == sides[b][2][0] && sides[f][2][1] == sides[u][2][2]) ||
+		(sides[b][2][2] == 0 && sides[u][1][2] == sides[l][2][0] && sides[r][2][1] == sides[u][2][0]) ||
+		(sides[l][2][2] == 0 && sides[u][2][1] == sides[f][2][0] && sides[b][2][1] == sides[u][0][0])) {
+		//rotate up to be above right place
+		string moveBasedOnColor[] = { "","","FUf","BUb","LUl","RUr" };
+		if (sides[f][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][0], sides[r][1][1]));
+			baseMove += moveBasedOnColor[sides[r][2][0]];
+		}
+		else if (sides[r][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][0], sides[b][1][1]));
+			baseMove += moveBasedOnColor[sides[b][2][0]];
+		}
+		else if (sides[b][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][0], sides[l][1][1]));
+			baseMove += moveBasedOnColor[sides[l][2][0]];
+		}
+		else if (sides[l][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][0], sides[f][1][1]));
+			baseMove += moveBasedOnColor[sides[f][2][0]];
+		}
+		code_s = baseMove;
+		code_input_index = 0;
+		//cerr << "b) ";
+	}
+	else if ((sides[r][2][0] == 0 && sides[f][2][1] == sides[f][2][2] && sides[u][0][1] == sides[u][0][2]) ||
+		(sides[b][2][0] == 0 && sides[r][2][1] == sides[r][2][2] && sides[u][1][2] == sides[u][2][2]) ||
+		(sides[l][2][0] == 0 && sides[b][2][1] == sides[b][2][2] && sides[u][2][1] == sides[u][2][0]) ||
+		(sides[f][2][0] == 0 && sides[l][2][1] == sides[l][2][2] && sides[u][1][0] == sides[u][0][0])) {
+		//rotate up to be above right place
+		string moveBasedOnColor[] = { "","","URur","ULul","UFuf","UBub" };
+		if (sides[r][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][2], sides[f][1][1]));
+			baseMove += moveBasedOnColor[sides[f][2][2]];
+		}
+		else if (sides[b][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][2], sides[r][1][1]));
+			baseMove += moveBasedOnColor[sides[r][2][2]];
+		}
+		else if (sides[l][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][2], sides[b][1][1]));
+			baseMove += moveBasedOnColor[sides[b][2][2]];
+		}
+		else if (sides[f][2][0] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][2], sides[l][1][1]));
+			baseMove += moveBasedOnColor[sides[l][2][2]];
+		}
+		code_s = baseMove;
+		code_input_index = 0;
+		//cerr << "c) ";
+	}
+	else if ((sides[f][2][2] == 0 && sides[r][2][1] == sides[r][2][0] && sides[u][1][2] == sides[u][0][2]) ||
+		(sides[r][2][2] == 0 && sides[b][2][1] == sides[b][2][0] && sides[u][2][1] == sides[u][2][2]) ||
+		(sides[b][2][2] == 0 && sides[l][2][1] == sides[l][2][0] && sides[u][1][0] == sides[u][2][0]) ||
+		(sides[l][2][2] == 0 && sides[f][2][1] == sides[f][2][0] && sides[u][0][1] == sides[u][0][0])) {
+		//rotate up to be above right place
+		string moveBasedOnColor[] = { "","","urUR","ulUL","ufUF","ubUB" };
+		if (sides[f][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][0], sides[r][1][1]));
+			baseMove += moveBasedOnColor[sides[r][2][0]];
+		}
+		else if (sides[r][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][0], sides[b][1][1]));
+			baseMove += moveBasedOnColor[sides[b][2][0]];
+		}
+		else if (sides[b][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][0], sides[l][1][1]));
+			baseMove += moveBasedOnColor[sides[l][2][0]];
+		}
+		else if (sides[l][2][2] == 0) {
+			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][0], sides[f][1][1]));
+			baseMove += moveBasedOnColor[sides[f][2][0]];
+		}
+		code_s = baseMove;
+		code_input_index = 0;
+		//cerr << "d) ";
+	}
+
+	//cerr << code_s << endl;
+	//code_input_index = -1;
+
+	return code_input_index;
 }

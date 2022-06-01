@@ -15,7 +15,7 @@ extern string code_s;
 
 void makeMoves(string code_s) {
 	int row = 0;
-	if (code_input_index < code_s.length() && rotateCounter < 0) {
+	if (code_input_index != -1 && code_input_index < code_s.length() && rotateCounter < 0) {
 		while (code_s[code_input_index] >= '0' && code_s[code_input_index] <= '9') {
 			row *= 10;
 			row += code_s[code_input_index] - '0';
@@ -71,6 +71,8 @@ void makeMoves(string code_s) {
 		}
 		code_input_index++;
 		prev_row_code = row;
+		if (code_input_index == code_s.length())
+			code_input_index = -1;
 	}
 }
 
