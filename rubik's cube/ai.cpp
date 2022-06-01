@@ -588,6 +588,7 @@ int f2l() {
 		code_s = baseMove;
 		code_input_index = 0;
 		//cerr << "a) ";
+		cerr << "1-1[?]\t";
 	}
 	else if ((sides[f][2][2] == 0 && sides[u][1][0] == sides[r][2][0] && sides[l][2][1] == sides[u][0][2]) ||
 		(sides[r][2][2] == 0 && sides[u][0][1] == sides[b][2][0] && sides[f][2][1] == sides[u][2][2]) ||
@@ -613,7 +614,7 @@ int f2l() {
 		}
 		code_s = baseMove;
 		code_input_index = 0;
-		//cerr << "b) ";
+		cerr << "1-2[?]\t";
 	}
 	else if ((sides[r][2][0] == 0 && sides[f][2][1] == sides[f][2][2] && sides[u][0][1] == sides[u][0][2]) ||
 		(sides[b][2][0] == 0 && sides[r][2][1] == sides[r][2][2] && sides[u][1][2] == sides[u][2][2]) ||
@@ -639,7 +640,7 @@ int f2l() {
 		}
 		code_s = baseMove;
 		code_input_index = 0;
-		//cerr << "c) ";
+		cerr << "1-3[?]\t";
 	}
 	else if ((sides[f][2][2] == 0 && sides[r][2][1] == sides[r][2][0] && sides[u][1][2] == sides[u][0][2]) ||
 		(sides[r][2][2] == 0 && sides[b][2][1] == sides[b][2][0] && sides[u][2][1] == sides[u][2][2]) ||
@@ -665,7 +666,7 @@ int f2l() {
 		}
 		code_s = baseMove;
 		code_input_index = 0;
-		//cerr << "d) ";
+		cerr << "1-4[?]\t";
 	}
 	//2nd case: Corner in bottom, edge in top layer
 	else if ((corners[0] % 8 < 4 && edges[0] % 8 >= 4) || (corners[1] % 8 < 4 && edges[1] % 8 >= 4) || (corners[2] % 8 < 4 && edges[2] % 8 >= 4) || (corners[3] % 8 < 4 && edges[3] % 8 >= 4)) {
@@ -699,7 +700,6 @@ int f2l() {
 	string midmove = "";
 	string premove = "";
 	int preoffset = 0;
-	cerr << pairID << ": ";
 	int typeOfCase = 0;
 	if (corners[pairID] / 8 == 0) { //1+2
 		if (edges[pairID] / 8 == 0) { //1
@@ -780,12 +780,129 @@ int f2l() {
 	//cerr << firstPhase[typeOfCase-1][corners[pairID] % 8] << "\t";
 	//cerr << midmove << "\t";
 	//cerr << secondPhase[typeOfCase-1][secondPhaseMove] << endl;
+	cerr << "2-" << typeOfCase << "[" << pairID << "]\t";
 	move = premove + firstPhase[typeOfCase - 1][corners[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
 
 	code_s = move;
 	code_input_index = 0;
 	}
+	//3rd case: Corner in top, edge in middle
+	else if ((corners[0] % 8 >= 4 && edges[0] % 8 < 4) || (corners[1] % 8 >= 4 && edges[1] % 8 < 4) || (corners[2] % 8 >= 4 && edges[2] % 8 < 4) || (corners[3] % 8 >= 4 && edges[3] % 8 < 4)) {
+	int pairID;
+	if (corners[0] % 8 >= 4 && edges[0] % 8 < 4)
+		pairID = 0;
+	else if (corners[1] % 8 >= 4 && edges[1] % 8 < 4)
+		pairID = 1;
+	else if (corners[2] % 8 >= 4 && edges[2] % 8 < 4)
+		pairID = 2;
+	else if (corners[3] % 8 >= 4 && edges[3] % 8 < 4)
+		pairID = 3;
 
+	string firstPhase[6][4] = {
+		{"ruRUruRU","buBUbuBU","luLUluLU","fuFUfuFU"},
+		{"rUR","bUB","lUL","fUF"},
+		{"uFuf","uRur","uBub","uLul"},
+		{"uFUf","uRUr","uBUb","uLUl"},
+		{"UrUR","UbUB","UlUL","UfUf"},
+		{"UruR","UbuB","UluL","UfuF"}
+	};
+	string secondPhase[6][4] = {
+		{"ruR","fuF","buB","luL"},
+		{"uFuf","uRur","uBub","uLul"}, //[d]->[U]+rot
+		{"uFuuf","uRuur","uBuub","uLuul"},
+		{"UruR","UbuB","UluL","UfuF"}, //[d']->[U']+rot
+		{"UrUR","UbUB","UlUL","UfUF"},
+		{"uFUf","uRUr","uBUb","uLUl"}
+	};
+
+
+	int typeOfCase = 0;
+	int preoffset = 0;
+	if (corners[pairID] / 8 == 0) { //5+6
+		if (edges[pairID] / 8 == 0) { //5
+			typeOfCase = 5;
+		}
+		else { //6
+			typeOfCase = 6;
+		}
+	}
+	else if (corners[pairID] / 8 == 1) { //1+2
+		if (edges[pairID] / 8 == 0) { //1
+			typeOfCase = 1;
+		}
+		else { //2
+			typeOfCase = 2;
+		}
+	}
+	else { //3+4
+		if (edges[pairID] / 8 == 0) { //3
+			typeOfCase = 3;
+		}
+		else { //4
+			typeOfCase = 4;
+		}
+	}
+	preoffset += corners[pairID] % 8 - edges[pairID] % 8;
+	if (preoffset > 3)
+		preoffset -= 4;
+	string move = "";
+	string midmove = "";
+	string premove = "";
+	switch (preoffset) {
+	case 0:
+		premove = "";
+		break;
+	case 1:
+		premove = "u";
+		break;
+	case 2:
+		premove = "uu";
+		break;
+	case 3:
+		premove = "U";
+		break;
+	}
+
+	int postoffset = edges[pairID] % 8 - pairID;
+	int secondPhaseMove = edges[pairID] % 8;
+	switch (postoffset) {
+	case 0:
+		midmove = "";
+		break;
+	case 1:
+	case -3:
+		midmove = "u";
+		secondPhaseMove--;
+		break;
+	case -1:
+	case 3:
+		secondPhaseMove++;
+		midmove = "U";
+		break;
+	case 2:
+	case -2:
+		secondPhaseMove -= 2;
+		midmove = "uu";
+		break;
+	default:
+		cerr << "error_postoffset_midmove: " << postoffset << endl;
+	}
+	if (secondPhaseMove > 3)
+		secondPhaseMove -= 4;
+	else if (secondPhaseMove < 0)
+		secondPhaseMove += 4;
+
+	//cerr << "("<< pairID << ") 3-" << typeOfCase << "  ->  " << premove << endl;
+	//cerr << premove << "\t";
+	//cerr << firstPhase[typeOfCase-1][edges[pairID] % 8] << "\t";
+	//cerr << midmove << "\t";
+	//cerr << secondPhase[typeOfCase-1][secondPhaseMove] << endl;
+	cerr << "3-" << typeOfCase << "[" << pairID << "]\t";
+	move = premove + firstPhase[typeOfCase - 1][edges[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
+
+	code_s = move;
+	code_input_index = 0;
+	}
 
 	return code_input_index;
 }

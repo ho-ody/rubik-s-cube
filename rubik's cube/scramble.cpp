@@ -163,7 +163,7 @@ string generateScramble(int length) {
 			}
 		}
 
-	cerr << output << endl;
+	cerr << endl << output << endl;
 
 	code_s = output;
 	code_input_index = 0;
