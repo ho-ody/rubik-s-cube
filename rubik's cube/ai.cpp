@@ -255,7 +255,7 @@ void cross() {
 	}
 	//second type of move
 	else;
-	else if (sides[u][0][1] == 0 || sides[u][1][0] == 0 || sides[u][1][2] == 0 || sides[u][2][1] == 0 ) {
+	else if (0 == 1) if (sides[u][0][1] == 0 || sides[u][1][0] == 0 || sides[u][1][2] == 0 || sides[u][2][1] == 0 ) {
 		int colorID, finalPosition;
 		if (sides[u][0][1] == 0) {
 			baseMove = "ff";
@@ -333,5 +333,104 @@ void cross() {
 			code_s = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
 			code_input_index = 0;
 		}
+	}
+	else;
+	//third type of move
+	else if (0 == 1) if (sides[f][2][1] == 0 || sides[r][2][1] == 0 || sides[b][2][1] == 0 || sides[l][2][1] == 0) {
+		int colorID, finalPosition;
+		if (sides[f][2][1] == 0) {
+			baseMove = "URfr";
+			colorID = sides[u][0][1];
+			finalPosition = 3;
+		}
+		else if (sides[l][2][1] == 0) {
+			baseMove = "UFlf";
+			colorID = sides[u][1][0];
+			finalPosition = 1;
+		}
+		else if (sides[r][2][1] == 0) {
+			baseMove = "UBrb";
+			colorID = sides[u][1][2];
+			finalPosition = 2;
+		}
+		else if (sides[b][2][1] == 0) {
+			baseMove = "ULbl";
+			colorID = sides[u][1][0];
+			finalPosition = 0;
+		}
+		//check number of blocks already filled in bottom
+		int blocksOnBottomCount = 0;
+		int blocksOnBottom[4] = { -1,-1,-1,-1 };
+		if (sides[d][0][1] == 0) {
+			blocksOnBottomCount++; blocksOnBottom[0] = sides[b][0][1];
+		}
+		if (sides[d][1][0] == 0) {
+			blocksOnBottomCount++; blocksOnBottom[1] = sides[l][0][1];
+		}
+		if (sides[d][1][2] == 0) {
+			blocksOnBottomCount++; blocksOnBottom[2] = sides[r][0][1];
+		}
+		if (sides[d][2][1] == 0) {
+			blocksOnBottomCount++; blocksOnBottom[3] = sides[f][0][1];
+		}
+		//if bottom is empty
+		if (blocksOnBottomCount == 0) {
+			code_s = baseMove;
+			code_input_index = 0;
+		}
+		//1 block already filled
+		//2 blocks already filled
+		else if (blocksOnBottomCount == 1 || blocksOnBottomCount == 2) {
+			int pos, color;
+			if (blocksOnBottom[0] != -1)
+				pos = 0;
+			else if (blocksOnBottom[1] != -1)
+				pos = 1;
+			else if (blocksOnBottom[2] != -1)
+				pos = 2;
+			else
+				pos = 3;
+
+			color = blocksOnBottom[pos];
+			code_s = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
+			//cerr << x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove << endl;
+			code_input_index = 0;
+		}
+		//3 blocks already filled
+		else if (blocksOnBottomCount == 3) {
+			int pos1 = -1, pos2 = -1, pos3 = -1, color1, color2, color3;
+			if (blocksOnBottom[0] != -1)
+				if (pos1 == -1) pos1 = 0; else if (pos2 == -1) pos2 = 0; else pos3 = 0;
+			if (blocksOnBottom[1] != -1)
+				if (pos1 == -1) pos1 = 1; else if (pos2 == -1) pos2 = 1; else pos3 = 1;
+			if (blocksOnBottom[2] != -1)
+				if (pos1 == -1) pos1 = 2; else if (pos2 == -1) pos2 = 2; else pos3 = 2;
+			if (blocksOnBottom[3] != -1)
+				if (pos1 == -1) pos1 = 3; else if (pos2 == -1) pos2 = 3; else pos3 = 3;
+
+			color1 = blocksOnBottom[pos1];
+			color2 = blocksOnBottom[pos2];
+			color3 = blocksOnBottom[pos3];
+			code_s = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
+			code_input_index = 0;
+		}
+	}
+	else;
+	//forth type of move
+	else if (sides[f][0][1] == 0 || sides[r][0][1] == 0 || sides[b][0][1] == 0 || sides[l][0][1] == 0) {
+		if (sides[f][0][1] == 0) {
+			baseMove = "f";
+		}
+		else if (sides[l][0][1] == 0) {
+			baseMove = "l";
+		}
+		else if (sides[r][0][1] == 0) {
+			baseMove = "r";
+		}
+		else if (sides[b][0][1] == 0) {
+			baseMove = "b";
+		}
+		code_s = baseMove;
+		code_input_index = 0;
 	}
 }
