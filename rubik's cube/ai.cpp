@@ -139,7 +139,6 @@ string x3_pos_color_test(int new_pos, int new_color, int pos1, int color1, int p
 	return "";
 }
 
-
 enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
 void cross() {
