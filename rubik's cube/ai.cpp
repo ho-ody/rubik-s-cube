@@ -834,11 +834,11 @@ int f2l() {
 		{"UruR","UbuB","UluL","UfuF"}
 	};
 	string secondPhase[6][4] = {
-		{"ruR","fuF","buB","luL"},
+		{"ruR","buB","luL","fuF"},
 		{"uFuf","uRur","uBub","uLul"}, //[d]->[U]+rot
 		{"uFuuf","uRuur","uBuub","uLuul"},
 		{"UruR","UbuB","UluL","UfuF"}, //[d']->[U']+rot
-		{"UrUR","UbUB","UlUL","UfUF"},
+		{"UruuR","UbuuB","UluuL","UfuuF"},
 		{"uFUf","uRUr","uBUb","uLUl"}
 	};
 
