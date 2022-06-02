@@ -230,8 +230,10 @@ int scramble_go = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) { //move
-		if (ai_go == 0)
+		if (ai_go == 0) {
 			ai_go = 1;
+			//code_input_index = 0;
+		}		
 		if (ai_go == 2)
 			ai_go = 3;
 	}

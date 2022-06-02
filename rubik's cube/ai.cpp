@@ -478,6 +478,13 @@ int cross() {
 	}
 	return code_input_index;
 }
+
+int distance_edge_corner(int a, int b) {
+	int t = a % 8 - b % 8;
+	if (t < 0)
+		t += 4;
+	return t;
+} 
 //	x 3 x	1 x 3	1 3 3
 //	1 x 2	x x x	1 x 2
 //	x 0 x	0 x 2	0 0 2
@@ -563,137 +570,181 @@ int f2l() {
 
 
 	//1st: Easy cases
-	if ((sides[r][2][0] == 0 && sides[u][2][1] == sides[f][2][2] && sides[b][2][1] == sides[u][0][2]) ||
-		(sides[b][2][0] == 0 && sides[u][1][0] == sides[r][2][2] && sides[l][2][1] == sides[u][2][2]) ||
-		(sides[l][2][0] == 0 && sides[u][0][1] == sides[b][2][2] && sides[f][2][1] == sides[u][2][0]) ||
-		(sides[f][2][0] == 0 && sides[u][1][2] == sides[l][2][2] && sides[r][2][1] == sides[u][0][0])) {
-		//rotate up to be above right place
-		int side = -1;
-		string moveBasedOnColor[] = { "","","buB","fuF","ruR","luL" };
-		if (sides[r][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][2], sides[f][1][1]));
-			baseMove += moveBasedOnColor[sides[f][2][2]];
-			side = sides[f][2][2];
+	if ((corners[0] / 8 == 2 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
+		(corners[1] / 8 == 2 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
+		(corners[2] / 8 == 2 && edges[2] / 8 == 1 && distance_edge_corner(corners[2], edges[2]) == 2 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) ||
+		(corners[3] / 8 == 2 && edges[3] / 8 == 1 && distance_edge_corner(corners[3], edges[3]) == 2 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) { //1-1
+		
+		int pairID;
+		if (corners[0] / 8 == 2 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+			pairID = 0;
+		else if (corners[1] / 8 == 2 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+			pairID = 1;
+		else if (corners[2] / 8 == 2 && edges[2] / 8 == 1 && distance_edge_corner(corners[2], edges[2]) == 2 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+			pairID = 2;
+		else if (corners[3] / 8 == 2 && edges[3] / 8 == 1 && distance_edge_corner(corners[3], edges[3]) == 2 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+			pairID = 3;
+
+		string moves[] = {"ruR","buB","luL","fuF"};
+		int preoffset = 0;
+		preoffset += corners[pairID] % 8 - 4 - pairID;
+		if (preoffset > 3)
+			preoffset -= 4;
+		if (preoffset < 0)
+			preoffset += 4;
+		string move = "";
+		string premove = "";
+		switch (preoffset) {
+		case 0:
+			premove = "";
+			break;
+		case 1:
+			premove = "u";
+			break;
+		case 2:
+			premove = "uu";
+			break;
+		case 3:
+			premove = "U";
+			break;
 		}
-		else if (sides[b][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][2], sides[r][1][1]));
-			baseMove += moveBasedOnColor[sides[r][2][2]];
-			side = sides[r][2][2];
-		}
-		else if (sides[l][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][2], sides[b][1][1]));
-			baseMove += moveBasedOnColor[sides[b][2][2]];
-			side = sides[b][2][2];
-		}
-		else if (sides[f][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][2], sides[l][1][1]));
-			baseMove += moveBasedOnColor[sides[l][2][2]];
-			side = sides[l][2][2];
-		}
-		int sideReInterpret[] = { -1,1,3,0,2,-1 };
-		side = sideReInterpret[side-1];
-		code_s = baseMove;
+
+		move = premove + moves[pairID];
+		cerr << "1-1[" << pairID << "]\t";
+		code_s = move;
 		code_input_index = 0;
-		cerr << "1-1[" << side << "]\t";
 	}
-	else if ((sides[f][2][2] == 0 && sides[u][1][0] == sides[r][2][0] && sides[l][2][1] == sides[u][0][2]) ||
-		(sides[r][2][2] == 0 && sides[u][0][1] == sides[b][2][0] && sides[f][2][1] == sides[u][2][2]) ||
-		(sides[b][2][2] == 0 && sides[u][1][2] == sides[l][2][0] && sides[r][2][1] == sides[u][2][0]) ||
-		(sides[l][2][2] == 0 && sides[u][2][1] == sides[f][2][0] && sides[b][2][1] == sides[u][0][0])) {
-		//rotate up to be above right place
-		int side = -1;
-		string moveBasedOnColor[] = { "","","FUf","BUb","LUl","RUr" };
-		if (sides[f][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][0], sides[r][1][1]));
-			baseMove += moveBasedOnColor[sides[r][2][0]];
-			side = sides[r][2][0];
+	else if ((corners[0] / 8 == 2 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 0 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
+		(corners[1] / 8 == 2 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 0 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
+		(corners[2] / 8 == 2 && edges[2] / 8 == 0 && distance_edge_corner(corners[2], edges[2]) == 0 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) ||
+		(corners[3] / 8 == 2 && edges[3] / 8 == 0 && distance_edge_corner(corners[3], edges[3]) == 0 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) { //1-3
+
+		int pairID;
+		if (corners[0] / 8 == 2 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 0 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+			pairID = 0;
+		else if (corners[1] / 8 == 2 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 0 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+			pairID = 1;
+		else if (corners[2] / 8 == 2 && edges[2] / 8 == 0 && distance_edge_corner(corners[2], edges[2]) == 0 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+			pairID = 2;
+		else if (corners[3] / 8 == 2 && edges[3] / 8 == 0 && distance_edge_corner(corners[3], edges[3]) == 0 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+			pairID = 3;
+
+		string moves[] = { "UFuf","URur","UBub","ULul" };
+		int preoffset = 0;
+		preoffset += corners[pairID] % 8 - 4 - pairID;
+		if (preoffset > 3)
+			preoffset -= 4;
+		if (preoffset < 0)
+			preoffset += 4;
+		string move = "";
+		string premove = "";
+		switch (preoffset) {
+		case 0:
+			premove = "";
+			break;
+		case 1:
+			premove = "u";
+			break;
+		case 2:
+			premove = "uu";
+			break;
+		case 3:
+			premove = "U";
+			break;
 		}
-		else if (sides[r][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][0], sides[b][1][1]));
-			baseMove += moveBasedOnColor[sides[b][2][0]];
-			side = sides[b][2][0];
-		}
-		else if (sides[b][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][0], sides[l][1][1]));
-			baseMove += moveBasedOnColor[sides[l][2][0]];
-			side = sides[l][2][0];
-		}
-		else if (sides[l][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][0], sides[f][1][1]));
-			baseMove += moveBasedOnColor[sides[f][2][0]];
-			side = sides[f][2][0];
-		}
-		int sideReInterpret[] = { -1,0,2,3,1,-1 };
-		side = sideReInterpret[side - 1];
-		code_s = baseMove;
+
+		move = premove + moves[pairID];
+		cerr << "1-3[" << pairID << "]\t";
+		code_s = move;
 		code_input_index = 0;
-		cerr << "1-2[" << side << "]\t";
 	}
-	else if ((sides[r][2][0] == 0 && sides[f][2][1] == sides[f][2][2] && sides[u][0][1] == sides[u][0][2]) ||
-		(sides[b][2][0] == 0 && sides[r][2][1] == sides[r][2][2] && sides[u][1][2] == sides[u][2][2]) ||
-		(sides[l][2][0] == 0 && sides[b][2][1] == sides[b][2][2] && sides[u][2][1] == sides[u][2][0]) ||
-		(sides[f][2][0] == 0 && sides[l][2][1] == sides[l][2][2] && sides[u][1][0] == sides[u][0][0])) {
-		//rotate up to be above right place
-		int side = -1;
-		string moveBasedOnColor[] = { "","","URur","ULul","UFuf","UBub" };
-		if (sides[r][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][2], sides[f][1][1]));
-			baseMove += moveBasedOnColor[sides[f][2][2]];
-			side = sides[f][2][2];
+	else if ((corners[0] / 8 == 0 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 1 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
+		(corners[1] / 8 == 0 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 1 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
+		(corners[2] / 8 == 0 && edges[2] / 8 == 0 && distance_edge_corner(corners[2], edges[2]) == 1 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) ||
+		(corners[3] / 8 == 0 && edges[3] / 8 == 0 && distance_edge_corner(corners[3], edges[3]) == 1 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) { //1-2
+
+		int pairID;
+		if (corners[0] / 8 == 0 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 1 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+			pairID = 0;
+		else if (corners[1] / 8 == 0 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 1 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+			pairID = 1;
+		else if (corners[2] / 8 == 0 && edges[2] / 8 == 0 && distance_edge_corner(corners[2], edges[2]) == 1 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+			pairID = 2;
+		else if (corners[3] / 8 == 0 && edges[3] / 8 == 0 && distance_edge_corner(corners[3], edges[3]) == 1 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+			pairID = 3;
+
+		string moves[] = { "FUf","RUr","BUb","LUl" };
+		int preoffset = 0;
+		preoffset += corners[pairID] % 8 - 4 - pairID;
+		if (preoffset > 3)
+			preoffset -= 4;
+		if (preoffset < 0)
+			preoffset += 4;
+		string move = "";
+		string premove = "";
+		switch (preoffset) {
+		case 0:
+			premove = "";
+			break;
+		case 1:
+			premove = "u";
+			break;
+		case 2:
+			premove = "uu";
+			break;
+		case 3:
+			premove = "U";
+			break;
 		}
-		else if (sides[b][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][2], sides[r][1][1]));
-			baseMove += moveBasedOnColor[sides[r][2][2]];
-			side = sides[r][2][2];
-		}
-		else if (sides[l][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][2], sides[b][1][1]));
-			baseMove += moveBasedOnColor[sides[b][2][2]];
-			side = sides[b][2][2];
-		}
-		else if (sides[f][2][0] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][2], sides[l][1][1]));
-			baseMove += moveBasedOnColor[sides[l][2][2]];
-			side = sides[l][2][2];
-		}
-		int sideReInterpret[] = { -1,1,3,0,2,-1 };
-		side = sideReInterpret[side - 1];
-		code_s = baseMove;
+
+		move = premove + moves[pairID];
+		cerr << "1-2[" << pairID << "]\t";
+		code_s = move;
 		code_input_index = 0;
-		cerr << "1-3[" << side << "]\t";
 	}
-	else if ((sides[f][2][2] == 0 && sides[r][2][1] == sides[r][2][0] && sides[u][1][2] == sides[u][0][2]) ||
-		(sides[r][2][2] == 0 && sides[b][2][1] == sides[b][2][0] && sides[u][2][1] == sides[u][2][2]) ||
-		(sides[b][2][2] == 0 && sides[l][2][1] == sides[l][2][0] && sides[u][1][0] == sides[u][2][0]) ||
-		(sides[l][2][2] == 0 && sides[f][2][1] == sides[f][2][0] && sides[u][0][1] == sides[u][0][0])) {
-		//rotate up to be above right place
-		int side = -1;
-		string moveBasedOnColor[] = { "","","urUR","ulUL","ufUF","ubUB" };
-		if (sides[f][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[r][2][0], sides[r][1][1]));
-			baseMove += moveBasedOnColor[sides[r][2][0]];
-			side = sides[r][2][0];
+	else if ((corners[0] / 8 == 0 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 3 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
+		(corners[1] / 8 == 0 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 3 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
+		(corners[2] / 8 == 0 && edges[2] / 8 == 1 && distance_edge_corner(corners[2], edges[2]) == 3 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) ||
+		(corners[3] / 8 == 0 && edges[3] / 8 == 1 && distance_edge_corner(corners[3], edges[3]) == 3 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) { //1-4
+
+		int pairID;
+		if (corners[0] / 8 == 0 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 3 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+			pairID = 0;
+		else if (corners[1] / 8 == 0 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 3 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+			pairID = 1;
+		else if (corners[2] / 8 == 0 && edges[2] / 8 == 1 && distance_edge_corner(corners[2], edges[2]) == 3 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+			pairID = 2;
+		else if (corners[3] / 8 == 0 && edges[3] / 8 == 1 && distance_edge_corner(corners[3], edges[3]) == 3 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+			pairID = 3;
+
+		string moves[] = { "urUR","ubUB","ulUL","ufUF" };
+		int preoffset = 0;
+		preoffset += corners[pairID] % 8 - 4 - pairID;
+		if (preoffset > 3)
+			preoffset -= 4;
+		if (preoffset < 0)
+			preoffset += 4;
+		string move = "";
+		string premove = "";
+		switch (preoffset) {
+		case 0:
+			premove = "";
+			break;
+		case 1:
+			premove = "u";
+			break;
+		case 2:
+			premove = "uu";
+			break;
+		case 3:
+			premove = "U";
+			break;
 		}
-		else if (sides[r][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[b][2][0], sides[b][1][1]));
-			baseMove += moveBasedOnColor[sides[b][2][0]];
-			side = sides[b][2][0];
-		}
-		else if (sides[b][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[l][2][0], sides[l][1][1]));
-			baseMove += moveBasedOnColor[sides[l][2][0]];
-			side = sides[l][2][0];
-		}
-		else if (sides[l][2][2] == 0) {
-			baseMove = turnTopToMatchCorner(distance_c(sides[f][2][0], sides[f][1][1]));
-			baseMove += moveBasedOnColor[sides[f][2][0]];
-			side = sides[f][2][0];
-		}
-		int sideReInterpret[] = { -1,0,2,3,1,-1 };
-		side = sideReInterpret[side - 1];
-		code_s = baseMove;
+
+		move = premove + moves[pairID];
+		cerr << "1-4[" << pairID << "]\t";
+		code_s = move;
 		code_input_index = 0;
-		cerr << "1-4[" << side << "]\t";
 	}
 	//2nd case: Corner in bottom, edge in top layer
 	else if ((corners[0] % 8 < 4 && edges[0] % 8 >= 4) || (corners[1] % 8 < 4 && edges[1] % 8 >= 4) || (corners[2] % 8 < 4 && edges[2] % 8 >= 4) || (corners[3] % 8 < 4 && edges[3] % 8 >= 4)) {
@@ -1131,8 +1182,7 @@ int f2l() {
 	}
 
 
-
-
-
+	//cerr << code_s << endl << endl;
+	//code_input_index = -1;
 	return code_input_index;
 }
