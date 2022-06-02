@@ -1675,8 +1675,26 @@ int oll() {
 		"RFLfrFlf"
 	);
 	//4 corners
+	o_add(
+		0, 0, 1, 0, 0,
+		0, 1, 0, 1, 0,
+		0, 1, 1, 0, 1,
+		0, 1, 1, 1, 0,
+		0, 0, 0, 0, 0,
+		"MUmuuMUm"
+	);
+	o_add(
+		0, 0, 1, 0, 0,
+		0, 1, 0, 1, 0,
+		0, 1, 1, 1, 0,
+		0, 1, 0, 1, 0,
+		0, 0, 1, 0, 0,
+		"LruRUlRfrF"
+	);
+	//shape _|
 
-	code_s = test("RFLfrFlf");
+
+	code_s = test("MUmuuMUm");
 	o_add(
 		0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0,
