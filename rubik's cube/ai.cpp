@@ -903,6 +903,209 @@ int f2l() {
 	code_s = move;
 	code_input_index = 0;
 	}
+	//4th case: Corner pointing outwards, edge in top layer
+	//4b - parzyste: bia³y do osi Z
+	else if ((corners[0] / 8 == 0 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) || (corners[1] / 8 == 0 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) || (corners[2] / 8 == 0 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) || (corners[3] / 8 == 0 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) {
+	int pairID;
+	if (corners[0] / 8 == 0 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+		pairID = 0;
+	else if (corners[1] / 8 == 0 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+		pairID = 1;
+	else if (corners[2] / 8 == 0 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+		pairID = 2;
+	else if (corners[3] / 8 == 0 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+		pairID = 3;
+
+	string firstPhase[6][4] = {
+		{"FufU","RurU","BubU","LulU"},
+		{"UruuR","UbuuB","UluuL","UfuuF"},
+		{"UruR","UbuB","UluL","UfuF"},
+		{"uFufU","uRurU","uBubU","uLulU"},
+		{"uFUfU","uRUrU","uBUbU","uLUlU"},
+		{"UruuRu","UbuuBu","UluuLu","UfuuFu"}
+	};
+	string secondPhase[6][4] = {
+		{"UruR","UbuB","UluL","UfuF"},
+		{"UruuR","UbuuB","UluuL","UfuuF"},
+		{"UruuR","UbuuB","UluuL","UfuuF"},
+		{"FUf","RUr","BUb","LUl"},
+		{"FUf","RUr","BUb","LUl"},
+		{"FUf","RUr","BUb","LUl"}
+	};
+
+	int distance_edge_corner = corners[pairID] % 8 - edges[pairID] % 8;
+	if (distance_edge_corner < 0)
+		distance_edge_corner += 4;
+
+
+	int typeOfCase = 0;
+	int preoffset = 0;
+	if (distance_edge_corner == 0) { //4+1
+		if (edges[pairID] / 8 == 0) { //4
+			typeOfCase = 4;
+		}
+		else { //1
+			typeOfCase = 1;
+		}
+	}
+	else if (distance_edge_corner == 1) { //?+2
+		if (edges[pairID] / 8 == 0) { //?
+			typeOfCase = -1;
+			cerr << "error_4b_" << pairID << "_" << edges[pairID] << "_" << corners[pairID] << endl;
+		}
+		else { //2
+			typeOfCase = 2;
+		}
+	}
+	else if (distance_edge_corner == 2) { //5+3
+		if (edges[pairID] / 8 == 0) { //5
+			typeOfCase = 5;
+		}
+		else { //3
+			typeOfCase = 3;
+		}
+	}
+	else if (distance_edge_corner == 3) { //6+?
+		if (edges[pairID] / 8 == 0) { //6
+			typeOfCase = 6;
+		}
+		else { //?
+			cerr << "error_4b_" << pairID << "_" << edges[pairID] << "_" << corners[pairID] << endl;
+			typeOfCase = -1;
+		}
+	}
+	preoffset += corners[pairID] % 8 - 4 - pairID;
+	if (preoffset > 3)
+		preoffset -= 4;
+	if (preoffset < 0)
+		preoffset += 4;
+	string move = "";
+	string premove = "";
+	switch (preoffset) {
+	case 0:
+		premove = "";
+		break;
+	case 1:
+		premove = "u";
+		break;
+	case 2:
+		premove = "uu";
+		break;
+	case 3:
+		premove = "U";
+		break;
+	}
+
+	move = premove + firstPhase[typeOfCase-1][pairID] + secondPhase[typeOfCase-1][pairID];
+	//move = premove;
+	//cerr << "move = " << move << endl;
+	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
+	cerr << "4b-" << typeOfCase << "[" << pairID << "]\t";
+	code_s = move;
+	code_input_index = 0;
+	}
+	//4a - nieparzyste: bia³y do osi X
+	else if ((corners[0] / 8 == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) || (corners[1] / 8 == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) || (corners[2] / 8 == 2 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) || (corners[3] / 8 == 2 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) {
+	int pairID;
+	if (corners[0] / 8 == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4)
+		pairID = 0;
+	else if (corners[1] / 8 == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4)
+		pairID = 1;
+	else if (corners[2] / 8 == 2 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4)
+		pairID = 2;
+	else if (corners[3] / 8 == 2 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)
+		pairID = 3;
+
+	string firstPhase[6][4] = {
+		{"rURu","bUBu","lULu","fUFu"}, 
+		{"uFuuf","uRuur","uBuub","uLuul"}, 
+		{"uFUf","uRUr","uBUb","uLUl"}, 
+		{"UrURu","UbUBu","UlULu","UfUFu"}, 
+		{"UruRu","UbuBu","UluLu","UfuFu"}, 
+		{"uFuufU","uRuurU","uBuubU","uLuulU"} 
+	};
+	string secondPhase[6][4] = {
+		{"uFUf","uRUr","uBUb","uLUl"},
+		{"uFuuf","uRuur","uBuub","uLuul"},
+		{"uFuuf","uRuur","uBuub","uLuul"},
+		{"ruR","buB","luL","fuF"},
+		{"ruR","buB","luL","fuF"},
+		{"ruR","buB","luL","fuF"},
+	};
+
+	int distance_edge_corner = corners[pairID] % 8 - edges[pairID] % 8;
+	if (distance_edge_corner < 0)
+		distance_edge_corner += 4;
+
+
+	int typeOfCase = 0;
+	int preoffset = 0;
+	if (distance_edge_corner == 0) { //?+6
+		if (edges[pairID] / 8 == 0) { //?
+			typeOfCase = -1;
+			cerr << "error_4a_" << pairID << "_" << edges[pairID] << "_" << corners[pairID] << endl;
+		}
+		else { //6
+			typeOfCase = 6;
+		}
+	}
+	else if (distance_edge_corner == 1) { //3+5
+		if (edges[pairID] / 8 == 0) { //3
+			typeOfCase = 3;
+		}
+		else { //5
+			typeOfCase = 5;
+		}
+	}
+	else if (distance_edge_corner == 2) { //2+?
+		if (edges[pairID] / 8 == 0) { //2
+			typeOfCase = 2;
+		}
+		else { //?
+			typeOfCase = -1;
+			cerr << "error_4a_" << pairID << "_" << edges[pairID] << "_" << corners[pairID] << endl;
+		}
+	}
+	else if (distance_edge_corner == 3) { //1+4
+		if (edges[pairID] / 8 == 0) { //1
+			typeOfCase = 1;
+		}
+		else { //4
+			typeOfCase = 4;
+		}
+	}
+	preoffset += corners[pairID] % 8 - 4 - pairID;
+	if (preoffset > 3)
+		preoffset -= 4;
+	if (preoffset < 0)
+		preoffset += 4;
+	string move = "";
+	string premove = "";
+	switch (preoffset) {
+	case 0:
+		premove = "";
+		break;
+	case 1:
+		premove = "u";
+		break;
+	case 2:
+		premove = "uu";
+		break;
+	case 3:
+		premove = "U";
+		break;
+	}
+
+	move = premove + firstPhase[typeOfCase - 1][pairID] + secondPhase[typeOfCase - 1][pairID];
+	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
+	cerr << "4a-" << typeOfCase << "[" << pairID << "]\t";
+	code_s = move;
+	code_input_index = 0;
+	}
+
+
+
+
 
 	return code_input_index;
 }
