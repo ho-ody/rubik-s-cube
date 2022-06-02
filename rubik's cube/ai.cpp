@@ -86,9 +86,9 @@ void letsGoAiLoop() {
 
 		//if (code_input_index == -1)
 		//	f2l();
-		if (code_input_index == -1 && rotateCounter < 0)
-			if (cross() == -1)
-				if (f2l() == -1)
+		//if (code_input_index == -1 && rotateCounter < 0)
+		//	if (cross() == -1)
+		//		if (f2l() == -1)
 					if (ok_its_enought == false)
 						ok_its_enought = oll();
 		//showSides();
@@ -1437,6 +1437,7 @@ void o_add(
 	orientations[o_index][4][2] = a13;
 	orientations[o_index][4][3] = a14;
 	orientations[o_index][4][4] = a15;
+	o_index++;
 }
 
 void showOrientation(bool Orientaion[5][5]) {
@@ -1487,10 +1488,11 @@ void getTopOrientation(bool currentOrientaion[4][5][5]) {
 int a = 0;
 
 string test(string in) {
-	//cerr << endl << in;
+	cerr << endl << in;
 	for (int i = 0; i < in.length(); i++) {
 		char t = in[i];
-		if (t > 'Z')
+		if (t >= '0' && t <= '9');
+		else if (t > 'Z')
 			t += 'Z' - 'z';
 		else
 			t -= 'Z' - 'z';
@@ -1501,7 +1503,7 @@ string test(string in) {
 	for (int i = 0; i < in.length(); i++) {
 		out.insert(0, string(1, in[i]));
 	}
-	//cerr << " -> " << out << endl;
+	cerr << " -> " << out << endl;
 	return out;
 }
 
@@ -1515,10 +1517,8 @@ int oll() {
 		//cerr << "\n\n========================================\n\n";
 
 	//here we go
-	//dot
-	code_s = test("ruBrbrrURfrF");
 	code_input_index = 0;
-
+	//dot
 	bool x = true;
 	o_add(
 		0, 0, 1, 0, 0,
@@ -1542,7 +1542,7 @@ int oll() {
 		1, 0, 1, 0, 1,
 		1, 0, 0, 1, 0,
 		0, 0, 1, 0, 0,
-		"FbblBlfuuFl2F"
+		"bulULBUfruRUF"
 	);
 	o_add(
 		0, 0, 1, 0, 0,
@@ -1552,9 +1552,50 @@ int oll() {
 		0, 1, 1, 0, 0,
 		"RuuRfrFUFUfUr"
 	);
-	
-	
+	o_add(
+		0, 0, 1, 1, 0,
+		0, 1, 0, 0, 0,
+		1, 0, 1, 0, 1,
+		1, 0, 0, 1, 0,
+		0, 0, 1, 0, 0,
+		"ruRuRfrFuuRfrF"
+	);
+	o_add(
+		0, 0, 1, 0, 0,
+		0, 1, 0, 1, 0,
+		1, 0, 1, 0, 1,
+		0, 1, 0, 1, 0,
+		0, 0, 1, 0, 0,
+		"MuumuuMumuuMuum"
+	);
+	o_add(
+		0, 0, 1, 0, 0,
+		0, 1, 0, 1, 0,
+		1, 0, 1, 0, 1,
+		1, 0, 0, 0, 1,
+		0, 0, 1, 0, 0,
+		"muruRUMRfrF"
+	);
+	o_add(
+		0, 1, 1, 1, 0,
+		0, 0, 0, 0, 0,
+		1, 0, 1, 0, 1,
+		0, 1, 0, 1, 0,
+		0, 0, 1, 0, 0,
+		"fruRuFuuFlfL"
+	);
+	o_add(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 1, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		"xxxxx"
+	);
+	//line
 
+
+	code_s = test("fruRuFuuFlfL");
 	o_add(
 		0, 0, 0, 0, 0,
 		0, 0, 0, 0, 0,

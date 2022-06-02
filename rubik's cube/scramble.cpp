@@ -30,10 +30,14 @@ void makeMoves(string code_s) {
 			code_s[code_input_index] = code_s[code_input_index - 1];
 		}
 
+		if (code_s[code_input_index] == 'M' || code_s[code_input_index] == 'm' || code_s[code_input_index] == 'E' || code_s[code_input_index] == 'e' || code_s[code_input_index] == 'S' || code_s[code_input_index] == 's')
+			row = 1;
 		direction = 0;
 		switch (code_s[code_input_index]) {
+		case 'S':
 		case 'F':
 			direction = 1;
+		case 's':
 		case 'f':
 			axis = axis = 2 + row * 3;
 			rotate(direction, indexesOfRotationZ, row);
@@ -44,8 +48,10 @@ void makeMoves(string code_s) {
 			axis = 0 + row * 3;
 			rotate(direction, indexesOfRotationX, row);
 			break;
+		case 'e':
 		case 'd':
 			direction = 1;
+		case 'E':
 		case 'D':
 			axis = 1 + row * 3;
 			rotate(direction, indexesOfRotationY, row);
@@ -56,8 +62,10 @@ void makeMoves(string code_s) {
 			axis = 2 + (N - 1) * 3 - row * 3;
 			rotate(direction, indexesOfRotationZ, N - 1 - row);
 			break;
+		case 'M':
 		case 'L':
 			direction = 1;
+		case 'm':
 		case 'l':
 			axis = 0 + (N - 1) * 3 - row * 3;
 			rotate(direction, indexesOfRotationX, N - 1 - row);
