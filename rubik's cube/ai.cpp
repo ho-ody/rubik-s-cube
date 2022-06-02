@@ -77,6 +77,7 @@ int f2l();
 int oll();
 extern int ai_go;
 extern int rotateCounter;
+int ok_its_enought = 0;
 void letsGoAiLoop() {
 	updateSidesFromOrder();
 	if (ai_go) {
@@ -88,7 +89,8 @@ void letsGoAiLoop() {
 		if (code_input_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
 				if (f2l() == -1)
-					oll();
+					if (ok_its_enought == false)
+						ok_its_enought = oll();
 		//showSides();
 	}
 }
@@ -1406,8 +1408,35 @@ void o_add(
 	bool a51, bool a52, bool a53, bool a54, bool a55,
 	string move) {
 
-	orientations[o_index][0][1] = true;
+	orientations[o_index][0][0] = a51;
+	orientations[o_index][0][1] = a52;
+	orientations[o_index][0][2] = a53;
+	orientations[o_index][0][3] = a54;
+	orientations[o_index][0][4] = a55;
 
+	orientations[o_index][1][0] = a41;
+	orientations[o_index][1][1] = a42;
+	orientations[o_index][1][2] = a43;
+	orientations[o_index][1][3] = a44;
+	orientations[o_index][1][4] = a45;
+
+	orientations[o_index][2][0] = a31;
+	orientations[o_index][2][1] = a32;
+	orientations[o_index][2][2] = a33;
+	orientations[o_index][2][3] = a34;
+	orientations[o_index][2][4] = a35;
+
+	orientations[o_index][3][0] = a21;
+	orientations[o_index][3][1] = a22;
+	orientations[o_index][3][2] = a23;
+	orientations[o_index][3][3] = a24;
+	orientations[o_index][3][4] = a25;
+
+	orientations[o_index][4][0] = a11;
+	orientations[o_index][4][1] = a12;
+	orientations[o_index][4][2] = a13;
+	orientations[o_index][4][3] = a14;
+	orientations[o_index][4][4] = a15;
 }
 
 void showOrientation(bool Orientaion[5][5]) {
@@ -1455,6 +1484,27 @@ void getTopOrientation(bool currentOrientaion[4][5][5]) {
 	rotateMatrix(currentOrientaion[1], currentOrientaion[2]);
 	rotateMatrix(currentOrientaion[2], currentOrientaion[3]);
 }
+int a = 0;
+
+string test(string in) {
+	//cerr << endl << in;
+	for (int i = 0; i < in.length(); i++) {
+		char t = in[i];
+		if (t > 'Z')
+			t += 'Z' - 'z';
+		else
+			t -= 'Z' - 'z';
+		in.erase(i, 1);
+		in.insert(i, string(1, t));
+	}
+	string out = "";
+	for (int i = 0; i < in.length(); i++) {
+		out.insert(0, string(1, in[i]));
+	}
+	//cerr << " -> " << out << endl;
+	return out;
+}
+
 int oll() {
 	getTopOrientation(currentOrientaion);
 
@@ -1465,21 +1515,59 @@ int oll() {
 		//cerr << "\n\n========================================\n\n";
 
 	//here we go
+	//dot
+	code_s = test("ruBrbrrURfrF");
+	code_input_index = 0;
 
+	bool x = true;
+	o_add(
+		0, 0, 1, 0, 0,
+		1, 0, 0, 0, 1,
+		1, 0, 1, 0, 1,
+		1, 0, 0, 0, 1,
+		0, 0, 1, 0, 0,
+		"ruBrbrrURfrF"
+	);
+	o_add(
+		0, 0, 1, 0, 0,
+		1, 0, 0, 0, 1,
+		1, 0, 1, 0, 1,
+		0, 0, 0, 0, 0,
+		0, 1, 1, 1, 0,
+		"RfrFuuRfrffuuf"
+	);
 	o_add(
 		0, 1, 1, 0, 0,
-		1, 0, 0, 0, 0,
-		1, 1, 0, 0, 1,
-		0, 0, 1, 1, 0,
-		0, 0, 0, 1, 0,
-		"some move"
+		0, 0, 0, 0, 1,
+		1, 0, 1, 0, 1,
+		1, 0, 0, 1, 0,
+		0, 0, 1, 0, 0,
+		"FbblBlfuuFl2F"
 	);
+	o_add(
+		0, 0, 1, 0, 0,
+		1, 0, 0, 1, 0,
+		1, 0, 1, 0, 1,
+		0, 0, 0, 0, 1,
+		0, 1, 1, 0, 0,
+		"RuuRfrFUFUfUr"
+	);
+	
+	
 
-	//showOrientation(orientations[0]);
+	o_add(
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 1, 0, 0,
+		0, 0, 0, 0, 0,
+		0, 0, 0, 0, 0,
+		"xxxxx"
+	);
+	showOrientation(orientations[0]);
 
 
 
 
-	return 0;
+	return 1;
 }
 

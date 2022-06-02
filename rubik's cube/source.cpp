@@ -223,7 +223,7 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
 int code_input = 0; 
-int code_input_index = 0;
+int code_input_index = -1;
 int row = 0;
 int ai_go = 0;
 int scramble_go = 0;
