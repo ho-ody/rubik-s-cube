@@ -1709,8 +1709,8 @@ int oll() {
 		"fRFrurUR"
 	);
 	o_add(
-		0, 0, 0, 0, 0,
-		1, 0, 1, 0, 1,
+		0, 0, 0, 1, 0,
+		1, 0, 1, 0, 0,
 		0, 1, 1, 0, 1,
 		0, 0, 0, 1, 0,
 		0, 1, 1, 0, 0,
@@ -1991,7 +1991,7 @@ int oll() {
 	);
 
 	code_s = test("RfRFrruuBrbR");
-	cerr << "total: " << o_index;
+
 	/*
 	o_add(
 		0, 0, 0, 0, 0,
@@ -2002,8 +2002,11 @@ int oll() {
 		"xxxxx"
 	);
 	*/
-
-	showOrientation(orientations[0]);
+	for (int i = 0; i < 57; i++) {
+		showOrientation(orientations[i]);
+		cerr << "\n=========\n";
+	}
+	
 
 
 
