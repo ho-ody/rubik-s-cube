@@ -59,7 +59,7 @@ int ccc = 0;
 int rotateCounter = -1;
 int ANIMATION_DURATION = 1;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
-int AI_DELAY = 10;
+int AI_DELAY = 1;
 
 int* order;
 int* neworder;
@@ -617,6 +617,7 @@ int main() {
 		lastFrame = currentFrame;
 		//input
 		input(window, camera.Position, camera.Orientation, camera.Up);
+		//cerr << "*" << code_input_index << endl;
 		makeMoves(code_s);
 		//logika koloru t³a
 		time += deltaTime;

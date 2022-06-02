@@ -75,6 +75,7 @@ void showSides() {
 int cross();
 int f2l();
 extern int ai_go;
+extern int rotateCounter;
 void letsGoAiLoop() {
 	updateSidesFromOrder();
 	if (ai_go) {
@@ -83,7 +84,7 @@ void letsGoAiLoop() {
 
 		//if (code_input_index == -1)
 		//	f2l();
-		if (code_input_index == -1)
+		if (code_input_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
 				f2l();
 		//showSides();
@@ -565,8 +566,6 @@ int f2l() {
 	}
 	//for (int i = 0; i < 4; i++) cerr << corners[i] << ", ";
 	//cerr << endl;
-
-
 
 
 	//1st: Easy cases
@@ -1282,6 +1281,94 @@ int f2l() {
 	cerr << "5-" << typeOfCase << "[" << pairID << "]\t";
 	code_s = move;
 	code_input_index = 0;
+	}
+	//6th case: Corner in bottom, edge in middle
+	else if ((corners[0] % 8 < 4 && edges[0] % 8 < 4 && (corners[0] / 8 != 0 || edges[0] / 8 != 0)) || (corners[1] % 8 < 4 && edges[1] % 8 < 4 && (corners[1] / 8 != 0 || edges[1] / 8 != 0)) || (corners[2] % 8 < 4 && edges[2] % 8 < 4 && (corners[2] / 8 != 0 || edges[2] / 8 != 0)) || (corners[3] % 8 < 4 && edges[3] % 8 < 4 && (corners[3] / 8 != 0 || edges[3] / 8 != 0))) {
+	int pairID;
+	if (corners[0] % 8 < 4 && edges[0] % 8 < 4 && (corners[0] / 8 != 0 || edges[0] / 8 != 0))
+		pairID = 0;
+	else if (corners[1] % 8 < 4 && edges[1] % 8 < 4 && (corners[1] / 8 != 0 || edges[1] / 8 != 0))
+		pairID = 1;
+	else if (corners[2] % 8 < 4 && edges[2] % 8 < 4 && (corners[2] / 8 != 0 || edges[2] / 8 != 0))
+		pairID = 2;
+	else if (corners[3] % 8 < 4 && edges[3] % 8 < 4 && (corners[3] / 8 != 0 || edges[3] / 8 != 0))
+		pairID = 3;
+
+	string firstPhase[5][4] = {
+		{"rURuFuuf","bUBuRuur","lULuBuub","fUFuLuul"},
+		{"rURuruuR","bUBubuuB","lULuluuL","fUFufuuF"},
+		{"rURUruR","bUBUbuB","lULUluL","fUFUfuF"},
+		{"ruRUrUR","buBUbUB","luLUlUL","fuFUfUF"},
+		{"rURuFUf","bUBuRUr","lULuBUb","fUFuLUl"}
+	};
+	string secondPhase[5][4] = {
+		{"uFuuf","uRuur","uBuub","uLuul"},
+		{"urUR","ubUB","ulUL","ufUF"},
+		{"UruuR","UbuuB","UluuL","UfuuF"},
+		{"uuFUf","uuRUr","uuBUb","uuLUl"},
+		{"UFUf","URUr","UBUb","ULUl"}
+	};
+	//if (edges[pairID] / 8 == 0) //dobrze
+	//	cerr << ": to ";
+	//else
+	//	cerr << ": inne ";
+	int typeOfCase = 0;
+	if (corners[pairID] / 8 == 0) { //git
+		if (edges[pairID] / 8 == 0) {
+			typeOfCase = -1; //ulozone juz
+			cerr << "error_6_" << pairID << "_" << edges[pairID] << "_" << corners[pairID] << endl;
+		}
+		else
+			typeOfCase = 1;
+	}
+	else if (corners[pairID] / 8 == 1) { //blue
+		if (edges[pairID] / 8 == 0)
+			typeOfCase = 3;
+		else
+			typeOfCase = 5;
+	}
+	else if (corners[pairID] / 8 == 2) { //red
+		if (edges[pairID] / 8 == 0)
+			typeOfCase = 2;
+		else
+			typeOfCase = 4;
+	}
+	string midmove = "";
+	int postoffset = edges[pairID] % 8 - pairID;
+	int secondPhaseMove = edges[pairID] % 8;
+	switch (postoffset) {
+	case 0:
+		midmove = "";
+		break;
+	case 1:
+	case -3:
+		midmove = "u";
+		secondPhaseMove--;
+		break;
+	case -1:
+	case 3:
+		secondPhaseMove++;
+		midmove = "U";
+		break;
+	case 2:
+	case -2:
+		secondPhaseMove -= 2;
+		midmove = "uu";
+		break;
+	default:
+		cerr << "error_postoffset_midmove: " << postoffset << endl;
+	}
+	if (secondPhaseMove > 3)
+		secondPhaseMove -= 4;
+	else if (secondPhaseMove < 0)
+		secondPhaseMove += 4;
+
+	cerr << "6-" << typeOfCase << "[" << pairID << "]\t";
+	string move;
+	move = firstPhase[typeOfCase - 1][edges[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
+	code_s = move;
+	code_input_index = 0;
+	//cerr << move << endl;
 	}
 
 
