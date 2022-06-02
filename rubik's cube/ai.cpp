@@ -74,6 +74,7 @@ void showSides() {
 }
 int cross();
 int f2l();
+int oll();
 extern int ai_go;
 extern int rotateCounter;
 void letsGoAiLoop() {
@@ -86,7 +87,8 @@ void letsGoAiLoop() {
 		//	f2l();
 		if (code_input_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
-				f2l();
+				if (f2l() == -1)
+					oll();
 		//showSides();
 	}
 }
@@ -1376,3 +1378,108 @@ int f2l() {
 	//code_input_index = -1;
 	return code_input_index;
 }
+
+//saves rotated tab1 to tab2
+void rotateMatrix(bool tab1[5][5], bool tab2[5][5]) 
+{
+	tab2[2][2] = tab1[2][2];
+	int N = 5;
+	for (int x = 0; x < N / 2; x++) {
+		for (int y = x; y < N - x - 1; y++) {
+			tab2[x][y] = tab1[y][N - 1 - x];
+			tab2[y][N - 1 - x] = tab1[N - 1 - x][N - 1 - y];
+			tab2[N - 1 - x][N - 1 - y] = tab1[N - 1 - y][x];
+			tab2[N - 1 - y][x] = tab1[x][y];
+		}
+	}
+}
+
+bool currentOrientaion[4][5][5];
+bool orientations[57][5][5];
+string move[57];
+int o_index = 0;
+void o_add(
+	bool a11, bool a12, bool a13, bool a14, bool a15,
+	bool a21, bool a22, bool a23, bool a24, bool a25,
+	bool a31, bool a32, bool a33, bool a34, bool a35,
+	bool a41, bool a42, bool a43, bool a44, bool a45,
+	bool a51, bool a52, bool a53, bool a54, bool a55,
+	string move) {
+
+	orientations[o_index][0][1] = true;
+
+}
+
+void showOrientation(bool Orientaion[5][5]) {
+	for (int i = 4; i >= 0; i--) {
+		for (int j = 0; j < 5; j++) {
+			if ((i == 0 && j == 0) || (i == 0 && j == 4))
+				cerr << " ";
+			else if ((i == 4 && j == 0) || (i == 4 && j == 4))
+				cerr << " ";
+			else if (Orientaion[i][j] == true)
+				cerr << "#";
+			else
+				cerr << ".";
+			cerr << " ";
+		}
+		cerr << "\n";
+	}
+	cerr << endl;
+}
+void getTopOrientation(bool currentOrientaion[4][5][5]) {
+	//currentOrientaion[1][0] = ;
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 5; j++)
+			currentOrientaion[0][i][j] = false;
+	//middle
+	for (int i = 0; i < 3; i++)
+		for (int j = 0; j < 3; j++)
+			if (sides[u][i][j] == 1)
+				currentOrientaion[0][i + 1][j + 1] = true;
+	//edges
+	for (int i = 0; i < 3; i++)
+		if (sides[f][2][i] == 1)
+			currentOrientaion[0][0][i+1] = true;
+	for (int i = 0; i < 3; i++)
+		if (sides[r][2][i] == 1)
+			currentOrientaion[0][i+1][4] = true;
+	for (int i = 0; i < 3; i++)
+		if (sides[b][2][i] == 1)
+			currentOrientaion[0][4][3 - i] = true;
+	for (int i = 0; i < 3; i++)
+		if (sides[l][2][i] == 1)
+			currentOrientaion[0][3 - i][0] = true;
+	//save every rotation
+	rotateMatrix(currentOrientaion[0], currentOrientaion[1]);
+	rotateMatrix(currentOrientaion[1], currentOrientaion[2]);
+	rotateMatrix(currentOrientaion[2], currentOrientaion[3]);
+}
+int oll() {
+	getTopOrientation(currentOrientaion);
+
+	//showOrientation(currentOrientaion[0]);
+		//showOrientation(currentOrientaion[1]);
+		//showOrientation(currentOrientaion[2]);
+		//showOrientation(currentOrientaion[3]);
+		//cerr << "\n\n========================================\n\n";
+
+	//here we go
+
+	o_add(
+		0, 1, 1, 0, 0,
+		1, 0, 0, 0, 0,
+		1, 1, 0, 0, 1,
+		0, 0, 1, 1, 0,
+		0, 0, 0, 1, 0,
+		"some move"
+	);
+
+	//showOrientation(orientations[0]);
+
+
+
+
+	return 0;
+}
+
