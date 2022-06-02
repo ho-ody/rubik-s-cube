@@ -881,7 +881,7 @@ int f2l() {
 		{"rUR","bUB","lUL","fUF"},
 		{"uFuf","uRur","uBub","uLul"},
 		{"uFUf","uRUr","uBUb","uLUl"},
-		{"UrUR","UbUB","UlUL","UfUf"},
+		{"UrUR","UbUB","UlUL","UfUF"},
 		{"UruR","UbuB","UluL","UfuF"}
 	};
 	string secondPhase[6][4] = {
@@ -1278,10 +1278,10 @@ int f2l() {
 	//move = premove;
 	//cerr << "move = " << move << endl;
 	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
-	cerr << "move = " << move << endl;
+	//cerr << "move = " << move << endl;
 	cerr << "5-" << typeOfCase << "[" << pairID << "]\t";
-	//code_s = move;
-	//code_input_index = 0;
+	code_s = move;
+	code_input_index = 0;
 	}
 
 
