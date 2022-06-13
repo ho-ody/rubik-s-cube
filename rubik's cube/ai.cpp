@@ -20,9 +20,10 @@ void generateSidesTables() {
 		}
 	}	
 }
-
+void oll_initialize();
 void letsGoAiStart() {
 	generateSidesTables();
+	oll_initialize();
 }
 // (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
@@ -92,8 +93,10 @@ void letsGoAiLoop() {
 		if (code_input_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
 				if (f2l() == -1)
-					if (ok_its_enought == false)
-						ok_its_enought = oll();
+					//if (ok_its_enought == false)
+					//	ok_its_enought = oll();
+					if (oll() == -1)
+						cerr << "solved boss!\n";
 		//showSides();
 	}
 }
@@ -1404,7 +1407,7 @@ int currentOrientation_code[4];
 
 bool orientations[57][5][5];
 int orientations_codes[57];
-string move[57];
+string moves[57];
 int o_index = 0;
 void o_add(
 	bool a11, bool a12, bool a13, bool a14, bool a15,
@@ -1412,7 +1415,7 @@ void o_add(
 	bool a31, bool a32, bool a33, bool a34, bool a35,
 	bool a41, bool a42, bool a43, bool a44, bool a45,
 	bool a51, bool a52, bool a53, bool a54, bool a55,
-	string move) {
+	string move_in) {
 
 
 	string binary = "";
@@ -1447,12 +1450,22 @@ void o_add(
 	binary += to_string(a55);
 
 
+	
+	/*
 	if (currentOrientation_code[0] == stoi(binary, 0, 2))
-		cerr << " ! ";
+		cerr << " 0: ";
+	if (currentOrientation_code[1] == stoi(binary, 0, 2))
+		cerr << " 1: ";
+	if (currentOrientation_code[2] == stoi(binary, 0, 2))
+		cerr << " 2: ";
+	if (currentOrientation_code[3] == stoi(binary, 0, 2))
+		cerr << " 3: ";
 	cerr << stoi(binary, 0, 2);
 
-	cerr << " --> " << move << endl;
-
+	cerr << " --> " << move_in << endl;
+	*/
+	moves[o_index] = move_in;
+	orientations_codes[o_index] = stoi(binary, 0, 2);
 
 	orientations[o_index][0][0] = a51;
 	orientations[o_index][0][1] = a52;
@@ -1484,7 +1497,7 @@ void o_add(
 	orientations[o_index][4][3] = a14;
 	orientations[o_index][4][4] = a15;
 
-	orientations_codes[o_index] = stoi(binary, 0, 2);
+	
 	o_index++;
 }
 
@@ -1533,8 +1546,8 @@ void getTopOrientation(bool currentOrientaion[4][5][5]) {
 	rotateMatrix(currentOrientaion[1], currentOrientaion[2]);
 	rotateMatrix(currentOrientaion[2], currentOrientaion[3]);
 	//current orientaion code
-	string binary[4] = { "" };
-	for (int i = 0; i < 5; i++)
+	string binary[4] = { "","","","" };
+	for (int i = 4; i >= 0; i--)
 		for (int j = 0; j < 5; j++) {
 			binary[0] += to_string(currentOrientaion[0][i][j]);
 			binary[1] += to_string(currentOrientaion[1][i][j]);
@@ -1546,10 +1559,10 @@ void getTopOrientation(bool currentOrientaion[4][5][5]) {
 	currentOrientation_code[2] = stoi(binary[2], 0, 2);
 	currentOrientation_code[3] = stoi(binary[3], 0, 2);
 
-	cerr << "0: " << currentOrientation_code[0] << endl;
-	cerr << "1: " << currentOrientation_code[1] << endl;
-	cerr << "2: " << currentOrientation_code[2] << endl;
-	cerr << "3: " << currentOrientation_code[3] << endl;
+	//cerr << "0: " << currentOrientation_code[0] << endl;
+	//cerr << "1: " << currentOrientation_code[1] << endl;
+	//cerr << "2: " << currentOrientation_code[2] << endl;
+	//cerr << "3: " << currentOrientation_code[3] << endl;
 }
 int a = 0;
 
@@ -1593,15 +1606,50 @@ void rotateMove(string* input, int rotate_times) {
 				(*input)[i] = 'l';
 			else if ((*input)[i] == 'B')
 				(*input)[i] = 'L';
+			else if ((*input)[i] == 'l')
+				(*input)[i] = 'f';
+			else if ((*input)[i] == 'L')
+				(*input)[i] = 'F';
 			else if ((*input)[i] == 'm')
 				(*input)[i] = 's';
 			else if ((*input)[i] == 'M')
 				(*input)[i] = 'S';
 			else if ((*input)[i] == 's')
-				(*input)[i] = 'm';
-			else if ((*input)[i] == 'S')
 				(*input)[i] = 'M';
+			else if ((*input)[i] == 'S')
+				(*input)[i] = 'm';
 	}
+}
+
+string findOllScheme() {
+	string output = "";
+	if (currentOrientation_code[0] == 473536) //already solved
+		return "already_solved";
+	for (int i = 0; i < 57; i++)
+		if (currentOrientation_code[0] == orientations_codes[i]) {
+			output = moves[i];
+			cerr << output << " -> ";
+			break;
+		}
+		else if (currentOrientation_code[1] == orientations_codes[i]) {
+			output = moves[i];
+			rotateMove(&output, 1);
+			cerr << output << " -> ";
+			break;
+		}
+		else if (currentOrientation_code[2] == orientations_codes[i]) {
+			output = moves[i];
+			cerr << output << " -> ";
+			rotateMove(&output, 2);
+			break;
+		}
+		else if (currentOrientation_code[3] == orientations_codes[i]) {
+			output = moves[i];
+			cerr << output << " -> ";
+			rotateMove(&output, 3);
+			break;
+		}
+	return output;
 }
 
 void oll_initialize() {
@@ -2080,33 +2128,33 @@ void oll_initialize() {
 }
 int oll() {
 	getTopOrientation(currentOrientaion);
+	//showOrientation(currentOrientaion[0]);
+	//showOrientation(currentOrientaion[1]);
+	//showOrientation(currentOrientaion[2]);
+	//showOrientation(currentOrientaion[3]);
+	//oll_initialize();
+	//cerr << findOllScheme();
 
-	showOrientation(currentOrientaion[0]);
-		//showOrientation(currentOrientaion[1]);
-		//showOrientation(currentOrientaion[2]);
-		//showOrientation(currentOrientaion[3]);
-		//cerr << "\n\n========================================\n\n";
 
-	//here we go
-	
-	
+	code_input_index = 0;
+	code_s = findOllScheme();
+	if (code_s == "already_solved")
+		code_input_index = -1;
+
 
 	/*
-	o_add(
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 1, 0, 0,
-		0, 0, 0, 0, 0,
-		0, 0, 0, 0, 0,
-		"xxxxx"
-	);
-	for (int i = 0; i < 57; i++) {
-		showOrientation(orientations[i]);
-		cerr << "\n=========\n";
-	}
+	string sth = "frbl FRBL";
+	cerr << sth << endl;
+	rotateMove(&sth, 1);
+	cerr << sth << endl;
+	rotateMove(&sth, 1);
+	cerr << sth << endl;
+	rotateMove(&sth, 1);
+	cerr << sth << endl;
+	rotateMove(&sth, 1);
+	cerr << sth << endl;
 	*/
-	
 
-	return 1;
+	return code_input_index;
 }
 
