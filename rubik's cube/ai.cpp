@@ -82,12 +82,13 @@ extern int rotateCounter;
 int ok_its_enought = 0;
 void runrun();
 
+int counter = 0;
+
+extern string generateScramble(int length);
 void letsGoAiLoop() {
 	updateSidesFromOrder();
 	if (ai_go) {
 		
-
-
 		//if (code_input_index == -1)
 		//	f2l();
 		if (code_input_index == -1 && rotateCounter < 0)
@@ -95,8 +96,13 @@ void letsGoAiLoop() {
 				if (f2l() == -1)
 					//if (ok_its_enought == false)
 					//	ok_its_enought = oll();
-					if (oll() == -1)
-						cerr << "solved boss!\n";
+					if (oll() == -1) {
+						cerr << "\t{" << counter << "}";
+						counter++;
+						generateScramble(30);			
+					}
+						
+						//cerr << "solved boss!\n";
 		//showSides();
 	}
 }
@@ -1628,25 +1634,25 @@ string findOllScheme() {
 	for (int i = 0; i < 57; i++)
 		if (currentOrientation_code[0] == orientations_codes[i]) {
 			output = moves[i];
-			cerr << output << " -> ";
+			cerr << i << "[0]\t";
 			break;
 		}
 		else if (currentOrientation_code[1] == orientations_codes[i]) {
 			output = moves[i];
 			rotateMove(&output, 1);
-			cerr << output << " -> ";
+			cerr << i << "[1]\t";
 			break;
 		}
 		else if (currentOrientation_code[2] == orientations_codes[i]) {
-			output = moves[i];
-			cerr << output << " -> ";
+			output = moves[i];	
 			rotateMove(&output, 2);
+			cerr << i << "[2]\t";
 			break;
 		}
 		else if (currentOrientation_code[3] == orientations_codes[i]) {
 			output = moves[i];
-			cerr << output << " -> ";
 			rotateMove(&output, 3);
+			cerr << i << "[3]\t";
 			break;
 		}
 	return output;
