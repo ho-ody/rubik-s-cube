@@ -99,7 +99,7 @@ void letsGoAiLoop() {
 					if (oll() == -1) {
 						cerr << "\t{" << counter << "}";
 						counter++;
-						generateScramble(30);			
+						generateScramble(30);
 					}
 						
 						//cerr << "solved boss!\n";
@@ -2119,7 +2119,7 @@ void oll_initialize() {
 		0, 1, 1, 1, 0,
 		1, 0, 0, 1, 0,
 		0, 0, 1, 0, 0,
-		"RfruRURur"
+		"RfruRUFur"
 	);
 	o_add(
 		0, 1, 1, 0, 0,
@@ -2141,13 +2141,14 @@ int oll() {
 	//oll_initialize();
 	//cerr << findOllScheme();
 
-
 	code_input_index = 0;
 	code_s = findOllScheme();
 	if (code_s == "already_solved")
 		code_input_index = -1;
 
 
+		//code_input_index = 0;
+		//code_s = test("RfruRUFur");
 	/*
 	string sth = "frbl FRBL";
 	cerr << sth << endl;
