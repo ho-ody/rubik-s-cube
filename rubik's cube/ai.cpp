@@ -1,5 +1,6 @@
 #include <iostream>
 #include "Block.h"
+#include <string>
 using namespace std;
 
 extern int N;
@@ -78,6 +79,8 @@ int oll();
 extern int ai_go;
 extern int rotateCounter;
 int ok_its_enought = 0;
+void runrun();
+
 void letsGoAiLoop() {
 	updateSidesFromOrder();
 	if (ai_go) {
@@ -86,9 +89,9 @@ void letsGoAiLoop() {
 
 		//if (code_input_index == -1)
 		//	f2l();
-		//if (code_input_index == -1 && rotateCounter < 0)
-		//	if (cross() == -1)
-		//		if (f2l() == -1)
+		if (code_input_index == -1 && rotateCounter < 0)
+			if (cross() == -1)
+				if (f2l() == -1)
 					if (ok_its_enought == false)
 						ok_its_enought = oll();
 		//showSides();
@@ -1397,7 +1400,10 @@ void rotateMatrix(bool tab1[5][5], bool tab2[5][5])
 }
 
 bool currentOrientaion[4][5][5];
+int currentOrientation_code[4];
+
 bool orientations[57][5][5];
+int orientations_codes[57];
 string move[57];
 int o_index = 0;
 void o_add(
@@ -1407,6 +1413,46 @@ void o_add(
 	bool a41, bool a42, bool a43, bool a44, bool a45,
 	bool a51, bool a52, bool a53, bool a54, bool a55,
 	string move) {
+
+
+	string binary = "";
+	binary += to_string(a11);
+	binary += to_string(a12);
+	binary += to_string(a13);
+	binary += to_string(a14);
+	binary += to_string(a15);
+
+	binary += to_string(a21);
+	binary += to_string(a22);
+	binary += to_string(a23);
+	binary += to_string(a24);
+	binary += to_string(a25);
+
+	binary += to_string(a31);
+	binary += to_string(a32);
+	binary += to_string(a33);
+	binary += to_string(a34);
+	binary += to_string(a35);
+
+	binary += to_string(a41);
+	binary += to_string(a42);
+	binary += to_string(a43);
+	binary += to_string(a44);
+	binary += to_string(a45);
+
+	binary += to_string(a51);
+	binary += to_string(a52);
+	binary += to_string(a53);
+	binary += to_string(a54);
+	binary += to_string(a55);
+
+
+	if (currentOrientation_code[0] == stoi(binary, 0, 2))
+		cerr << " ! ";
+	cerr << stoi(binary, 0, 2);
+
+	cerr << " --> " << move << endl;
+
 
 	orientations[o_index][0][0] = a51;
 	orientations[o_index][0][1] = a52;
@@ -1437,6 +1483,8 @@ void o_add(
 	orientations[o_index][4][2] = a13;
 	orientations[o_index][4][3] = a14;
 	orientations[o_index][4][4] = a15;
+
+	orientations_codes[o_index] = stoi(binary, 0, 2);
 	o_index++;
 }
 
@@ -1484,6 +1532,24 @@ void getTopOrientation(bool currentOrientaion[4][5][5]) {
 	rotateMatrix(currentOrientaion[0], currentOrientaion[1]);
 	rotateMatrix(currentOrientaion[1], currentOrientaion[2]);
 	rotateMatrix(currentOrientaion[2], currentOrientaion[3]);
+	//current orientaion code
+	string binary[4] = { "" };
+	for (int i = 0; i < 5; i++)
+		for (int j = 0; j < 5; j++) {
+			binary[0] += to_string(currentOrientaion[0][i][j]);
+			binary[1] += to_string(currentOrientaion[1][i][j]);
+			binary[2] += to_string(currentOrientaion[2][i][j]);
+			binary[3] += to_string(currentOrientaion[3][i][j]);
+		}		
+	currentOrientation_code[0] = stoi(binary[0], 0, 2);
+	currentOrientation_code[1] = stoi(binary[1], 0, 2);
+	currentOrientation_code[2] = stoi(binary[2], 0, 2);
+	currentOrientation_code[3] = stoi(binary[3], 0, 2);
+
+	cerr << "0: " << currentOrientation_code[0] << endl;
+	cerr << "1: " << currentOrientation_code[1] << endl;
+	cerr << "2: " << currentOrientation_code[2] << endl;
+	cerr << "3: " << currentOrientation_code[3] << endl;
 }
 int a = 0;
 
@@ -1507,17 +1573,22 @@ string test(string in) {
 	return out;
 }
 
+void runrun() {
+	getTopOrientation(currentOrientaion);
+	showOrientation(currentOrientaion[0]);
+}
+
 int oll() {
 	getTopOrientation(currentOrientaion);
 
-	//showOrientation(currentOrientaion[0]);
+	showOrientation(currentOrientaion[0]);
 		//showOrientation(currentOrientaion[1]);
 		//showOrientation(currentOrientaion[2]);
 		//showOrientation(currentOrientaion[3]);
 		//cerr << "\n\n========================================\n\n";
 
 	//here we go
-	code_input_index = 0;
+	code_input_index = -1;
 	//dot
 	bool x = true;
 	o_add(
@@ -1990,7 +2061,7 @@ int oll() {
 		"lFLUlufUL"
 	);
 
-	code_s = test("RfRFrruuBrbR");
+	//code_s = test("RfRFrruuBrbR");
 
 	/*
 	o_add(
@@ -2001,15 +2072,12 @@ int oll() {
 		0, 0, 0, 0, 0,
 		"xxxxx"
 	);
-	*/
 	for (int i = 0; i < 57; i++) {
 		showOrientation(orientations[i]);
 		cerr << "\n=========\n";
 	}
+	*/
 	
-
-
-
 
 	return 1;
 }
