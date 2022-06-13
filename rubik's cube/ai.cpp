@@ -1578,19 +1578,34 @@ void runrun() {
 	showOrientation(currentOrientaion[0]);
 }
 
-int oll() {
-	getTopOrientation(currentOrientaion);
+void rotateMove(string* input, int rotate_times) {
+	for (int t = 0; t < rotate_times; t++) {
+		for (int i = 0; i < input->length(); i++)
+			if ((*input)[i] == 'f')
+				(*input)[i] = 'r';
+			else if ((*input)[i] == 'F')
+				(*input)[i] = 'R';
+			else if ((*input)[i] == 'r')
+				(*input)[i] = 'b';
+			else if ((*input)[i] == 'R')
+				(*input)[i] = 'B';
+			else if ((*input)[i] == 'b')
+				(*input)[i] = 'l';
+			else if ((*input)[i] == 'B')
+				(*input)[i] = 'L';
+			else if ((*input)[i] == 'm')
+				(*input)[i] = 's';
+			else if ((*input)[i] == 'M')
+				(*input)[i] = 'S';
+			else if ((*input)[i] == 's')
+				(*input)[i] = 'm';
+			else if ((*input)[i] == 'S')
+				(*input)[i] = 'M';
+	}
+}
 
-	showOrientation(currentOrientaion[0]);
-		//showOrientation(currentOrientaion[1]);
-		//showOrientation(currentOrientaion[2]);
-		//showOrientation(currentOrientaion[3]);
-		//cerr << "\n\n========================================\n\n";
-
-	//here we go
-	code_input_index = -1;
+void oll_initialize() {
 	//dot
-	bool x = true;
 	o_add(
 		0, 0, 1, 0, 0,
 		1, 0, 0, 0, 1,
@@ -1951,7 +1966,7 @@ int oll() {
 		0, 0, 0, 1, 0,
 		0, 1, 1, 0, 0,
 		"RfruRFrfUF"
-		);
+	);
 	o_add(
 		0, 1, 1, 0, 0,
 		0, 0, 0, 0, 1,
@@ -2060,8 +2075,21 @@ int oll() {
 		0, 0, 1, 0, 0,
 		"lFLUlufUL"
 	);
-
+	//code_input_index = 0;
 	//code_s = test("RfRFrruuBrbR");
+}
+int oll() {
+	getTopOrientation(currentOrientaion);
+
+	showOrientation(currentOrientaion[0]);
+		//showOrientation(currentOrientaion[1]);
+		//showOrientation(currentOrientaion[2]);
+		//showOrientation(currentOrientaion[3]);
+		//cerr << "\n\n========================================\n\n";
+
+	//here we go
+	
+	
 
 	/*
 	o_add(
