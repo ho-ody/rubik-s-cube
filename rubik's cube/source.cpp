@@ -14,7 +14,7 @@ using namespace std;
 #include "Block.h"
 
 extern void makeMoves(string code_s);
-extern string generateScramble(int length);
+extern string generateScramble(int length, string frontText = "");
 extern void letsGoAiStart();
 extern void letsGoAiLoop();
 extern void letsGoAiEnd();

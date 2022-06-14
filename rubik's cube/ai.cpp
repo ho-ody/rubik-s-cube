@@ -87,7 +87,7 @@ int ok_its_enought = 0;
 
 int counter = 0;
 
-extern string generateScramble(int length);
+extern string generateScramble(int length, string frontText = "");
 void letsGoAiLoop() {
 	updateSidesFromOrder();
 	if (ai_go) {
@@ -106,7 +106,12 @@ void letsGoAiLoop() {
 						if (solved == false)
 							pll();
 					}
-						
+		if (solved == true) {
+			string text = "{" + to_string(counter) + "}  ";
+			generateScramble(45, text);
+			counter++;
+
+		}
 						//cerr << "solved boss!\n";
 		//showSides();
 	}
@@ -1386,7 +1391,7 @@ int f2l() {
 
 	cerr << "6-" << typeOfCase << "[" << pairID << "]\t";
 	string move;
-	move = firstPhase[typeOfCase - 1][edges[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
+	move = firstPhase[typeOfCase - 1][corners[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
 	code_s = move;
 	code_input_index = 0;
 	//cerr << move << endl;

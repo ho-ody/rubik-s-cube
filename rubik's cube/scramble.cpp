@@ -87,7 +87,7 @@ void makeMoves(string code_s) {
 
 
 extern bool solved;
-string generateScramble(int length){
+string generateScramble(int length, string frontText = "") {
 	solved = false;
 	string* everyMove = new string[6 * N];
 	string baseMoves = "FfRrDdBbLlUu";
@@ -172,7 +172,7 @@ string generateScramble(int length){
 			}
 		}
 
-	cerr << endl << output << endl;
+	cerr << endl << frontText << output << endl;
 
 	code_s = output;
 	code_input_index = 0;
