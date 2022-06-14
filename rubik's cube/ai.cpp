@@ -12,6 +12,12 @@ extern int code_input_index;
 extern string code_s;
 bool solved = false;
 
+
+string ai_code = "";
+//string ai_wholecode = "";
+int ai_code_index;
+
+
 void generateSidesTables() {
 	sides = new int** [6];
 	for (int i = 0; i < 6; i++) {
@@ -23,14 +29,34 @@ void generateSidesTables() {
 }
 void oll_initialize();
 void pll_initialize();
+
+//int* ai_order;
+int* ai_toRotate;
+
 void letsGoAiStart() {
+	//ai_order = new int[pow(N, 3)];
+	//for (int i = 0; i < pow(N, 3); i++) {
+	//	ai_order[i] = i;
+	//}
+	ai_toRotate = new int[pow(N, 2)];
+
 	generateSidesTables();
 	oll_initialize();
 	pll_initialize();
 }
 // (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
+
+void updateAiOrder() {
+	//for (int i = 0; i < pow(N, 3); i++)
+	//	ai_order[i] = order[i];
+}
+
+//int color_positions[]
+
 void updateSidesFromOrder() {
+	//int* temp = ai_order;
+	//ai_order = order;
 	for (int i = 0; i < N; i++) { //front + back
 		for (int j = 0; j < N; j++) {
 			sides[0][N - 1 - i][N - 1 - j] = GLOBALblocks[order[(i * N + j) % N + ((i * N + j) / N) * N * N]].color[5];//down
@@ -43,6 +69,7 @@ void updateSidesFromOrder() {
 			sides[5][i][j] = GLOBALblocks[order[i * N + j + N * N * (N - 1)]].color[2];//back
 		}
 	}
+	//ai_order = temp;
 }
 
 void showSides() {
@@ -86,15 +113,23 @@ extern int rotateCounter;
 int ok_its_enought = 0;
 
 int counter = 0;
-
+extern void ai_makeMoves(string code_s);
 extern string generateScramble(int length, string frontText = "");
+bool niceflag = true;
 void letsGoAiLoop() {
+	showSides();
 	updateSidesFromOrder();
+	//updateAiOrder();
+
+	if (niceflag == true && 0) {
+		updateAiOrder();
+		niceflag = false;
+	}
 	if (ai_go) {
-		
+		ai_makeMoves("f");
 		//if (code_input_index == -1)
 		//	f2l();
-		if (code_input_index == -1 && rotateCounter < 0)
+		if (ai_code_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
 				if (f2l() == -1)
 					//if (ok_its_enought == false)
@@ -106,14 +141,17 @@ void letsGoAiLoop() {
 						if (solved == false)
 							pll();
 					}
+
+		if (ai_code_index != -1)
+			ai_makeMoves(ai_code);
+		/*
 		if (solved == true) {
 			string text = "{" + to_string(counter) + "}  ";
 			generateScramble(45, text);
 			counter++;
 
 		}
-						//cerr << "solved boss!\n";
-		//showSides();
+		*/
 	}
 }
 void delete3dArray(int*** tab) {
@@ -126,6 +164,7 @@ void delete3dArray(int*** tab) {
 	delete[] tab;
 }
 void letsGoAiEnd() {
+	//delete[] ai_order;
 	delete3dArray(sides);
 }
 
@@ -211,8 +250,8 @@ int cross() {
 	if (sides[f][0][1] == 0 && sides[r][0][1] == 0 && sides[b][0][1] == 0 && sides[l][0][1] == 0 &&
 		sides[d][0][1] == 5 && sides[d][1][0] == 3 && sides[d][1][2] == 2 && sides[d][2][1] == 4) {
 			cerr << "superFlip!\n";
-			code_s = superFlip;
-			code_input_index = 0;
+			ai_code = superFlip;
+			ai_code_index = 0;
 		}
 	//first type of move
 	else if (sides[f][1][0] == 0 || sides[f][1][2] == 0 || sides[r][1][0] == 0 || sides[r][1][2] == 0 ||
@@ -280,8 +319,8 @@ int cross() {
 		}
 		//if bottom is empty
 		if (blocksOnBottomCount == 0) {
-			code_s = baseMove;
-			code_input_index = 0;
+			ai_code = baseMove;
+			ai_code_index = 0;
 		}
 		//1 block already filled
 		//2 blocks already filled -> w sumie to nie ma ró¿nicy, jak s¹ dobrze to i tak siê dopasuje, jak nie to wywali jeden z³y najwy¿ej
@@ -297,9 +336,9 @@ int cross() {
 				pos = 3;
 
 			color = blocksOnBottom[pos];
-			code_s = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
+			ai_code = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
 			//cerr << x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove << endl;
-			code_input_index = 0;
+			ai_code_index = 0;
 		}
 		//3 blocks already filled
 		else if (blocksOnBottomCount == 3) {
@@ -316,8 +355,8 @@ int cross() {
 			color1 = blocksOnBottom[pos1];
 			color2 = blocksOnBottom[pos2];
 			color3 = blocksOnBottom[pos3];
-			code_s = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
-			code_input_index = 0;
+			ai_code = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
+			ai_code_index = 0;
 		}
 	}
 	//second type of move
@@ -360,8 +399,8 @@ int cross() {
 		}
 		//if bottom is empty
 		if (blocksOnBottomCount == 0) {
-			code_s = baseMove;
-			code_input_index = 0;
+			ai_code = baseMove;
+			ai_code_index = 0;
 		}
 		//1 block already filled
 		//2 blocks already filled
@@ -377,9 +416,9 @@ int cross() {
 				pos = 3;
 
 			color = blocksOnBottom[pos];
-			code_s = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
+			ai_code = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
 			//cerr << x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove << endl;
-			code_input_index = 0;
+			ai_code_index = 0;
 		}
 		//3 blocks already filled
 		else if (blocksOnBottomCount == 3) {
@@ -396,8 +435,8 @@ int cross() {
 			color1 = blocksOnBottom[pos1];
 			color2 = blocksOnBottom[pos2];
 			color3 = blocksOnBottom[pos3];
-			code_s = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
-			code_input_index = 0;
+			ai_code = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
+			ai_code_index = 0;
 		}
 	}
 	//third type of move
@@ -440,8 +479,8 @@ int cross() {
 		}
 		//if bottom is empty
 		if (blocksOnBottomCount == 0) {
-			code_s = baseMove;
-			code_input_index = 0;
+			ai_code = baseMove;
+			ai_code_index = 0;
 		}
 		//1 block already filled
 		//2 blocks already filled
@@ -457,9 +496,9 @@ int cross() {
 				pos = 3;
 
 			color = blocksOnBottom[pos];
-			code_s = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
+			ai_code = x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove;
 			//cerr << x1_pos_color_test(finalPosition, colorID, pos, color) + baseMove << endl;
-			code_input_index = 0;
+			ai_code_index = 0;
 		}
 		//3 blocks already filled
 		else if (blocksOnBottomCount == 3) {
@@ -476,8 +515,8 @@ int cross() {
 			color1 = blocksOnBottom[pos1];
 			color2 = blocksOnBottom[pos2];
 			color3 = blocksOnBottom[pos3];
-			code_s = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
-			code_input_index = 0;
+			ai_code = x3_pos_color_test(finalPosition, colorID, pos1, color1, pos2, color2, pos3, color3) + baseMove;
+			ai_code_index = 0;
 		}
 	}
 	//forth type of move
@@ -494,16 +533,16 @@ int cross() {
 		else if (sides[b][0][1] == 0) {
 			baseMove = "b";
 		}
-		code_s = baseMove;
-		code_input_index = 0;
+		ai_code = baseMove;
+		ai_code_index = 0;
 	}
 	//fix bottom orientation
 	else if (sides[f][0][1] != sides[f][1][1]) {
 		baseMove = turnBottomToMatchCorner(distance_c(sides[f][1][1], sides[f][0][1]));
-		code_s = baseMove;
-		code_input_index = 0;
+		ai_code = baseMove;
+		ai_code_index = 0;
 	}
-	return code_input_index;
+	return ai_code_index;
 }
 
 int distance_edge_corner(int a, int b) {
@@ -519,7 +558,6 @@ int distance_edge_corner(int a, int b) {
 // (0): white, (1): yellow, (2): red,   (3): orange, (4): blue,  (5): green
 // (0): down,  (1): up,     (2): right, (3): left,   (4): front, (5): back
 int f2l() {
-	//cerr << "f2l!\n";
 	string baseMove = "";
 	//Positions of corners and edges
 	int corners[4]; //fr, rb, bl, lf	// 0 -> 8  8 -> 15  15 -> 23	w zale¿noœci od rotacji
@@ -590,10 +628,6 @@ int f2l() {
 				corners[3] = i + 8;
 		}
 	}
-	//for (int i = 0; i < 4; i++) cerr << corners[i] << ", ";
-	//cerr << endl;
-
-
 	//1st: Easy cases
 	if ((corners[0] / 8 == 2 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
 		(corners[1] / 8 == 2 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
@@ -636,8 +670,8 @@ int f2l() {
 
 		move = premove + moves[pairID];
 		cerr << "1-1[" << pairID << "]\t";
-		code_s = move;
-		code_input_index = 0;
+		ai_code = move;
+		ai_code_index = 0;
 	}
 	else if ((corners[0] / 8 == 2 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 0 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
 		(corners[1] / 8 == 2 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 0 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
@@ -680,8 +714,8 @@ int f2l() {
 
 		move = premove + moves[pairID];
 		cerr << "1-3[" << pairID << "]\t";
-		code_s = move;
-		code_input_index = 0;
+		ai_code = move;
+		ai_code_index = 0;
 	}
 	else if ((corners[0] / 8 == 0 && edges[0] / 8 == 0 && distance_edge_corner(corners[0], edges[0]) == 1 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
 		(corners[1] / 8 == 0 && edges[1] / 8 == 0 && distance_edge_corner(corners[1], edges[1]) == 1 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
@@ -724,8 +758,8 @@ int f2l() {
 
 		move = premove + moves[pairID];
 		cerr << "1-2[" << pairID << "]\t";
-		code_s = move;
-		code_input_index = 0;
+		ai_code = move;
+		ai_code_index = 0;
 	}
 	else if ((corners[0] / 8 == 0 && edges[0] / 8 == 1 && distance_edge_corner(corners[0], edges[0]) == 3 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) ||
 		(corners[1] / 8 == 0 && edges[1] / 8 == 1 && distance_edge_corner(corners[1], edges[1]) == 3 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) ||
@@ -768,8 +802,8 @@ int f2l() {
 
 		move = premove + moves[pairID];
 		cerr << "1-4[" << pairID << "]\t";
-		code_s = move;
-		code_input_index = 0;
+		ai_code = move;
+		ai_code_index = 0;
 	}
 	//2nd case: Corner in bottom, edge in top layer
 	else if ((corners[0] % 8 < 4 && edges[0] % 8 >= 4) || (corners[1] % 8 < 4 && edges[1] % 8 >= 4) || (corners[2] % 8 < 4 && edges[2] % 8 >= 4) || (corners[3] % 8 < 4 && edges[3] % 8 >= 4)) {
@@ -886,8 +920,8 @@ int f2l() {
 	cerr << "2-" << typeOfCase << "[" << pairID << "]\t";
 	move = premove + firstPhase[typeOfCase - 1][corners[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
 
-	code_s = move;
-	code_input_index = 0;
+	ai_code = move;
+	ai_code_index = 0;
 	}
 	//3rd case: Corner in top, edge in middle
 	else if ((corners[0] % 8 >= 4 && edges[0] % 8 < 4) || (corners[1] % 8 >= 4 && edges[1] % 8 < 4) || (corners[2] % 8 >= 4 && edges[2] % 8 < 4) || (corners[3] % 8 >= 4 && edges[3] % 8 < 4)) {
@@ -1003,8 +1037,8 @@ int f2l() {
 	cerr << "3-" << typeOfCase << "[" << pairID << "]\t";
 	move = premove + firstPhase[typeOfCase - 1][edges[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
 
-	code_s = move;
-	code_input_index = 0;
+	ai_code = move;
+	ai_code_index = 0;
 	}
 	//4th case: Corner pointing outwards, edge in top layer
 	//4b - parzyste: bia³y do osi Z
@@ -1104,8 +1138,8 @@ int f2l() {
 	//cerr << "move = " << move << endl;
 	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
 	cerr << "4b-" << typeOfCase << "[" << pairID << "]\t";
-	code_s = move;
-	code_input_index = 0;
+	ai_code = move;
+	ai_code_index = 0;
 	}
 	//4a - nieparzyste: bia³y do osi X
 	else if ((corners[0] / 8 == 2 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) || (corners[1] / 8 == 2 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) || (corners[2] / 8 == 2 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) || (corners[3] / 8 == 2 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) {
@@ -1202,8 +1236,8 @@ int f2l() {
 	move = premove + firstPhase[typeOfCase - 1][pairID] + secondPhase[typeOfCase - 1][pairID];
 	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
 	cerr << "4a-" << typeOfCase << "[" << pairID << "]\t";
-	code_s = move;
-	code_input_index = 0;
+	ai_code = move;
+	ai_code_index = 0;
 	}
 	//5th case: Corner pointing upwards, edge in top layer
 	else if ((corners[0] / 8 == 1 && corners[0] % 8 >= 4 && edges[0] % 8 >= 4) || (corners[1] / 8 == 1 && corners[1] % 8 >= 4 && edges[1] % 8 >= 4) || (corners[2] / 8 == 1 && corners[2] % 8 >= 4 && edges[2] % 8 >= 4) || (corners[3] / 8 == 1 && corners[3] % 8 >= 4 && edges[3] % 8 >= 4)) {
@@ -1305,8 +1339,8 @@ int f2l() {
 	//cerr << premove << "\t" << firstPhase[typeOfCase - 1][pairID] << "\t" << secondPhase[typeOfCase - 1][pairID] << endl;
 	//cerr << "move = " << move << endl;
 	cerr << "5-" << typeOfCase << "[" << pairID << "]\t";
-	code_s = move;
-	code_input_index = 0;
+	ai_code = move;
+	ai_code_index = 0;
 	}
 	//6th case: Corner in bottom, edge in middle
 	else if ((corners[0] % 8 < 4 && edges[0] % 8 < 4 && (corners[0] / 8 != 0 || edges[0] / 8 != 0)) || (corners[1] % 8 < 4 && edges[1] % 8 < 4 && (corners[1] / 8 != 0 || edges[1] / 8 != 0)) || (corners[2] % 8 < 4 && edges[2] % 8 < 4 && (corners[2] / 8 != 0 || edges[2] / 8 != 0)) || (corners[3] % 8 < 4 && edges[3] % 8 < 4 && (corners[3] / 8 != 0 || edges[3] / 8 != 0))) {
@@ -1334,10 +1368,6 @@ int f2l() {
 		{"uuFUf","uuRUr","uuBUb","uuLUl"},
 		{"UFUf","URUr","UBUb","ULUl"}
 	};
-	//if (edges[pairID] / 8 == 0) //dobrze
-	//	cerr << ": to ";
-	//else
-	//	cerr << ": inne ";
 	int typeOfCase = 0;
 	if (corners[pairID] / 8 == 0) { //git
 		if (edges[pairID] / 8 == 0) {
@@ -1392,15 +1422,10 @@ int f2l() {
 	cerr << "6-" << typeOfCase << "[" << pairID << "]\t";
 	string move;
 	move = firstPhase[typeOfCase - 1][corners[pairID] % 8] + midmove + secondPhase[typeOfCase - 1][secondPhaseMove];
-	code_s = move;
-	code_input_index = 0;
-	//cerr << move << endl;
+	ai_code = move;
+	ai_code_index = 0;
 	}
-
-
-	//cerr << code_s << endl << endl;
-	//code_input_index = -1;
-	return code_input_index;
+	return ai_code_index;
 }
 
 //saves rotated tab1 to tab2
@@ -1525,11 +1550,6 @@ void oll_getTopOrientation(bool currentOrientaion[4][5][5]) {
 	currentOrientation_code[1] = stoi(binary[1], 0, 2);
 	currentOrientation_code[2] = stoi(binary[2], 0, 2);
 	currentOrientation_code[3] = stoi(binary[3], 0, 2);
-
-	//cerr << "0: " << currentOrientation_code[0] << endl;
-	//cerr << "1: " << currentOrientation_code[1] << endl;
-	//cerr << "2: " << currentOrientation_code[2] << endl;
-	//cerr << "3: " << currentOrientation_code[3] << endl;
 }
 int a = 0;
 
@@ -2088,37 +2108,14 @@ void oll_initialize() {
 }
 int oll() {
 	oll_getTopOrientation(currentOrientaion);
-	//showOrientation(currentOrientaion[0]);
-	//showOrientation(currentOrientaion[1]);
-	//showOrientation(currentOrientaion[2]);
-	//showOrientation(currentOrientaion[3]);
-	//oll_initialize();
-	//cerr << findOllScheme();
 
-	code_input_index = 0;
-	code_s = findOllScheme();
-	if (code_s == "already_solved")
-		code_input_index = -1;
+	ai_code_index = 0;
+	ai_code = findOllScheme();
+	if (ai_code == "already_solved")
+		ai_code_index = -1;
 
-
-		//code_input_index = 0;
-		//code_s = test("RfruRUFur");
-	/*
-	string sth = "frbl FRBL";
-	cerr << sth << endl;
-	rotateMove(&sth, 1);
-	cerr << sth << endl;
-	rotateMove(&sth, 1);
-	cerr << sth << endl;
-	rotateMove(&sth, 1);
-	cerr << sth << endl;
-	rotateMove(&sth, 1);
-	cerr << sth << endl;
-	*/
-
-	return code_input_index;
+	return ai_code_index;
 }
-
 
 short pll_currentOrientaion[4][4][3];
 int pll_currentOrientation_code[4][4];
@@ -2184,15 +2181,7 @@ void p_add(
 	p_index++;
 
 }
-/*
-p_add(f, f, f, r, r, r, b, b, b, l, l, l, "xxxxx");
-p_add(
-		f, f, f,
-		r, r, r,
-		b, b, b,
-		l, l, l,
-		"xxxxx");
-*/
+
 void pll_initialize() {
 	p_add(
 		l, f, f,
@@ -2333,7 +2322,6 @@ void findPllScheme() {
 		for (int j = 0; j < 4; j++)
 			for (int k = 0; k < 4; k++)
 				if (pll_currentOrientation_code[j][k] == pll_orientations_codes[i]) {
-					//	cerr << "pll: " << p_moves[i] << endl;	
 					string the_move = p_moves[i];
 					rotateMove(&the_move, k);
 					//end last layer rotation fix
@@ -2356,7 +2344,7 @@ void findPllScheme() {
 						break;
 					}
 					//ship it
-					code_s = the_move; code_input_index = 0;
+					ai_code = the_move; ai_code_index = 0;
 					//cerr
 					if (!(i==21 && k == 0))
 						cerr << i << "[" << k << "]\t";
@@ -2374,6 +2362,5 @@ int pll() {
 	pll_getTopOrientation();
 	findPllScheme();
 
-	return code_input_index;
+	return ai_code_index;
 }
-
