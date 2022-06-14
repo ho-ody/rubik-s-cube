@@ -80,7 +80,6 @@ int oll();
 extern int ai_go;
 extern int rotateCounter;
 int ok_its_enought = 0;
-void runrun();
 
 int counter = 0;
 
@@ -97,9 +96,9 @@ void letsGoAiLoop() {
 					//if (ok_its_enought == false)
 					//	ok_its_enought = oll();
 					if (oll() == -1) {
-						cerr << "\t{" << counter << "}";
-						counter++;
-						generateScramble(30);
+						//cerr << "\t{" << counter << "}";
+						//counter++;
+						//generateScramble(30);
 					}
 						
 						//cerr << "solved boss!\n";
@@ -1411,7 +1410,6 @@ void rotateMatrix(bool tab1[5][5], bool tab2[5][5])
 bool currentOrientaion[4][5][5];
 int currentOrientation_code[4];
 
-bool orientations[57][5][5];
 int orientations_codes[57];
 string moves[57];
 int o_index = 0;
@@ -1422,7 +1420,6 @@ void o_add(
 	bool a41, bool a42, bool a43, bool a44, bool a45,
 	bool a51, bool a52, bool a53, bool a54, bool a55,
 	string move_in) {
-
 
 	string binary = "";
 	binary += to_string(a11);
@@ -1455,55 +1452,8 @@ void o_add(
 	binary += to_string(a54);
 	binary += to_string(a55);
 
-
-	
-	/*
-	if (currentOrientation_code[0] == stoi(binary, 0, 2))
-		cerr << " 0: ";
-	if (currentOrientation_code[1] == stoi(binary, 0, 2))
-		cerr << " 1: ";
-	if (currentOrientation_code[2] == stoi(binary, 0, 2))
-		cerr << " 2: ";
-	if (currentOrientation_code[3] == stoi(binary, 0, 2))
-		cerr << " 3: ";
-	cerr << stoi(binary, 0, 2);
-
-	cerr << " --> " << move_in << endl;
-	*/
 	moves[o_index] = move_in;
 	orientations_codes[o_index] = stoi(binary, 0, 2);
-
-	orientations[o_index][0][0] = a51;
-	orientations[o_index][0][1] = a52;
-	orientations[o_index][0][2] = a53;
-	orientations[o_index][0][3] = a54;
-	orientations[o_index][0][4] = a55;
-
-	orientations[o_index][1][0] = a41;
-	orientations[o_index][1][1] = a42;
-	orientations[o_index][1][2] = a43;
-	orientations[o_index][1][3] = a44;
-	orientations[o_index][1][4] = a45;
-
-	orientations[o_index][2][0] = a31;
-	orientations[o_index][2][1] = a32;
-	orientations[o_index][2][2] = a33;
-	orientations[o_index][2][3] = a34;
-	orientations[o_index][2][4] = a35;
-
-	orientations[o_index][3][0] = a21;
-	orientations[o_index][3][1] = a22;
-	orientations[o_index][3][2] = a23;
-	orientations[o_index][3][3] = a24;
-	orientations[o_index][3][4] = a25;
-
-	orientations[o_index][4][0] = a11;
-	orientations[o_index][4][1] = a12;
-	orientations[o_index][4][2] = a13;
-	orientations[o_index][4][3] = a14;
-	orientations[o_index][4][4] = a15;
-
-	
 	o_index++;
 }
 
@@ -1591,12 +1541,6 @@ string test(string in) {
 	cerr << " -> " << out << endl;
 	return out;
 }
-
-void runrun() {
-	getTopOrientation(currentOrientaion);
-	showOrientation(currentOrientaion[0]);
-}
-
 void rotateMove(string* input, int rotate_times) {
 	for (int t = 0; t < rotate_times; t++) {
 		for (int i = 0; i < input->length(); i++)
@@ -1657,7 +1601,6 @@ string findOllScheme() {
 		}
 	return output;
 }
-
 void oll_initialize() {
 	//dot
 	o_add(
@@ -2163,5 +2106,14 @@ int oll() {
 	*/
 
 	return code_input_index;
+}
+
+
+
+
+int pll() {
+
+
+	return 0;
 }
 
