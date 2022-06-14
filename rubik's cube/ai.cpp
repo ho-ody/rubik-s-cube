@@ -21,9 +21,11 @@ void generateSidesTables() {
 	}	
 }
 void oll_initialize();
+void pll_initialize();
 void letsGoAiStart() {
 	generateSidesTables();
 	oll_initialize();
+	pll_initialize();
 }
 // (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
@@ -77,6 +79,7 @@ void showSides() {
 int cross();
 int f2l();
 int oll();
+int pll();
 extern int ai_go;
 extern int rotateCounter;
 int ok_its_enought = 0;
@@ -90,16 +93,17 @@ void letsGoAiLoop() {
 		
 		//if (code_input_index == -1)
 		//	f2l();
-		if (code_input_index == -1 && rotateCounter < 0)
-			if (cross() == -1)
-				if (f2l() == -1)
+		//if (code_input_index == -1 && rotateCounter < 0)
+		//	if (cross() == -1)
+		//		if (f2l() == -1)
 					//if (ok_its_enought == false)
 					//	ok_its_enought = oll();
-					if (oll() == -1) {
+		//			if (oll() == -1) {
 						//cerr << "\t{" << counter << "}";
 						//counter++;
 						//generateScramble(30);
-					}
+						pll();
+		//			}
 						
 						//cerr << "solved boss!\n";
 		//showSides();
@@ -1474,7 +1478,7 @@ void showOrientation(bool Orientaion[5][5]) {
 	}
 	cerr << endl;
 }
-void getTopOrientation(bool currentOrientaion[4][5][5]) {
+void oll_getTopOrientation(bool currentOrientaion[4][5][5]) {
 	//currentOrientaion[1][0] = ;
 	for (int i = 0; i < 5; i++)
 		for (int j = 0; j < 5; j++)
@@ -2076,7 +2080,7 @@ void oll_initialize() {
 	//code_s = test("RfRFrruuBrbR");
 }
 int oll() {
-	getTopOrientation(currentOrientaion);
+	oll_getTopOrientation(currentOrientaion);
 	//showOrientation(currentOrientaion[0]);
 	//showOrientation(currentOrientaion[1]);
 	//showOrientation(currentOrientaion[2]);
@@ -2109,9 +2113,209 @@ int oll() {
 }
 
 
+short pll_currentOrientaion[4][4][3];
+int pll_currentOrientation_code[4];
+void pll_getTopOrientation() {
+	//edges
+	for (int i = 0; i < 3; i++)
+		pll_currentOrientaion[0][0][i] = sides[f][2][i];
+	for (int i = 0; i < 3; i++)
+		pll_currentOrientaion[0][1][i] = sides[r][2][i];
+	for (int i = 0; i < 3; i++)
+		pll_currentOrientaion[0][2][i] = sides[b][2][i];
+	for (int i = 0; i < 3; i++)
+		pll_currentOrientaion[0][3][i] = sides[l][2][i];
 
+	string code0 = "";
+	for (int i = 0; i < 4; i++)
+		for (int j = 0; j < 3; j++)
+			code0 += to_string(pll_currentOrientaion[0][i][j]-2);
 
+	pll_currentOrientation_code[0] = stoi(code0, nullptr, 4); //base-6 - lower numbers, albe to store in int
+
+	//cerr << pll_currentOrientation_code[0] << endl;
+}
+
+int pll_orientations_codes[21];
+string p_moves[21];
+int p_index = 0;
+void p_add(
+	int f0, int f1, int f2,
+	int r0, int r1, int r2, 
+	int b0, int b1, int b2,
+	int l0, int l1, int l2,
+	string move_in) {
+
+	string code = "";
+	code += to_string(f0 - 2); code += to_string(f1 - 2); code += to_string(f2 - 2);
+	code += to_string(r0 - 2); code += to_string(r1 - 2); code += to_string(r2 - 2);
+	code += to_string(b0 - 2); code += to_string(b1 - 2); code += to_string(b2 - 2);
+	code += to_string(l0 - 2); code += to_string(l1 - 2); code += to_string(l2 - 2);
+
+	pll_orientations_codes[p_index] = stoi(code, nullptr, 4);
+	p_moves[p_index] = move_in;
+	p_index++;
+
+}
+/*
+p_add(f, f, f, r, r, r, b, b, b, l, l, l, "xxxxx");
+p_add(
+		f, f, f,
+		r, r, r,
+		b, b, b,
+		l, l, l,
+		"xxxxx");
+*/
+void pll_initialize() {
+	p_add(
+		l, f, f,
+		r, r, l, 
+		f, b, r,
+		b, l, b, 
+		"llbbLFlbbLfL");
+	p_add(
+		r, f, b, 
+		l, r, r, 
+		b, b, l, 
+		f, l, f, 
+		"llfflbLfflBl");
+	p_add(
+		f, b, r,
+		b, r, f,
+		r, f, b,
+		l, l, l,
+		"RUFruRURfrrURUruRur");
+	p_add(
+		f, r, r,
+		b, l, f,
+		r, f, b,
+		l, b, l,
+		"rruRuRUrUrrUdRurD");
+	p_add(
+		f, b, r,
+		b, f, f,
+		r, l, b,
+		l, r, l,
+		"RUruDrruRurUrUrrd");
+	p_add(
+		f, b, r,
+		b, l, f,
+		r, r, b,
+		l, f, l,
+		"rrUrUruRurruDrURd");
+	p_add(
+		f, l, r,
+		b, b, f,
+		r, f, b,
+		l, r, l,
+		"ruRUdrrUrURuRurrD");
+	p_add(
+		f, f, r,
+		b, b, f,
+		r, r, b,
+		l, l, l,
+		"rrdrDrffLulff");
+	p_add(
+		l, f, f,
+		r, l, l,
+		f, r, r,
+		b, b, b,
+		"ruRFruRURfrrUR");
+	p_add(
+		l, l, f,
+		r, f, l,
+		f, b, r,
+		b, r, b,
+		"rURUrurdRUrDRuuR");
+	p_add(
+		r, f, b,
+		l, b, r,
+		b, l, l,
+		f, r, f,
+		"rrfrurURFruuRuur");
+	p_add(
+		f, f, r,
+		b, l, f,
+		r, b, b,
+		l, r, l,
+		"ruRURfrrURUruRF");
+	p_add(
+		l, f, r,
+		b, r, f,
+		r, b, l,
+		f, l, b,
+		"LblFLBlfLBlFLblf");
+	p_add(
+		b, f, f,
+		r, l, l,
+		f, b, b,
+		l, r, r,
+		"ruRuruRFruRURfrrURuurUR");
+	p_add(
+		f, f, b,
+		l, l, r,
+		b, b, f,
+		r, r, l,
+		"RurURFUfruRfRFrUr");
+	p_add(
+		f, f, b,
+		l, b, r,
+		b, r, f,
+		r, l, l,
+		"RuRUBRbbUBuBrbr");
+	p_add(
+		f, f, b,
+		l, r, r,
+		b, l, f,
+		r, b, l,
+		"frURUruRFruRURfrF");
+	p_add(
+		f, b, f,
+		r, l, r,
+		b, f, b,
+		l, r, l,
+		"mmummuummumm");
+	p_add(
+		f, r, f,
+		r, l, r,
+		b, b, b,
+		l, f, l,
+		"mmumuuMumm");
+	p_add(
+		f, l, f,
+		r, f, r,
+		b, b, b,
+		l, r, l,
+		"mmUmuuMUmm");
+	p_add(
+		l, b, l,
+		f, r, f,
+		r, f, r,
+		b, l, b,
+		"MummummuMuumm");
+}
+
+void check_sth() {
+
+	for (int i = 0; i < 21; i++) {
+		if (pll_currentOrientation_code[0] == pll_orientations_codes[i])
+			cerr << "pll: " << p_moves[i] << endl;
+	}
+
+}
+bool flag = true;
 int pll() {
+
+	pll_getTopOrientation();
+
+	check_sth();
+
+	if (flag) {
+		flag = false;
+
+		code_input_index = 0;
+		code_s = test("llbbLFlbbLfL");
+	}
 
 
 	return 0;
