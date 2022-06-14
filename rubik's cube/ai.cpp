@@ -10,6 +10,7 @@ extern Block* GLOBALblocks;
 
 extern int code_input_index;
 extern string code_s;
+bool solved = false;
 
 void generateSidesTables() {
 	sides = new int** [6];
@@ -102,7 +103,8 @@ void letsGoAiLoop() {
 						//cerr << "\t{" << counter << "}";
 						//counter++;
 						//generateScramble(30);
-						pll();
+						if (solved == false)
+							pll();
 					}
 						
 						//cerr << "solved boss!\n";
@@ -135,7 +137,7 @@ string x1_pos_color_test(int new_pos, int new_color, int pos, int color) {
 
 	if (move == 0)
 		return "";
-	if (move == 1)
+	if (move == 1 || move == -3)
 		return "D";
 	if (move == 2 || move == -2)
 		return "dd";
@@ -2156,8 +2158,8 @@ void pll_getTopOrientation() {
 	//cerr << pll_currentOrientation_code[3] << endl << endl;
 }
 
-int pll_orientations_codes[21];
-string p_moves[21];
+int pll_orientations_codes[22];
+string p_moves[22];
 int p_index = 0;
 void p_add(
 	int f0, int f1, int f2,
@@ -2313,38 +2315,60 @@ void pll_initialize() {
 		r, f, r,
 		b, l, b,
 		"MummummuMuumm");
+	p_add( //already fixed
+		f, f, f,
+		r, r, r,
+		b, b, b,
+		l, l, l,
+		"");
 }
 
-void check_sth() {
-
-	for (int i = 0; i < 21; i++) {
+void findPllScheme() {
+	for (int i = 0; i < 22; i++) {
 		for (int j = 0; j < 4; j++)
 			for (int k = 0; k < 4; k++)
-				if (pll_currentOrientation_code[j][k] == pll_orientations_codes[i])
-					//	cerr << "pll: " << p_moves[i] << endl;
-					cerr << i << "[" << j << "][" << k << "]\t";
-
-		//{
-		//	code_s = p_moves[i]; code_input_index = 0;
-		//}
+				if (pll_currentOrientation_code[j][k] == pll_orientations_codes[i]) {
+					//	cerr << "pll: " << p_moves[i] << endl;	
+					string the_move = p_moves[i];
+					rotateMove(&the_move, k);
+					//end last layer rotation fix
+					if (k == 1) k = 3; //fix k - odwrotnie by³o
+					else if (k == 3) k = 1;
+					switch (j - k) {
+					case 0:
+						break;
+					case 1:
+					case -3:
+						the_move += "u";
+						break;
+					case -1:
+					case 3:
+						the_move += "U";
+						break;
+					case 2:
+					case -2:
+						the_move += "uu";
+						break;
+					}
+					//ship it
+					code_s = the_move; code_input_index = 0;
+					//cerr
+					if (!(i==21 && k == 0))
+						cerr << i << "[" << k << "]\t";
+					if (i == 21 && k == 0) {
+						cerr << "solved\t";
+						solved = true;
+					}
+					k = 4, j = 4, i = 22; //master break
+				}
 	}
 	
 }
-bool flag = false;
 int pll() {
 
 	pll_getTopOrientation();
+	findPllScheme();
 
-	check_sth();
-
-	if (flag) {
-		flag = false;
-
-		code_input_index = 0;
-		code_s = test("llbbLFlbbLfL");
-	}
-
-
-	return 0;
+	return code_input_index;
 }
 
