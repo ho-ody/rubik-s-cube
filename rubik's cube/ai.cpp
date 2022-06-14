@@ -93,17 +93,17 @@ void letsGoAiLoop() {
 		
 		//if (code_input_index == -1)
 		//	f2l();
-		//if (code_input_index == -1 && rotateCounter < 0)
-		//	if (cross() == -1)
-		//		if (f2l() == -1)
+		if (code_input_index == -1 && rotateCounter < 0)
+			if (cross() == -1)
+				if (f2l() == -1)
 					//if (ok_its_enought == false)
 					//	ok_its_enought = oll();
-		//			if (oll() == -1) {
+					if (oll() == -1) {
 						//cerr << "\t{" << counter << "}";
 						//counter++;
 						//generateScramble(30);
 						pll();
-		//			}
+					}
 						
 						//cerr << "solved boss!\n";
 		//showSides();
@@ -2114,7 +2114,7 @@ int oll() {
 
 
 short pll_currentOrientaion[4][4][3];
-int pll_currentOrientation_code[4];
+int pll_currentOrientation_code[4][4];
 void pll_getTopOrientation() {
 	//edges
 	for (int i = 0; i < 3; i++)
@@ -2126,14 +2126,34 @@ void pll_getTopOrientation() {
 	for (int i = 0; i < 3; i++)
 		pll_currentOrientaion[0][3][i] = sides[l][2][i];
 
-	string code0 = "";
+	string code = "";
 	for (int i = 0; i < 4; i++)
 		for (int j = 0; j < 3; j++)
-			code0 += to_string(pll_currentOrientaion[0][i][j]-2);
+			code += to_string(pll_currentOrientaion[0][i][j] - 2);
+			
+	for (int j = 0; j < 4; j++) {		
+		for (int k = 0; k < 4; k++) {
+			pll_currentOrientation_code[j][k] = stoi(code, nullptr, 4); //base-6 - lower numbers, albe to store in int
+			code = code.substr(3, 9) + code.substr(0, 3); //przesuniecie stringa - rotacja
+		}	
+		for (int i = 0; i < code.length(); i++) //podstawianie pozostalych kolorow
+			switch (code[i]) {
+			case '2':
+				code[i] = '0'; break;
+			case '0':
+				code[i] = '3'; break;
+			case '3':
+				code[i] = '1'; break;
+			case '1':
+				code[i] = '2'; break;
+			}
+	}
 
-	pll_currentOrientation_code[0] = stoi(code0, nullptr, 4); //base-6 - lower numbers, albe to store in int
 
 	//cerr << pll_currentOrientation_code[0] << endl;
+	//cerr << pll_currentOrientation_code[1] << endl;
+	//cerr << pll_currentOrientation_code[2] << endl;
+	//cerr << pll_currentOrientation_code[3] << endl << endl;
 }
 
 int pll_orientations_codes[21];
@@ -2298,12 +2318,19 @@ void pll_initialize() {
 void check_sth() {
 
 	for (int i = 0; i < 21; i++) {
-		if (pll_currentOrientation_code[0] == pll_orientations_codes[i])
-			cerr << "pll: " << p_moves[i] << endl;
-	}
+		for (int j = 0; j < 4; j++)
+			for (int k = 0; k < 4; k++)
+				if (pll_currentOrientation_code[j][k] == pll_orientations_codes[i])
+					//	cerr << "pll: " << p_moves[i] << endl;
+					cerr << i << "[" << j << "][" << k << "]\t";
 
+		//{
+		//	code_s = p_moves[i]; code_input_index = 0;
+		//}
+	}
+	
 }
-bool flag = true;
+bool flag = false;
 int pll() {
 
 	pll_getTopOrientation();
