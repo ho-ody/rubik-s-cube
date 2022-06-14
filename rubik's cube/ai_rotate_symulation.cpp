@@ -315,7 +315,26 @@ void rotate_b(int side, bool direction, int offset) {
 
 void ai_rotate(int direction, int axis) {
 	showSides();
-	rotate_u(u, 1, 1);
+	//u: rotate_u(u, 1, 2);
+	//U: rotate_u(u, 0, 2);
+	//D: rotate_u(d, 0, 0);
+	//d: rotate_u(d, 1, 0);
+	//E: rotate_u(d, 0, 1);
+	//e: rotate_u(d, 1, 1);
+	
+	//R: rotate_r(r, 0, 0);
+	//r: rotate_r(r, 1, 0);
+	//L: rotate_r(l, 0, 2);
+	//l: rotate_r(l, 1, 2);
+	//M: rotate_r(l, 0, 1);
+	//m: rotate_r(l, 1, 1);
+	
+	//F: rotate_f(f, 0, 2);
+	//f: rotate_f(f, 1, 2);
+	//B: rotate_b(b, 0, 2);
+	//b: rotate_b(b, 1, 2);
+	//S: rotate_f(f, 0, 1);
+	//s:rotate_f(f, 1, 1);
 	showSides();
 	//ai_toRotate = rotateIndex[axis];
 	//axis %= 3;
@@ -330,23 +349,8 @@ void ai_makeMoves(string code_s) {
 	int row = 0;
 	int prev_row_code = 0;
 	int direction = -1;
-
 	ai_wholecode += code_s;
 	for (int id = 0; id < code_s.length(); id++) {
-		while (code_s[id] >= '0' && code_s[id] <= '9') {
-			row *= 10;
-			row += code_s[id] - '0';
-			id++;
-		}
-		if (row)
-			row--;
-		if (code_s[id] == '^') {
-			row = prev_row_code;
-			code_s[id] = code_s[id - 1];
-		}
-
-		if (code_s[id] == 'M' || code_s[id] == 'm' || code_s[id] == 'E' || code_s[id] == 'e' || code_s[id] == 'S' || code_s[id] == 's')
-			row = 1;
 		direction = 0;
 		switch (code_s[id]) {
 		case 'S':
