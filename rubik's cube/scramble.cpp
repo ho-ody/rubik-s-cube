@@ -87,8 +87,12 @@ void makeMoves(string code_s) {
 
 
 extern bool solved;
+extern bool once;
 string generateScramble(int length, string frontText = "") {
 	solved = false;
+	once = true;
+	//ai_wholecode = "";
+
 	string* everyMove = new string[6 * N];
 	string baseMoves = "FfRrDdBbLlUu";
 	int i = 0;
@@ -175,7 +179,6 @@ string generateScramble(int length, string frontText = "") {
 	cerr << endl << frontText << output << endl;
 
 	code_s = output;
-	code_s = "BFsSdlbuBrlSRbbmfLefDLmDUEmSFBDlRLrFMmRdFUDBUfEldMuMMBflFdLbfbuSrffMuBdfulrDU";
 	code_input_index = 0;
 
 	delete[] everyMove;

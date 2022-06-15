@@ -340,7 +340,7 @@ void ai_rotate(int direction, int axis) {
 extern int ai_code_index;
 string ai_wholecode = "";
 void ai_makeMoves(string* ai_code) {
-	showSides();
+	//showSides();
 	string code_s = *ai_code;
 	*ai_code = "";
 	int axis = -1;

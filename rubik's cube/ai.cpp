@@ -117,36 +117,48 @@ extern void ai_makeMoves(string* code_s);
 extern string generateScramble(int length, string frontText = "");
 bool niceflag = true;
 bool once = true;
+extern string ai_wholecode;
+string test(string in);
+
+double stat_number = 0;
+double stat_n = 0;
+
 void letsGoAiLoop() {
 	//showSides();
 	//updateSidesFromOrder();
 	//updateAiOrder();
-
-
-	if (niceflag == true) {
-		updateSidesFromOrder(); //!!
-		niceflag = false;
-	}
-	if (ai_go) {
+	if (ai_go && code_input_index == -1 && rotateCounter < 0) {
 		if (once) {
 			once = false;
-			showSides();
-			string sth = "BFsSdlbuBrlSRbbmfLefDLmDUEmSFBDlRLrFMmRdFUDBUfEldMuMMBflFdLbfbuSrffMuBdfulrDU";
-			ai_makeMoves(&sth);
-			showSides();
-
+			updateSidesFromOrder();
+			//code_s = "fdffddUBrbuuUBubulULuuufUFULuluuRuruRuuruuruuRUruRfuFuFlfLuuFlfLbuBRbuBUBrbbUB";
+			//code_s = "drULblBddbduURuruurURuuluLULUluuuRUruufuFUUfuFUfuFfrBrbrrFluLULbllULUluLBU";
+			//code_input_index = 0;
 		}
-
+		//updateSidesFromOrder();
+		//showSides();
 		
-		/*
-		if (cross() == -1)
-			if (f2l() == -1)
-				if (oll() == -1)
-					if (solved == false)
-						pll();
+		if (solved == false)
+			if (cross() == -1)
+				if (f2l() == -1)
+				{
+					oll();
+					pll();
+					solved = true;
+					cerr << "solved!\n";
+					//cerr << ai_wholecode << endl;
 
-			cerr << "done!\n";
-			*/
+					stat_number += ai_wholecode.length();
+					stat_n++;
+					cerr << " avg= " << stat_number / stat_n << endl;
+
+					code_s = ai_wholecode;
+					ai_wholecode = "";
+					code_input_index = 0;
+					generateScramble(50);
+					//showSides();
+				}
+		
 		//ai_makeMoves("u");
 		//if (code_input_index == -1)
 		//	f2l();
@@ -2145,7 +2157,7 @@ int oll() {
 	if (ai_code == "already_solved")
 		ai_code_index = -1;
 
-	if (ai_code == "")
+	if (ai_code == "already_solved")
 		return -1;
 	ai_makeMoves(&ai_code);
 	return 0;
@@ -2392,11 +2404,10 @@ void findPllScheme() {
 	
 }
 int pll() {
-
 	pll_getTopOrientation();
 	findPllScheme();
 
-	if (ai_code == "")
+	if (solved == true)
 		return -1;
 	ai_makeMoves(&ai_code);
 	return 0;
