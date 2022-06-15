@@ -1,7 +1,6 @@
 #include <string>
 using namespace std;
 extern int** rotateIndex; //ustawiane raz, na pocz¹tku dzia³ania programu na podstawie wielkoœci koœci
-// extern int* ai_order;
 extern int* ai_toRotate;
 extern int N;
 extern int*** sides;
@@ -66,19 +65,6 @@ void worker_side_rotate(int side, bool direction) {
 	}
 }
 
-int zero(int in) {
-	return 0;
-}
-int one(int in) {
-	return 1;
-}
-int two(int in) {
-	return 2;
-}
-int norm(int in) {
-	return in;
-}
-
 enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 void worker_toside_rotate(int side, bool direction, int offset_i1(int), int offset_j1(int), int offset_i2(int), int offset_j2(int)) {
 	int rules[6][4] = { {f,l,b,r},{f,r,b,l},{f,d,b,u},{f,u,b,d},{u,l,d,r},{u,r,d,l} };
@@ -109,11 +95,6 @@ void worker_toside_rotate(int side, bool direction, int offset_i1(int), int offs
 	}
 
 
-}
-
-void rotate_side(int side, bool direction, int offset_i1(int), int offset_j1(int), int offset_i2(int), int offset_j2(int)) {
-	worker_side_rotate(side, direction);
-	worker_toside_rotate(side, direction, offset_i1, offset_j1,offset_i2, offset_j2);
 }
 
 void rotate_u(int side, bool direction, int offset) {
@@ -340,7 +321,6 @@ void ai_rotate(int direction, int axis) {
 extern int ai_code_index;
 string ai_wholecode = "";
 void ai_makeMoves(string* ai_code) {
-	//showSides();
 	string code_s = *ai_code;
 	*ai_code = "";
 	int axis = -1;

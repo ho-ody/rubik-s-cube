@@ -14,7 +14,6 @@ bool solved = false;
 
 
 string ai_code = "";
-//string ai_wholecode = "";
 int ai_code_index;
 
 
@@ -34,10 +33,6 @@ void pll_initialize();
 int* ai_toRotate;
 void updateSidesFromOrder();
 void letsGoAiStart() {
-	//ai_order = new int[pow(N, 3)];
-	//for (int i = 0; i < pow(N, 3); i++) {
-	//	ai_order[i] = i;
-	//}
 	ai_toRotate = new int[pow(N, 2)];
 
 	generateSidesTables();
@@ -46,17 +41,7 @@ void letsGoAiStart() {
 }
 // (-1): none, (0): white, (1): yellow, (2):red, (3): orange, (4): blue, (5): green
 // (0): down, (1): up, (2): right, (3): left, (4): front, (5): back
-
-void updateAiOrder() {
-	//for (int i = 0; i < pow(N, 3); i++)
-	//	ai_order[i] = order[i];
-}
-
-//int color_positions[]
-
 void updateSidesFromOrder() {
-	//int* temp = ai_order;
-	//ai_order = order;
 	for (int i = 0; i < N; i++) { //front + back
 		for (int j = 0; j < N; j++) {
 			sides[0][N - 1 - i][N - 1 - j] = GLOBALblocks[order[(i * N + j) % N + ((i * N + j) / N) * N * N]].color[5];//down
@@ -69,7 +54,6 @@ void updateSidesFromOrder() {
 			sides[5][i][j] = GLOBALblocks[order[i * N + j + N * N * (N - 1)]].color[2];//back
 		}
 	}
-	//ai_order = temp;
 }
 
 void showSides() {
@@ -124,20 +108,11 @@ double stat_number = 0;
 double stat_n = 0;
 
 void letsGoAiLoop() {
-	//showSides();
-	//updateSidesFromOrder();
-	//updateAiOrder();
 	if (ai_go && code_input_index == -1 && rotateCounter < 0) {
 		if (once) {
 			once = false;
 			updateSidesFromOrder();
-			//code_s = "fdffddUBrbuuUBubulULuuufUFULuluuRuruRuuruuruuRUruRfuFuFlfLuuFlfLbuBRbuBUBrbbUB";
-			//code_s = "drULblBddbduURuruurURuuluLULUluuuRUruufuFUUfuFUfuFfrBrbrrFluLULbllULUluLBU";
-			//code_input_index = 0;
 		}
-		//updateSidesFromOrder();
-		//showSides();
-		
 		if (solved == false)
 			if (cross() == -1)
 				if (f2l() == -1)
@@ -146,7 +121,6 @@ void letsGoAiLoop() {
 					pll();
 					solved = true;
 					cerr << "solved!\n";
-					//cerr << ai_wholecode << endl;
 
 					stat_number += ai_wholecode.length();
 					stat_n++;
@@ -158,35 +132,6 @@ void letsGoAiLoop() {
 					generateScramble(50);
 					//showSides();
 				}
-		
-		//ai_makeMoves("u");
-		//if (code_input_index == -1)
-		//	f2l();
-		/*
-		if (ai_code_index == -1 && rotateCounter < 0)
-			if (cross() == -1)
-				if (f2l() == -1)
-					//if (ok_its_enought == false)
-					//	ok_its_enought = oll();
-					if (oll() == -1) {
-						//cerr << "\t{" << counter << "}";
-						//counter++;
-						//generateScramble(30);
-						if (solved == false)
-							pll();
-					}
-
-		if (ai_code_index != -1)
-			ai_makeMoves(ai_code);
-			*/
-		/*
-		if (solved == true) {
-			string text = "{" + to_string(counter) + "}  ";
-			generateScramble(45, text);
-			counter++;
-
-		}
-		*/
 	}
 }
 void delete3dArray(int*** tab) {
@@ -199,14 +144,8 @@ void delete3dArray(int*** tab) {
 	delete[] tab;
 }
 void letsGoAiEnd() {
-	//delete[] ai_order;
 	delete3dArray(sides);
 }
-
-//	x 3 x
-//	1 x 2
-//	x 0 x
-
 string x1_pos_color_test(int new_pos, int new_color, int pos, int color) {
 	//offset of color to other color lol
 	int color_rules[6][6] = { {0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,2,1,3}, {0,0,2,0,3,1}, {0,0,3,1,0,2}, {0,0,1,3,2,0} };
@@ -246,10 +185,8 @@ int distance_p(int pos1, int pos2) {
 	int pos_rules[4][4] = { {0,3,1,2}, {1,0,2,3}, {3,2,0,1}, {2,1,3,0} };
 	return pos_rules[pos1][pos2];
 }
-
 int distance_c(int color1, int color2) {
 	int color_rules[6][6] = { {0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,2,1,3}, {0,0,2,0,3,1}, {0,0,3,1,0,2}, {0,0,1,3,2,0} };
-	//cerr << "d= " << color_rules[color1][color2] << endl;
 	return color_rules[color1][color2];
 }
 
@@ -583,7 +520,6 @@ int cross() {
 	ai_makeMoves(&ai_code);
 	return 0;
 }
-
 int distance_edge_corner(int a, int b) {
 	int t = a % 8 - b % 8;
 	if (t < 0)
@@ -1470,7 +1406,6 @@ int f2l() {
 	ai_makeMoves(&ai_code);
 	return 0;
 }
-
 //saves rotated tab1 to tab2
 void rotateMatrix(bool tab1[5][5], bool tab2[5][5]) 
 {
@@ -1485,10 +1420,8 @@ void rotateMatrix(bool tab1[5][5], bool tab2[5][5])
 		}
 	}
 }
-
 bool currentOrientaion[4][5][5];
 int currentOrientation_code[4];
-
 int orientations_codes[57];
 string moves[57];
 int o_index = 0;
@@ -2227,7 +2160,6 @@ void p_add(
 	p_index++;
 
 }
-
 void pll_initialize() {
 	p_add(
 		l, f, f,
@@ -2362,7 +2294,6 @@ void pll_initialize() {
 		l, l, l,
 		"");
 }
-
 void findPllScheme() {
 	for (int i = 0; i < 22; i++) {
 		for (int j = 0; j < 4; j++)
