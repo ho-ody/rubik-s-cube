@@ -175,6 +175,7 @@ string generateScramble(int length, string frontText = "") {
 	cerr << endl << frontText << output << endl;
 
 	code_s = output;
+	code_s = "BFsSdlbuBrlSRbbmfLefDLmDUEmSFBDlRLrFMmRdFUDBUfEldMuMMBflFdLbfbuSrffMuBdfulrDU";
 	code_input_index = 0;
 
 	delete[] everyMove;

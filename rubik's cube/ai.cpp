@@ -32,7 +32,7 @@ void pll_initialize();
 
 //int* ai_order;
 int* ai_toRotate;
-
+void updateSidesFromOrder();
 void letsGoAiStart() {
 	//ai_order = new int[pow(N, 3)];
 	//for (int i = 0; i < pow(N, 3); i++) {
@@ -113,22 +113,44 @@ extern int rotateCounter;
 int ok_its_enought = 0;
 
 int counter = 0;
-extern void ai_makeMoves(string code_s);
+extern void ai_makeMoves(string* code_s);
 extern string generateScramble(int length, string frontText = "");
 bool niceflag = true;
+bool once = true;
 void letsGoAiLoop() {
-	showSides();
-	updateSidesFromOrder();
+	//showSides();
+	//updateSidesFromOrder();
 	//updateAiOrder();
 
-	if (niceflag == true && 0) {
-		updateAiOrder();
+
+	if (niceflag == true) {
+		updateSidesFromOrder(); //!!
 		niceflag = false;
 	}
 	if (ai_go) {
-		ai_makeMoves("f");
+		if (once) {
+			once = false;
+			showSides();
+			string sth = "BFsSdlbuBrlSRbbmfLefDLmDUEmSFBDlRLrFMmRdFUDBUfEldMuMMBflFdLbfbuSrffMuBdfulrDU";
+			ai_makeMoves(&sth);
+			showSides();
+
+		}
+
+		
+		/*
+		if (cross() == -1)
+			if (f2l() == -1)
+				if (oll() == -1)
+					if (solved == false)
+						pll();
+
+			cerr << "done!\n";
+			*/
+		//ai_makeMoves("u");
 		//if (code_input_index == -1)
 		//	f2l();
+		/*
 		if (ai_code_index == -1 && rotateCounter < 0)
 			if (cross() == -1)
 				if (f2l() == -1)
@@ -144,6 +166,7 @@ void letsGoAiLoop() {
 
 		if (ai_code_index != -1)
 			ai_makeMoves(ai_code);
+			*/
 		/*
 		if (solved == true) {
 			string text = "{" + to_string(counter) + "}  ";
@@ -542,7 +565,11 @@ int cross() {
 		ai_code = baseMove;
 		ai_code_index = 0;
 	}
-	return ai_code_index;
+
+	if (ai_code == "")
+		return -1;
+	ai_makeMoves(&ai_code);
+	return 0;
 }
 
 int distance_edge_corner(int a, int b) {
@@ -1425,7 +1452,11 @@ int f2l() {
 	ai_code = move;
 	ai_code_index = 0;
 	}
-	return ai_code_index;
+	
+	if (ai_code == "")
+		return -1;
+	ai_makeMoves(&ai_code);
+	return 0;
 }
 
 //saves rotated tab1 to tab2
@@ -2114,7 +2145,10 @@ int oll() {
 	if (ai_code == "already_solved")
 		ai_code_index = -1;
 
-	return ai_code_index;
+	if (ai_code == "")
+		return -1;
+	ai_makeMoves(&ai_code);
+	return 0;
 }
 
 short pll_currentOrientaion[4][4][3];
@@ -2362,5 +2396,8 @@ int pll() {
 	pll_getTopOrientation();
 	findPllScheme();
 
-	return ai_code_index;
+	if (ai_code == "")
+		return -1;
+	ai_makeMoves(&ai_code);
+	return 0;
 }

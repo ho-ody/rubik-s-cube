@@ -179,13 +179,13 @@ void rotate_r(int side, bool direction, int offset) {
 		sides[rules[side][0]][1][2 - offset] = sides[rules[side][1]][1][2 - offset];
 		sides[rules[side][0]][2][2 - offset] = sides[rules[side][1]][2][2 - offset];
 
-		sides[rules[side][1]][0][2 - offset] = sides[rules[side][2]][0][offset];
+		sides[rules[side][1]][0][2 - offset] = sides[rules[side][2]][2][offset];
 		sides[rules[side][1]][1][2 - offset] = sides[rules[side][2]][1][offset];
-		sides[rules[side][1]][2][2 - offset] = sides[rules[side][2]][2][offset];
+		sides[rules[side][1]][2][2 - offset] = sides[rules[side][2]][0][offset];
 
-		sides[rules[side][2]][0][offset] = sides[rules[side][3]][0][2 - offset];
+		sides[rules[side][2]][0][offset] = sides[rules[side][3]][2][2 - offset];
 		sides[rules[side][2]][1][offset] = sides[rules[side][3]][1][2 - offset];
-		sides[rules[side][2]][2][offset] = sides[rules[side][3]][2][2 - offset];
+		sides[rules[side][2]][2][offset] = sides[rules[side][3]][0][2 - offset];
 
 		sides[rules[side][3]][0][2 - offset] = temp[0];
 		sides[rules[side][3]][1][2 - offset] = temp[1];
@@ -201,13 +201,13 @@ void rotate_r(int side, bool direction, int offset) {
 		sides[rules[side][0]][1][2 - offset] = sides[rules[side][3]][1][2 - offset];
 		sides[rules[side][0]][2][2 - offset] = sides[rules[side][3]][2][2 - offset];
 
-		sides[rules[side][3]][0][2 - offset] = sides[rules[side][2]][0][offset];
+		sides[rules[side][3]][0][2 - offset] = sides[rules[side][2]][2][offset];
 		sides[rules[side][3]][1][2 - offset] = sides[rules[side][2]][1][offset];
-		sides[rules[side][3]][2][2 - offset] = sides[rules[side][2]][2][offset];
+		sides[rules[side][3]][2][2 - offset] = sides[rules[side][2]][0][offset];
 
-		sides[rules[side][2]][0][offset] = sides[rules[side][1]][0][2 - offset];
+		sides[rules[side][2]][0][offset] = sides[rules[side][1]][2][2 - offset];
 		sides[rules[side][2]][1][offset] = sides[rules[side][1]][1][2 - offset];
-		sides[rules[side][2]][2][offset] = sides[rules[side][1]][2][2 - offset];
+		sides[rules[side][2]][2][offset] = sides[rules[side][1]][0][2 - offset];
 
 		sides[rules[side][1]][0][2 - offset] = temp[0];
 		sides[rules[side][1]][1][2 - offset] = temp[1];
@@ -314,7 +314,7 @@ void rotate_b(int side, bool direction, int offset) {
 }
 
 void ai_rotate(int direction, int axis) {
-	showSides();
+	//showSides();
 	//u: rotate_u(u, 1, 2);
 	//U: rotate_u(u, 0, 2);
 	//D: rotate_u(d, 0, 0);
@@ -335,68 +335,78 @@ void ai_rotate(int direction, int axis) {
 	//b: rotate_b(b, 1, 2);
 	//S: rotate_f(f, 0, 1);
 	//s:rotate_f(f, 1, 1);
-	showSides();
-	//ai_toRotate = rotateIndex[axis];
-	//axis %= 3;
-
-	//aktualizacja tablciy order
-	//ai_orderUpdateRotateMatrix(direction,axis);
+	//showSides();
 }
 extern int ai_code_index;
 string ai_wholecode = "";
-void ai_makeMoves(string code_s) {
+void ai_makeMoves(string* ai_code) {
+	showSides();
+	string code_s = *ai_code;
+	*ai_code = "";
 	int axis = -1;
 	int row = 0;
 	int prev_row_code = 0;
 	int direction = -1;
 	ai_wholecode += code_s;
+
 	for (int id = 0; id < code_s.length(); id++) {
 		direction = 0;
 		switch (code_s[id]) {
-		case 'S':
-		case 'F':
-			direction = 1;
-		case 's':
-		case 'f':
-			//axis = 2 + row * 3;
-			//rotate_side(f, direction, norm, zero, norm, zero);
-			break;
-		case 'r': //fix -> zamiana 'R' z 'r'
-			direction = 1;
-		case 'R':
-			rotate_r(r, 1, 0);
-			//rotate_side(r, direction, norm, zero, norm, zero);
-			//axis = 0 + row * 3;
-			break;
-		case 'e':
-		case 'd':
-			direction = 1;
-		case 'E':
-		case 'D':
-			rotate_u(d, direction, 0);
-			//axis = 1 + row * 3;
-			break;
-		case 'b':
-			direction = 1;
-		case 'B':
-			//axis = 2 + (N - 1) * 3 - row * 3;
-			break;
-		case 'M':
-		case 'L':
-			direction = 1;
-		case 'm':
-		case 'l':
-			rotate_r(l, 1, 2);
-			//axis = 0 + (N - 1) * 3 - row * 3;
+		case 'u':
+			rotate_u(u, 1, 2);
 			break;
 		case 'U':
-			direction = 1;
-		case 'u':
-			rotate_u(u, direction, 2);
-			//axis = 1 + (N - 1) * 3 - row * 3;
+			rotate_u(u, 0, 2);
+			break;
+		case 'd':
+			rotate_u(d, 1, 0);
+			break;
+		case 'D':
+			rotate_u(d, 0, 0);
+			break;
+		case 'e':
+			rotate_u(d, 1, 1);
+			break;
+		case 'E':
+			rotate_u(d, 0, 1);
+			break;
+		case 'r':
+			rotate_r(r, 1, 0);
+			break;
+		case 'R':
+			rotate_r(r, 0, 0);
+			break;
+		case 'l':
+			rotate_r(l, 1, 2);
+			break;
+		case 'L':
+			rotate_r(l, 0, 2);
+			break;
+		case 'm':
+			rotate_r(l, 1, 1);
+			break;
+		case 'M':
+			rotate_r(l, 0, 1);
+			break;
+		case 'f':
+			rotate_f(f, 1, 2);
+			break;
+		case 'F':
+			rotate_f(f, 0, 2);
+			break;
+		case 'b':
+			rotate_b(b, 1, 2);
+			break;
+		case 'B':
+			rotate_b(b, 0, 2);
+			break;
+		case 's':
+			rotate_f(f, 1, 1);
+			break;
+		case 'S':
+			rotate_f(f, 0, 1);
 			break;
 		}
-		ai_rotate(direction, axis);
 		prev_row_code = row;
 	}
 }
