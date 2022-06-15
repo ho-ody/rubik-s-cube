@@ -1,6 +1,8 @@
 #include <iostream>
 #include "Block.h"
 #include <string>
+#include <windows.h>
+#include <algorithm>
 using namespace std;
 
 extern int N;
@@ -109,6 +111,22 @@ double stat_n = 0;
 
 extern void simplify_final_code();
 extern int calc_length(string in);
+
+string excel = "";
+extern int excel_go;
+void copyToClipboard(string input) {
+	std::replace(input.begin(), input.end(), '.', ',');
+
+	const char* toClipboard = input.c_str();
+	HGLOBAL hMem = GlobalAlloc(GMEM_MOVEABLE, input.length() + 1);
+	memcpy(GlobalLock(hMem), toClipboard, input.length() + 1);
+	GlobalUnlock(hMem);
+	OpenClipboard(0);
+	EmptyClipboard();
+	SetClipboardData(CF_TEXT, hMem);
+	CloseClipboard();
+}
+
 void letsGoAiLoop() {
 	if (ai_go && code_input_index == -1 && rotateCounter < 0) {
 		if (once) {
@@ -123,20 +141,25 @@ void letsGoAiLoop() {
 					pll();
 					solved = true;
 
-					cerr << endl << ai_wholecode << endl;
+					//cerr << endl << ai_wholecode << endl;
 					simplify_final_code();
-					cerr << ai_wholecode << endl;
+					cerr << endl << ai_wholecode << endl;
 
 					stat_number += calc_length(ai_wholecode);
 					stat_n++;
-					cerr << " avg= " << stat_number / stat_n << endl;
+					//cerr << " avg= " << stat_number / stat_n << endl;
+
+					//excel += to_string(stat_number / stat_n);
+					//excel += "\n";
 
 					code_s = ai_wholecode;
 					ai_wholecode = "";
 					code_input_index = 0;
-					generateScramble(50);
+					//generateScramble(50);
 					//showSides();
 				}
+		//if (excel_go)
+		//	copyToClipboard(excel);
 	}
 }
 void delete3dArray(int*** tab) {

@@ -4,36 +4,6 @@ extern int** rotateIndex; //ustawiane raz, na pocz¹tku dzia³ania programu na pod
 extern int* ai_toRotate;
 extern int N;
 extern int*** sides;
-void ai_orderUpdateRotateMatrix(bool direction, int axis)
-{
-	/*
-	if ((direction == 0 && axis % 3 != 0) || (direction == 1 && axis % 3 == 0)) {
-		for (int x = 0; x < N / 2; x++) {
-			for (int y = x; y < N - x - 1; y++) {
-
-				int temp = ai_order[ai_toRotate[x + N * y]];
-				ai_order[ai_toRotate[x + N * y]] = ai_order[ai_toRotate[y + (N - 1 - x) * N]];
-				ai_order[ai_toRotate[y + (N - 1 - x) * N]] = ai_order[ai_toRotate[(N - 1 - x) + (N - 1 - y) * N]];
-				ai_order[ai_toRotate[(N - 1 - x) + (N - 1 - y) * N]] = ai_order[ai_toRotate[(N - 1 - y) + x * N]];
-				ai_order[ai_toRotate[(N - 1 - y) + x * N]] = temp;
-			}
-		}
-	}
-	else {
-		for (int x = 0; x < N / 2; x++) {
-			for (int y = x; y < N - x - 1; y++) {
-
-				int temp = ai_order[ai_toRotate[x + N * y]];
-				ai_order[ai_toRotate[x + N * y]] = ai_order[ai_toRotate[(N - 1 - y) + x * N]];
-				ai_order[ai_toRotate[(N - 1 - y) + x * N]] = ai_order[ai_toRotate[(N - 1 - x) + (N - 1 - y) * N]];
-				ai_order[ai_toRotate[(N - 1 - x) + (N - 1 - y) * N]] = ai_order[ai_toRotate[y + (N - 1 - x) * N]];
-				ai_order[ai_toRotate[y + (N - 1 - x) * N]] = temp;
-			}
-		}
-	}
-	*/
-}
-
 extern void showSides();
 
 void worker_side_rotate(int side, bool direction) {
@@ -294,30 +264,6 @@ void rotate_b(int side, bool direction, int offset) {
 	}
 }
 
-void ai_rotate(int direction, int axis) {
-	//showSides();
-	//u: rotate_u(u, 1, 2);
-	//U: rotate_u(u, 0, 2);
-	//D: rotate_u(d, 0, 0);
-	//d: rotate_u(d, 1, 0);
-	//E: rotate_u(d, 0, 1);
-	//e: rotate_u(d, 1, 1);
-	
-	//R: rotate_r(r, 0, 0);
-	//r: rotate_r(r, 1, 0);
-	//L: rotate_r(l, 0, 2);
-	//l: rotate_r(l, 1, 2);
-	//M: rotate_r(l, 0, 1);
-	//m: rotate_r(l, 1, 1);
-	
-	//F: rotate_f(f, 0, 2);
-	//f: rotate_f(f, 1, 2);
-	//B: rotate_b(b, 0, 2);
-	//b: rotate_b(b, 1, 2);
-	//S: rotate_f(f, 0, 1);
-	//s:rotate_f(f, 1, 1);
-	//showSides();
-}
 extern int ai_code_index;
 string ai_wholecode = "";
 void ai_makeMoves(string* ai_code) {
@@ -588,7 +534,6 @@ void simplify_final_code() {
 			i++;
 	}
 }
-
 
 int calc_length(string in) {
 	int res = 0;

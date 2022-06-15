@@ -57,7 +57,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 1;
+int ANIMATION_DURATION = 20;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 int AI_DELAY = 1;
 
@@ -227,8 +227,22 @@ int code_input_index = -1;
 int row = 0;
 int ai_go = 0;
 int scramble_go = 0;
+int excel_go = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) { //move
+		if (excel_go == 0) {
+			excel_go = 1;
+		}
+		if (excel_go == 2)
+			excel_go = 3;
+	}
+	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
+		if (excel_go == 1)
+			excel_go = 2;
+		if (excel_go == 3)
+			excel_go = 0;
+	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) { //move
 		if (ai_go == 0) {
 			ai_go = 1;
