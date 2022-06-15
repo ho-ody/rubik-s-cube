@@ -390,3 +390,210 @@ void ai_makeMoves(string* ai_code) {
 		prev_row_code = row;
 	}
 }
+
+void simplify_final_code() {
+	//triple symbols reduce
+	for (int i = 0; i < ai_wholecode.length();) {
+		if (ai_wholecode[i] == 'u' && ai_wholecode[i + 1] == 'u' && ai_wholecode[i + 2] == 'u') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "U"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'U' && ai_wholecode[i + 1] == 'U' && ai_wholecode[i + 2] == 'U') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "u"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'd' && ai_wholecode[i + 1] == 'd' && ai_wholecode[i + 2] == 'd') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "D"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'D' && ai_wholecode[i + 1] == 'D' && ai_wholecode[i + 2] == 'D') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "d"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'f' && ai_wholecode[i + 1] == 'f' && ai_wholecode[i + 2] == 'f') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "F"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'F' && ai_wholecode[i + 1] == 'F' && ai_wholecode[i + 2] == 'F') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "f"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'r' && ai_wholecode[i + 1] == 'r' && ai_wholecode[i + 2] == 'r') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "R"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'R' && ai_wholecode[i + 1] == 'R' && ai_wholecode[i + 2] == 'R') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "r"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'b' && ai_wholecode[i + 1] == 'b' && ai_wholecode[i + 2] == 'b') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "B"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'B' && ai_wholecode[i + 1] == 'B' && ai_wholecode[i + 2] == 'B') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "b"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'l' && ai_wholecode[i + 1] == 'l' && ai_wholecode[i + 2] == 'l') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "L"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'L' && ai_wholecode[i + 1] == 'L' && ai_wholecode[i + 2] == 'L') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "l"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'm' && ai_wholecode[i + 1] == 'm' && ai_wholecode[i + 2] == 'm') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "M"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'M' && ai_wholecode[i + 1] == 'M' && ai_wholecode[i + 2] == 'M') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "m"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'e' && ai_wholecode[i + 1] == 'e' && ai_wholecode[i + 2] == 'e') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "E"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'E' && ai_wholecode[i + 1] == 'E' && ai_wholecode[i + 2] == 'E') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "e"); i = 0;
+		}
+		else if (ai_wholecode[i] == 's' && ai_wholecode[i + 1] == 's' && ai_wholecode[i + 2] == 's') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "S"); i = 0;
+		}
+		else if (ai_wholecode[i] == 'S' && ai_wholecode[i + 1] == 'S' && ai_wholecode[i + 2] == 'S') {
+			ai_wholecode.erase(i, 3);
+			ai_wholecode.insert(i, "s"); i = 0;
+		}
+		else
+			i++;
+	}
+	//opposite symbols reduce
+	for (int i = 0; i < ai_wholecode.length();) {
+		if (ai_wholecode[i] == 'u' && ai_wholecode[i + 1] == 'U') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'U' && ai_wholecode[i + 1] == 'u') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'd' && ai_wholecode[i + 1] == 'D') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'D' && ai_wholecode[i + 1] == 'd') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'f' && ai_wholecode[i + 1] == 'F') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'F' && ai_wholecode[i + 1] == 'f') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'r' && ai_wholecode[i + 1] == 'R') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'R' && ai_wholecode[i + 1] == 'r') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'b' && ai_wholecode[i + 1] == 'B') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'B' && ai_wholecode[i + 1] == 'b') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'l' && ai_wholecode[i + 1] == 'L') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'L' && ai_wholecode[i + 1] == 'l') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'm' && ai_wholecode[i + 1] == 'M') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'M' && ai_wholecode[i + 1] == 'm') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'e' && ai_wholecode[i + 1] == 'E') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'E' && ai_wholecode[i + 1] == 'e') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 's' && ai_wholecode[i + 1] == 'S') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else if (ai_wholecode[i] == 'S' && ai_wholecode[i + 1] == 's') {
+			ai_wholecode.erase(i, 2); i = 0;
+		}
+		else
+			i++;
+	}
+	//double symbols reduce to '^'
+	for (int i = 0; i < ai_wholecode.length();) {
+		if (ai_wholecode[i] == 'u' && ai_wholecode[i + 1] == 'u') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'U' && ai_wholecode[i + 1] == 'U') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'd' && ai_wholecode[i + 1] == 'd') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'D' && ai_wholecode[i + 1] == 'D') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'f' && ai_wholecode[i + 1] == 'f') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'F' && ai_wholecode[i + 1] == 'F') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'r' && ai_wholecode[i + 1] == 'r') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'R' && ai_wholecode[i + 1] == 'R') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'b' && ai_wholecode[i + 1] == 'b') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'B' && ai_wholecode[i + 1] == 'B') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'l' && ai_wholecode[i + 1] == 'l') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'L' && ai_wholecode[i + 1] == 'L') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'm' && ai_wholecode[i + 1] == 'm') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'M' && ai_wholecode[i + 1] == 'M') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 's' && ai_wholecode[i + 1] == 's') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'S' && ai_wholecode[i + 1] == 'S') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'e' && ai_wholecode[i + 1] == 'e') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else if (ai_wholecode[i] == 'E' && ai_wholecode[i + 1] == 'E') {
+			ai_wholecode[i + 1] = '^'; i = 0;
+		}
+		else
+			i++;
+	}
+}
+
+
+int calc_length(string in) {
+	int res = 0;
+	for (int i = 0; i < in.length(); i++)
+		if (in[i] != '^')
+			res++;
+	return res;
+}

@@ -107,6 +107,8 @@ string test(string in);
 double stat_number = 0;
 double stat_n = 0;
 
+extern void simplify_final_code();
+extern int calc_length(string in);
 void letsGoAiLoop() {
 	if (ai_go && code_input_index == -1 && rotateCounter < 0) {
 		if (once) {
@@ -120,9 +122,12 @@ void letsGoAiLoop() {
 					oll();
 					pll();
 					solved = true;
-					cerr << "solved!\n";
 
-					stat_number += ai_wholecode.length();
+					cerr << endl << ai_wholecode << endl;
+					simplify_final_code();
+					cerr << ai_wholecode << endl;
+
+					stat_number += calc_length(ai_wholecode);
 					stat_n++;
 					cerr << " avg= " << stat_number / stat_n << endl;
 
