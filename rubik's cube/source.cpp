@@ -3,6 +3,7 @@
 #include <iostream>
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
+#include <vector>
 using namespace std;
 
 #include "VAO.h"
@@ -10,15 +11,16 @@ using namespace std;
 #include "EBO.h"
 #include "ShaderClass.h"
 #include "Camera.h"
-#include <vector>
-#include "Block.h"
 
-extern void makeMoves(string code_s);
-extern string generateScramble(int length, string frontText = "");
-extern void letsGoAiStart();
-extern void letsGoAiLoop();
-extern void letsGoAiEnd();
-string code_s = "";
+#include "Block.h"
+#include "source.h"
+#include "scramble.h"
+#include "ai.h"
+
+
+int N = 3;
+float v = 1;
+
 
 Block* GLOBALblocks;
 
@@ -28,8 +30,9 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 5;
-float v = 1;
+int code_input_index = -1;
+string code_s = "";
+
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
 	int iterator = 0;
@@ -56,8 +59,8 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 }
 
 int ccc = 0;
-int rotateCounter = -1;
-int ANIMATION_DURATION = 201;
+
+int ANIMATION_DURATION = 21;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 int AI_DELAY = 1;
 
@@ -129,6 +132,8 @@ int reverseRotateIndex(int k, int axis) {
 	return -1;
 }
 //podstawowa funkcja poprzez ktora wydaje sie polecenie obrotu
+int rotateCounter = -1;
+
 void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 	float a, b;
 	rotateCounter = ANIMATION_DURATION;
@@ -223,26 +228,11 @@ void rotate(int direction, int indexsOfRotation(int,int), int offset) {
 // 0 -> waiting for input (M key), 1 -> waiting for move (FBLRUD or Escape), 2 -> input processed, reseting
 int move_cube = 0;
 int code_input = 0; 
-int code_input_index = -1;
 int row = 0;
 int ai_go = 0;
 int scramble_go = 0;
-int excel_go = 0;
 void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm::vec3& Up)
 {
-	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_PRESS) { //move
-		if (excel_go == 0) {
-			excel_go = 1;
-		}
-		if (excel_go == 2)
-			excel_go = 3;
-	}
-	if (glfwGetKey(window, GLFW_KEY_I) == GLFW_RELEASE) {
-		if (excel_go == 1)
-			excel_go = 2;
-		if (excel_go == 3)
-			excel_go = 0;
-	}
 	if (glfwGetKey(window, GLFW_KEY_P) == GLFW_PRESS) { //move
 		if (ai_go == 0) {
 			ai_go = 1;
@@ -764,7 +754,8 @@ int main() {
 		}
 		// AI
 		if (ai_counter <= 0) {
-			letsGoAiLoop();
+			if (ai_go && rotateCounter < 0)
+				letsGoAiLoop(1, order);
 			ai_counter = AI_DELAY;
 		}	
 		ai_counter--;

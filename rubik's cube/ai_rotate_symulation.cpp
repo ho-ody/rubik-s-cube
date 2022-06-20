@@ -1,10 +1,10 @@
 #include <string>
+#include "ai_rotate_symulation.h"
 using namespace std;
-extern int** rotateIndex; //ustawiane raz, na pocz¹tku dzia³ania programu na podstawie wielkoœci koœci
-extern int* ai_toRotate;
-extern int N;
+
 extern int*** sides;
-extern void showSides();
+string ai_wholecode = "";
+enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 
 void worker_side_rotate(int side, bool direction) {
 	if (direction) {
@@ -34,8 +34,6 @@ void worker_side_rotate(int side, bool direction) {
 		sides[side][1][2] = temp;
 	}
 }
-
-enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 void worker_toside_rotate(int side, bool direction, int offset_i1(int), int offset_j1(int), int offset_i2(int), int offset_j2(int)) {
 	int rules[6][4] = { {f,l,b,r},{f,r,b,l},{f,d,b,u},{f,u,b,d},{u,l,d,r},{u,r,d,l} };
 	if (direction) {
@@ -264,8 +262,6 @@ void rotate_b(int side, bool direction, int offset) {
 	}
 }
 
-extern int ai_code_index;
-string ai_wholecode = "";
 void ai_makeMoves(string* ai_code) {
 	string code_s = *ai_code;
 	*ai_code = "";
@@ -337,7 +333,7 @@ void ai_makeMoves(string* ai_code) {
 	}
 }
 
-void simplify_final_code() {
+string simplify_final_code() {
 	//triple symbols reduce
 	for (int i = 0; i < ai_wholecode.length();) {
 		if (ai_wholecode[i] == 'u' && ai_wholecode[i + 1] == 'u' && ai_wholecode[i + 2] == 'u') {
@@ -533,6 +529,7 @@ void simplify_final_code() {
 		else
 			i++;
 	}
+	return ai_wholecode;
 }
 
 int calc_length(string in) {
