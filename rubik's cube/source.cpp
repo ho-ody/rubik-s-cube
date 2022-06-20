@@ -18,7 +18,7 @@ using namespace std;
 #include "ai.h"
 
 
-int N = 3;
+int N = 4;
 float v = 1;
 
 
@@ -60,7 +60,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 
-int ANIMATION_DURATION = 21;
+int ANIMATION_DURATION = 1;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 int AI_DELAY = 1;
 
@@ -252,7 +252,7 @@ void input(GLFWwindow* window, glm::vec3& Position, glm::vec3& Orientation, glm:
 			scramble_go = 1;
 	}
 	if (scramble_go == 1) {
-		generateScramble(30);
+		generateScramble(60);
 		scramble_go = 2;
 	}
 	if (glfwGetKey(window, GLFW_KEY_O) == GLFW_RELEASE) {

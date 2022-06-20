@@ -144,6 +144,7 @@
   <ItemGroup>
     <ClCompile Include="ai.cpp" />
     <ClCompile Include="ai_3x3.cpp" />
+    <ClCompile Include="ai_4x4.cpp" />
     <ClCompile Include="ai_rotate_symulation.cpp" />
     <ClCompile Include="Block.cpp" />
     <ClCompile Include="Camera.cpp" />
@@ -165,6 +166,7 @@
   <ItemGroup>
     <ClInclude Include="ai.h" />
     <ClInclude Include="ai_3x3.h" />
+    <ClInclude Include="ai_4x4.h" />
     <ClInclude Include="ai_rotate_symulation.h" />
     <ClInclude Include="Block.h" />
     <ClInclude Include="Camera.h" />
