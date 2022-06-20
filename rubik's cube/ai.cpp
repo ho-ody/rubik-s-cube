@@ -22,9 +22,9 @@ int ai_code_index;
 void generateSidesTables() {
 	sides = new int** [6];
 	for (int i = 0; i < 6; i++) {
-		sides[i] = new int* [N];
-		for (int j = 0; j < N; j++) {
-			sides[i][j] = new int[N];
+		sides[i] = new int* [3];
+		for (int j = 0; j < 3; j++) {
+			sides[i][j] = new int[3];
 		}
 	}	
 }
@@ -163,8 +163,8 @@ void letsGoAiLoop() {
 	}
 }
 void delete3dArray(int*** tab) {
-	for (int i = 0; i < N; i++) {
-		for (int j = 0; j < N; j++) {
+	for (int i = 0; i < 6; i++) {
+		for (int j = 0; j < 3; j++) {
 			delete[] tab[i][j];
 		}
 		delete[] tab[i];
@@ -172,6 +172,7 @@ void delete3dArray(int*** tab) {
 	delete[] tab;
 }
 void letsGoAiEnd() {
+	delete[] ai_toRotate;
 	delete3dArray(sides);
 }
 string x1_pos_color_test(int new_pos, int new_color, int pos, int color) {
@@ -242,6 +243,8 @@ string turnBottomToMatchCorner(int distance) {
 enum sides_code { down = 0, up = 1, right = 2, left = 3, front = 4, back = 5, d = 0, u = 1, r = 2, l = 3, f = 4, b = 5 };
 // (0): white, (1): yellow, (2): red,   (3): orange, (4): blue,  (5): green
 // (0): down,  (1): up,     (2): right, (3): left,   (4): front, (5): back
+
+bool virgin = true;
 int cross() {
 	//cerr << "cross!\n";
 	string superFlip = "rflbrd";
@@ -541,6 +544,11 @@ int cross() {
 		baseMove = turnBottomToMatchCorner(distance_c(sides[f][1][1], sides[f][0][1]));
 		ai_code = baseMove;
 		ai_code_index = 0;
+	}
+
+	if (ai_code == "" && virgin == true) {
+		virgin = false;
+		ai_wholecode += " ";
 	}
 
 	if (ai_code == "")

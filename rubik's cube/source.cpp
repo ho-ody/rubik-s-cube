@@ -28,7 +28,7 @@ ostream& operator<<(ostream& stream, const glm::vec3& v)
 	return stream;
 }
 
-int N = 3;
+int N = 5;
 float v = 1;
 
 void colorUpdate(float r, float g, float b, int size, GLfloat*& vertices) {
@@ -57,7 +57,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height) // uru
 
 int ccc = 0;
 int rotateCounter = -1;
-int ANIMATION_DURATION = 20;
+int ANIMATION_DURATION = 201;
 int MOVEMENT_FREEZE_AFTER_MOVE = 0; //15
 int AI_DELAY = 1;
 
@@ -480,7 +480,7 @@ int main() {
 	Shader shaderProgram("color_uniform.vert", "default.frag");
 	// VAO
 	float dv = v / 10.;
-	v -= dv;
+	//v -= dv;
 	GLfloat vertices[] = {
 		-v, -v, -v,
 		+v, -v, -v,
@@ -494,7 +494,52 @@ int main() {
 		+v, +v, +v,
 		-v, +v, +v
 	};
+	float vf = 1.2*dv; //v_offset
+	v -= dv;
+
+	GLfloat vertices_sub[] = {
+		//front
+		-v, -v, -v - vf,
+		+v, -v, -v - vf,
+		+v, +v, -v - vf,
+		-v, +v, -v - vf,
+		//left
+		+v + vf, +v, +v,
+		+v + vf, -v, +v,
+		+v + vf, -v, -v,
+		+v + vf, +v, -v,
+		//back
+		-v, -v, +v + vf,
+		+v, -v, +v + vf,
+		+v, +v, +v + vf,
+		-v, +v, +v + vf,
+		//right
+		-v - vf, +v, +v,
+		-v - vf, -v, +v,
+		-v - vf, -v, -v,
+		-v - vf, +v, -v,
+		//up
+		+v, +v + vf, -v,
+		-v, +v + vf, -v,
+		-v, +v + vf, +v,
+		+v, +v + vf, +v,
+		//down
+		+v, -v - vf, -v,
+		-v, -v - vf, -v,
+		-v, -v - vf, +v,
+		+v, -v - vf, +v
+	};
 	v += dv;
+	GLuint indices_sub[] = {
+		0, 1, 3, 3, 1, 2,
+		4, 5, 7, 7, 5, 6,
+		8, 9, 11, 11, 9, 10,
+		12, 13, 15, 15, 13, 14,
+		16, 17, 19, 19, 17, 18,
+		20, 21, 23, 23, 21, 22
+	};
+	int n_vertices_sub = 72;
+	//v += dv;
 	int n_vertices = 4 * 2 * 3;
 	GLuint indices[] = {
 		0, 1, 3, 3, 1, 2,
@@ -513,6 +558,15 @@ int main() {
 	blockVAO.LinkVBO(blockVBO, 0, 1);
 	blockVAO.Unbind();
 	
+
+	VBO blockVBO_sub(vertices_sub, sizeof(GLfloat) * n_vertices_sub);
+	EBO blockEBO_sub(indices_sub, sizeof(GLuint) * n_indices);
+	VAO blockVAO_sub;
+	blockVAO_sub.Bind();
+	blockVAO_sub.LinkVBO(blockVBO_sub, 0, 1);
+	blockVAO_sub.Unbind();
+
+
 	order = new int[pow(N, 3)];
 	neworder = new int[pow(N, 3)];
 	toRotate = new int[pow(N, 2)];
@@ -646,6 +700,7 @@ int main() {
 		shaderProgram.Activate();
 		camera.Matrix(45.0f, 0.5f, 50.0f, shaderProgram, "camMatrix");
 		// Narysuj trójk¹ty
+		
 		blockVAO.Bind();
 		for (int i = 0; i < n_blocks; i++)
 		{
@@ -692,8 +747,19 @@ int main() {
 					colorTemp = glm::vec3(.1, .9, .1);
 					break;
 				}
-				glUniform3f(colorLoc, colorTemp.x, colorTemp.y, colorTemp.z);
-				glDrawElements(GL_TRIANGLES, 2*1*3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof (GLfloat)));
+				blockVAO_sub.Bind();
+				blockEBO_sub.Bind();
+				if (blocks[i].color[j] != -1) {
+					glUniform3f(colorLoc, colorTemp.x, colorTemp.y, colorTemp.z);
+					glDrawElements(GL_TRIANGLES, 2 * 1 * 3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof(GLfloat)));
+				}
+				blockVAO.Bind();
+				blockEBO.Bind();
+				colorTemp = glm::vec3(.1, .1, .1);
+				if (blocks[i].color[j] != -1 || blocks[i].roll == true) {
+					glUniform3f(colorLoc, colorTemp.x, colorTemp.y, colorTemp.z);
+					glDrawElements(GL_TRIANGLES, 2 * 1 * 3, GL_UNSIGNED_INT, (void*)(6 * j * sizeof(GLfloat)));
+				}			
 			}
 		}
 		// AI
