@@ -9,6 +9,7 @@
 ## Demo
 ### visualization + scramble
 _note:_ quality is lost by presentation in `.gif` format
+
 ![r3](demo/r3.gif)
 ![r4](demo/r4.gif)
 ![r7](demo/r7.gif)
